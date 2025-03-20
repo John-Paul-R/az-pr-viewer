@@ -42,14 +42,40 @@ export type UserIdentity = {
 export interface PrData {
     id: number;
     title: string;
+    description?: string;
     created_by: string;
+    created_by_id?: string;
     creation_date: string;
     status: string;
     repository: string;
+    repository_id?: string;
     source_branch: string;
     target_branch: string;
     url?: string;
     completion_date?: string;
+    auto_complete_set_by?: string | null;
+    merge_status?: string;
+    merge_id?: string;
+    last_merge_source_commit?: string;
+    last_merge_target_commit?: string;
+    last_merge_commit?: string;
+    is_draft?: boolean;
+    has_conflicts?: boolean;
+    supportsIterations?: boolean;
+    work_item_refs?: any[];
+    completion_options?: {
+        mergeCommitMessage?: string;
+        squashMerge?: boolean;
+        mergeStrategy?: string;
+        bypassReason?: string;
+    };
+    completion_queue_time?: string;
+    reviewers?: {
+        id: string;
+        displayName: string;
+        vote: number;
+        isRequired: boolean;
+    }[];
     threads?: Thread[];
 }
 

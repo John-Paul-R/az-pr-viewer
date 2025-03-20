@@ -6,3 +6,5 @@ export { ThreadComment } from "./ThreadComment";
 export { ThreadContainer } from "./ThreadContainer";
 export { ThreadsSection } from "./ThreadsSection";
 export { ErrorContainer } from "./ErrorContainer";
+export { PrDescription } from "./PrDescription";
+export { PrReviewers } from "./PrReviewers";

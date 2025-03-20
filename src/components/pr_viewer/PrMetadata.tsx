@@ -7,6 +7,7 @@ interface PrMetadataProps {
   repository?: string;
   sourceBranch?: string;
   targetBranch?: string;
+  mergeStatus?: string;
 }
 
 export const PrMetadata: React.FC<PrMetadataProps> = ({
@@ -15,7 +16,8 @@ export const PrMetadata: React.FC<PrMetadataProps> = ({
   completionDate,
   repository,
   sourceBranch,
-  targetBranch
+  targetBranch,
+  mergeStatus
 }) => {
   // Format dates
   const formatDate = (dateStr: string | undefined): string => {
@@ -59,6 +61,12 @@ export const PrMetadata: React.FC<PrMetadataProps> = ({
         <span className="metadata-label">Target Branch</span>
         <span className="metadata-value">{formatBranchName(targetBranch)}</span>
       </div>
+      {mergeStatus && (
+        <div className="metadata-item">
+          <span className="metadata-label">Merge Status</span>
+          <span className="metadata-value">{mergeStatus}</span>
+        </div>
+      )}
     </div>
   );
 };
