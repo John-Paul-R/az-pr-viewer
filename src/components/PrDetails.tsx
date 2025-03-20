@@ -1,9 +1,9 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { PrData } from '../types/interfaces';
+import { PrData, PrIndexEntry } from '../types/interfaces';
 import PrViewer from './PrViewer';
 
-function PrDetails() {
+function PrDetails({ indexData }: {indexDat: PrIndexEntry[]}) {
   const { prNumber } = useParams<{ prNumber: string }>();
   const navigate = useNavigate();
   const [prData, setPrData] = useState<PrData | null>(null);
