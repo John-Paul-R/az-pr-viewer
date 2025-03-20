@@ -171,10 +171,40 @@ fn set_archive_file(new_archive: String, state: State<AppState>) -> Result<(), S
 }
 
 #[tauri::command]
-fn read_pr_file(path: String) -> Result<String, String> {
-    let content = match fs::read_to_string(path) {
+fn read_pr_file(path: String, state: State<AppState>) -> Result<String, String> {
+    // Check if we have an extracted archive
+    let temp_dir = {
+        let mut temp_dir_guard = state.temp_dir.lock().unwrap();
+
+        // If no temp directory exists, we need to extract the archive first
+        if temp_dir_guard.is_none() {
+            let archive_path = state.archive_path.lock().unwrap();
+            if archive_path.is_empty() {
+                return Err("No archive file selected".to_string());
+            }
+
+            // Extract the archive
+            let extracted_dir = extract_archive(&archive_path)?;
+            *temp_dir_guard = Some(extracted_dir);
+        }
+
+        // Get a path to the temp directory
+        temp_dir_guard.as_ref().unwrap().path().to_path_buf()
+    };
+
+    // The path should now be a path relative to the extracted contents
+    // If it's an absolute path (from PrFile.path), we'll use it directly
+    let file_path = if Path::new(&path).is_absolute() {
+        Path::new(&path).to_path_buf()
+    } else {
+        // For relative paths, join with the temp directory
+        temp_dir.join(&path)
+    };
+
+    // Read the file content
+    let content = match fs::read_to_string(&file_path) {
         Ok(content) => content,
-        Err(e) => return Err(format!("Failed to read file: {}", e)),
+        Err(e) => return Err(format!("Failed to read file '{}': {}", file_path.display(), e)),
     };
 
     Ok(content)

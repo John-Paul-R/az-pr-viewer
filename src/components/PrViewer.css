@@ -26,6 +26,23 @@
     margin-bottom: 20px;
 }
 
+.back-button {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: #f0f2f5;
+    color: #333;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.back-button:hover {
+    background-color: #e0e3e9;
+}
+
 .pr-card {
     background-color: var(--card-background);
     border-radius: 8px;
@@ -92,6 +109,42 @@
     background-color: var(--error-color);
 }
 
+.pr-branches {
+    display: flex;
+    align-items: center;
+    margin: 24px 0;
+    padding: 16px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.branch {
+    flex: 1;
+}
+
+.label {
+    color: #666;
+    margin-right: 6px;
+    font-weight: 500;
+}
+
+.branch-arrow {
+    margin: 0 16px;
+    color: #666;
+    font-size: 24px;
+}
+
+.branch-name {
+    display: inline-block;
+    padding: 6px 10px;
+    background-color: #f0f0f0;
+    color: var(--text-secondary);
+    border-radius: 4px;
+    margin-left: 5px;
+    font-family: monospace;
+    word-break: break-all;
+}
+
 .threads-section {
     margin-top: 20px;
 }
@@ -116,10 +169,6 @@
     padding: 15px;
     border-bottom: 1px solid var(--border-color);
     background-color: var(--comment-bg);
-}
-
-.system-notifications {
-    margin-bottom: 25px;
 }
 
 .system-notification {
@@ -293,4 +342,39 @@
     text-overflow: ellipsis;
     max-width: 100%;
     display: inline-block;
+}
+
+.error-container {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.error {
+    color: var(--error-color);
+    margin-bottom: 20px;
+}
+
+.pr-details.loading,
+.pr-details.error,
+.pr-details.not-found {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.external-link {
+    margin-top: 16px;
+}
+
+.external-link a {
+    display: inline-block;
+    padding: 8px 16px;
+    background-color: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.2s;
+}
+
+.external-link a:hover {
+    background-color: var(--secondary-color);
 }
