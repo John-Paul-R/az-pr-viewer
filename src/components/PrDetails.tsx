@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import { PrData, PrIndexEntry } from "../types/interfaces";
 import PrViewer from "./PrViewer";
-import "./PrDetails.css";
+// import "./PrDetails.css";
 
 interface PrDetailsProps {
     indexData: PrIndexEntry[];
