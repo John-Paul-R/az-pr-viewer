@@ -1,4 +1,13 @@
-.pr-reviewers-section {
+.inline-vote-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+/* Use the same color scheme as vote-badge */.pr-reviewers-section {
     margin: 20px 0;
 }
 
@@ -466,6 +475,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     max-width: 100%;
+    display: inline-block;
+}
+
+.line-range {
+    background-color: #e0e0e0;
+    margin-left: 6px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-size: 12px;
+    color: #555;
     display: inline-block;
 }
 
