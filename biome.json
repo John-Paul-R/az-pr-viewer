@@ -1,0 +1,24 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.4.1/schema.json",
+	"organizeImports": {
+		"enabled": true
+	},
+	"formatter": {
+		"enabled": true,
+		"lineEnding": "lf",
+		"ignore": [
+			"src-tauri"
+		],
+		"include": [
+			"src"
+		],
+		"indentWidth": 4,
+		"indentStyle": "space"
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true
+		}
+	}
+}
