@@ -46,6 +46,7 @@ const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
 
             <div className="pr-card">
                 <PrHeader
+                    id={prData.id}
                     title={prData.title}
                     status={prData.status}
                     url={prData.url}

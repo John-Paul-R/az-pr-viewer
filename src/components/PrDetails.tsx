@@ -15,7 +15,6 @@ function PrDetails({ indexData }: PrDetailsProps) {
     const [prData, setPrData] = useState<PrData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>("");
-    const [indexEntry, setIndexEntry] = useState<PrIndexEntry | null>(null);
 
     useEffect(() => {
         async function fetchPrData() {
@@ -33,8 +32,6 @@ function PrDetails({ indexData }: PrDetailsProps) {
                     setLoading(false);
                     return;
                 }
-
-                setIndexEntry(entry);
 
                 // Construct the path to the PR file in the archive
                 const path = `prs/${entry.filename}`;
