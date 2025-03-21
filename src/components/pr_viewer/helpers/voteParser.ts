@@ -28,18 +28,23 @@ export function parseVoteEvents(threads: Thread[] = []) {
         // Get voter identity ID
         const voterIdentityId =
             thread.properties.CodeReviewVotedByIdentity?.$value;
+        // @ts-expect-error this ain't bad, indexing with a number, its what they do in this schema ig...
         if (!voterIdentityId || !thread.identities?.[voterIdentityId]) {
             continue;
         }
 
         // Get voter info
+        // @ts-expect-error this ain't bad, indexing with a number, its what they do in this schema ig...
         const voter = thread.identities[voterIdentityId];
         const date = thread.publishedDate;
 
         voteEvents.push({
             userId: voter.id,
             userName: voter.displayName,
-            vote: parseInt(voteValue, 10),
+            vote:
+                typeof voteValue === "number"
+                    ? voteValue
+                    : parseInt(voteValue, 10),
             date,
             imageUrl: voter.imageUrl || voter._links?.avatar?.href,
         });
@@ -96,7 +101,7 @@ export function enrichReviewersWithAvatars(
     return reviewers.map((reviewer) => {
         const voteEvent = userVoteMap.get(reviewer.id);
 
-        if (voteEvent && voteEvent.imageUrl && !reviewer.imageUrl) {
+        if (voteEvent?.imageUrl && !reviewer.imageUrl) {
             return {
                 ...reviewer,
                 imageUrl: voteEvent.imageUrl,

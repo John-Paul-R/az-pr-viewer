@@ -1,6 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
-import { useState } from "react";
 import { PrFile } from "../types/interfaces";
 import "./FileViewer.css";
 
