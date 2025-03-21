@@ -27,10 +27,13 @@ jobs:
         include:
           - platform: ubuntu-latest
             target: linux
+            rust_targets: x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
           - platform: macos-latest
-            target: macos
+            target: darwin
+            rust_targets: x86_64-apple-darwin aarch64-apple-darwin
           - platform: windows-latest
             target: windows
+            rust_targets: x86_64-pc-windows-msvc aarch64-pc-windows-msvc
 
     runs-on: ${{ matrix.platform }}
 
@@ -42,18 +45,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-          
+
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: latest
           run_install: false
-          
+
       - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-          
+
       - name: Setup pnpm cache
         uses: actions/cache@v3
         with:
@@ -62,10 +65,11 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Install Rust
+      - name: Install Rust (nightly)
         uses: dtolnay/rust-toolchain@nightly
         with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.rust_targets }}
+          components: rustfmt, clippy
 
       - name: Install dependencies (Linux)
         if: matrix.platform == 'ubuntu-latest'
@@ -82,7 +86,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tauriScript: pnpm tauri
-          args: build --target ${{ matrix.target }} -- --profile release
+          args: build --target ${{ matrix.target }} --profile release
 
       # Create tar.gz for Linux executable
       - name: Create Linux executable tarball
@@ -114,7 +118,7 @@ jobs:
             src-tauri/target/release/bundle/appimage/*.AppImage
             src-tauri/target/release/*.tar.gz
           if-no-files-found: warn
-          
+
   # Create GitHub Release if requested via manual trigger
   create-release:
     needs: build
@@ -125,10 +129,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-          
+
       - name: List artifacts
         run: find artifacts -type f | sort
-        
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -145,7 +149,7 @@ jobs:
             artifacts/**/*.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       # Handle macOS artifacts
       - name: Upload macOS artifacts
         if: matrix.platform == 'macos-latest'
@@ -156,7 +160,7 @@ jobs:
             src-tauri/target/release/bundle/dmg/*.dmg
             src-tauri/target/release/bundle/macos/*.app.tar.gz
           if-no-files-found: warn
-          
+
       # Handle Windows artifacts
       - name: Upload Windows artifacts
         if: matrix.platform == 'windows-latest'
