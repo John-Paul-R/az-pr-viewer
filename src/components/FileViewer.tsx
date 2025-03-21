@@ -2,9 +2,10 @@ import { Link, useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import { PrFile } from "../types/interfaces";
 import "./FileViewer.css";
+import { FuseResult, FuseResultMatch } from "fuse.js";
 
 interface FileViewerProps {
-    files: PrFile[];
+    files: FuseResult<PrFile>[];
 }
 
 function FileViewer({ files }: FileViewerProps) {
@@ -32,6 +33,28 @@ function FileViewer({ files }: FileViewerProps) {
         return <p>No PR files found in the selected directory.</p>;
     }
 
+    const highlight = (
+        text: string | undefined,
+        match: FuseResultMatch | undefined,
+    ) => {
+        if (text === undefined) {
+            return undefined;
+        }
+        if (match?.refIndex !== undefined && match.value) {
+            const end = match.refIndex + match.value.length;
+            return (
+                <>
+                    {text.slice(0, match.refIndex)}
+                    <strong>
+                        {text.slice(match.refIndex, match.value.length)}
+                    </strong>
+                    {text.slice(end)}
+                </>
+            );
+        }
+        return text;
+    };
+
     return (
         <div className="file-list">
             <h2>PR Files ({files.length})</h2>
@@ -43,39 +66,57 @@ function FileViewer({ files }: FileViewerProps) {
                     <div className="file-cell">Status</div>
                     <div className="file-cell">Date</div>
                 </div>
-                {files.slice(0, 100).map((file) => (
-                    <Link
-                        to={`/pr/${file.pr_number}`}
-                        key={file.path}
-                        className="file-row"
-                        data-status={file.status || "unknown"}
-                        onClick={() => handleFileClick(file)}
-                    >
-                        <div className="file-cell">{file.pr_number}</div>
-                        <div className="file-cell file-title">
-                            {file.title || "Unknown Title"}
-                        </div>
-                        <div className="file-cell">
-                            {file.author || "Unknown Author"}
-                        </div>
-                        <div className="file-cell status-cell">
-                            <span
-                                className={`status-badge status-${
-                                    file.status || "unknown"
-                                }`}
-                            >
-                                {file.status || "unknown"}
-                            </span>
-                        </div>
-                        <div className="file-cell">
-                            {file.creation_date
-                                ? new Date(
-                                      file.creation_date,
-                                  ).toLocaleDateString()
-                                : "Unknown"}
-                        </div>
-                    </Link>
-                ))}
+                {files.slice(0, 100).map(({ item: file, matches }) => {
+                    const matchByKey = new Map(
+                        // biome-ignore lint/style/noNonNullAssertion: <explanation>
+                        matches?.filter((m) => m.key).map((m) => [m.key!, m]) ??
+                            [],
+                    );
+                    return (
+                        <Link
+                            to={`/pr/${file.pr_number}`}
+                            key={file.path}
+                            className="file-row"
+                            data-status={file.status || "unknown"}
+                            onClick={() => handleFileClick(file)}
+                        >
+                            <div className="file-cell">
+                                {highlight(
+                                    file.pr_number,
+                                    matchByKey.get("pr_number"),
+                                )}
+                            </div>
+                            <div className="file-cell file-title">
+                                {highlight(
+                                    file.title,
+                                    matchByKey.get("title"),
+                                ) || "Unknown Title"}
+                            </div>
+                            <div className="file-cell">
+                                {highlight(
+                                    file.author,
+                                    matchByKey.get("author"),
+                                ) || "Unknown Author"}
+                            </div>
+                            <div className="file-cell status-cell">
+                                <span
+                                    className={`status-badge status-${
+                                        file.status || "unknown"
+                                    }`}
+                                >
+                                    {file.status || "unknown"}
+                                </span>
+                            </div>
+                            <div className="file-cell">
+                                {file.creation_date
+                                    ? new Date(
+                                          file.creation_date,
+                                      ).toLocaleDateString()
+                                    : "Unknown"}
+                            </div>
+                        </Link>
+                    );
+                })}
             </div>
         </div>
     );

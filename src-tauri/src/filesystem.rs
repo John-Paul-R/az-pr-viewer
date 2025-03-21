@@ -78,7 +78,7 @@ impl FileSystem {
         }
 
         // Check if already loaded
-        let mut archive_content = self.archive_content.lock().unwrap();
+        let mut archive_content: std::sync::MutexGuard<'_, Option<Arc<Vec<u8>>>> = self.archive_content.lock().unwrap();
         if archive_content.is_none() {
             // Load the archive content into memory
             let path = Path::new(&archive_path);
@@ -130,32 +130,32 @@ impl FileSystem {
         Ok(temp_dir_guard.as_ref().unwrap().path().to_path_buf())
     }
 
-    pub fn get_index_files(&self) -> Result<Vec<PathBuf>, String> {
+    pub fn get_index_file(&self) -> Result<PathBuf, String> {
         let start = Instant::now();
         let temp_dir = self.ensure_extracted()?;
 
-        let index_files = fs::read_dir(&temp_dir)
+        let index_file = fs::read_dir(&temp_dir)
             .map_err(|e| format!("Failed to read temp directory: {}", e))?
             .filter_map(Result::ok)
-            .filter(|entry| {
-                let path = entry.path();
+            .map(|entry| entry.path())
+            .find_map(|path| {
                 if let Some(file_name) = path.file_name() {
                     let name = file_name.to_string_lossy();
-                    name.starts_with("pr_index_") && name.ends_with(".json")
-                } else {
-                    false
+                    if name.starts_with("pr_index_") && name.ends_with(".json") {
+                        return Some(path)
+                    }
                 }
-            })
-            .map(|entry| entry.path())
-            .collect::<Vec<_>>();
+                None
+            });
 
-        println!("Performance: found {} index files in {:?}", index_files.len(), start.elapsed());
 
-        if index_files.is_empty() {
-            return Err("Index file not found in archive".to_string());
+        match index_file {
+            Some(path) => {
+                println!("Performance: get_index_file found '{}' in {:?}", path.to_string_lossy(), start.elapsed());
+                Ok(path)
+            },
+            None => Err("Index file not found in archive".to_string()),
         }
-
-        Ok(index_files)
     }
 
     pub fn read_file(&self, path: &str) -> Result<String, String> {
@@ -215,8 +215,8 @@ impl FileSystem {
         }
 
         // Find and read index file
-        let index_files = self.get_index_files()?;
-        let index_path = &index_files[0];
+        let index_file = self.get_index_file()?;
+        let index_path = &index_file;
         let content = self.read_file(index_path.to_str().unwrap())?;
 
         println!("Performance: get_index_content completed in {:?}", start.elapsed());

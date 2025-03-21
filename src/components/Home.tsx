@@ -19,8 +19,11 @@ function Home() {
     const { setIndexData, archiveFile, setArchiveFile, files, setFiles } =
         useAppContext();
     const [loading, setLoading] = useState<boolean>(false);
+    const [searchLoading, setSearchLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
+    const [searchResults, setSearchResults] = useState<PrFile[] | null>(null);
+    const [advancedSearch, setAdvancedSearch] = useState<boolean>(false);
 
     // Function to select tar.gz file
     async function selectArchiveFile() {
@@ -57,6 +60,7 @@ function Home() {
 
         setLoading(true);
         setError("");
+        setSearchResults(null);
 
         try {
             // Set the archive file in the backend
@@ -92,29 +96,7 @@ function Home() {
                 `(${prFiles.length} files)`,
             );
 
-            // Enhance PR files with title and author from index
-            const enhanceStartTime = performance.now();
-            const enhancedFiles = prFiles.map((file) => {
-                const indexEntry = indexEntries.find(
-                    (entry) => entry.id.toString() === file.pr_number,
-                );
-
-                return {
-                    ...file,
-                    title: indexEntry ? indexEntry.title : "Unknown Title",
-                    author: indexEntry
-                        ? indexEntry.created_by
-                        : "Unknown Author",
-                    status: indexEntry ? indexEntry.status : "unknown",
-                    creation_date: indexEntry ? indexEntry.creation_date : "",
-                    repository: indexEntry ? indexEntry.repository : "",
-                    source_branch: indexEntry ? indexEntry.source_branch : "",
-                    target_branch: indexEntry ? indexEntry.target_branch : "",
-                };
-            });
-            logPerformance("enhance files with metadata", enhanceStartTime);
-
-            setFiles(enhancedFiles);
+            setFiles(prFiles);
             logPerformance("total data fetching", fetchStartTime);
         } catch (err) {
             setError(`Error: ${err}`);
@@ -126,20 +108,50 @@ function Home() {
         }
     }
 
-    // Filter files based on search term
-    const filterFiles = () => {
-        if (searchTerm === "") return files;
+    // Search PRs using the backend search function
+    async function searchPRs(searchTerm: string) {
+        if (!searchTerm.trim()) {
+            setSearchResults(null);
+            return;
+        }
 
         const startTime = performance.now();
+        setSearchLoading(true);
+        setError("");
+
+        try {
+            const results = await invoke<PrFile[]>("search_prs", {
+                query: searchTerm,
+            });
+            setSearchResults(results);
+            logPerformance(
+                "search_prs backend search",
+                startTime,
+                `(${results.length} results)`,
+            );
+        } catch (err) {
+            setError(`Search error: ${err}`);
+            setSearchResults([]);
+        } finally {
+            setSearchLoading(false);
+        }
+    }
+
+    // Basic frontend filtering (used when advanced search is disabled)
+    const filterFiles = () => {
+        if (!searchTerm.trim()) return files;
+
+        const startTime = performance.now();
+        const lowercaseSearchTerm = searchTerm.toLowerCase();
+
         const result = files.filter(
             (file) =>
                 file.pr_number.includes(searchTerm) ||
-                file.filename
-                    .toLowerCase()
-                    .includes(searchTerm.toLowerCase()) ||
-                file.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                file.author?.toLowerCase().includes(searchTerm.toLowerCase()),
+                file.filename?.toLowerCase().includes(lowercaseSearchTerm) ||
+                file.title?.toLowerCase().includes(lowercaseSearchTerm) ||
+                file.author?.toLowerCase().includes(lowercaseSearchTerm),
         );
+
         logPerformance(
             "filter files",
             startTime,
@@ -148,7 +160,41 @@ function Home() {
         return result;
     };
 
-    const filteredFiles = filterFiles();
+    // Determine which files to display
+    const displayFiles =
+        searchResults !== null
+            ? searchResults
+            : advancedSearch && searchTerm.trim()
+              ? []
+              : filterFiles();
+
+    // Handle search input changes
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const startTime = performance.now();
+        const newTerm = e.target.value;
+        setSearchTerm(newTerm);
+        searchPRs(newTerm);
+
+        // Clear search results when input is cleared
+        if (newTerm.trim() === "") {
+            setSearchResults(null);
+        }
+
+        logPerformance("searchTerm update", startTime);
+    };
+
+    // Trigger search when Enter key is pressed
+    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter" && advancedSearch) {
+            searchPRs();
+        }
+    };
+
+    // Format files for the FileViewer component
+    const formattedFiles = displayFiles.map((file) => ({
+        item: file,
+        refIndex: -1,
+    }));
 
     return (
         <div className="center-container">
@@ -167,23 +213,48 @@ function Home() {
 
             {archiveFile && (
                 <div className="search-section">
-                    <input
-                        type="text"
-                        placeholder="Search PRs by number, title, or author..."
-                        value={searchTerm}
-                        onChange={(e) => {
-                            const startTime = performance.now();
-                            setSearchTerm(e.target.value);
-                            logPerformance("searchTerm update", startTime);
-                        }}
-                    />
+                    <div className="search-controls">
+                        <input
+                            type="text"
+                            placeholder="Search PRs by number, title, or author..."
+                            value={searchTerm}
+                            onChange={handleSearchChange}
+                            onKeyPress={handleKeyPress}
+                        />
+
+                        {advancedSearch && (
+                            <button
+                                onClick={searchPRs}
+                                disabled={searchLoading || !searchTerm.trim()}
+                            >
+                                {searchLoading ? "Searching..." : "Search"}
+                            </button>
+                        )}
+                    </div>
+
+                    <div className="search-options">
+                        <label>
+                            <input
+                                type="checkbox"
+                                checked={advancedSearch}
+                                onChange={() => {
+                                    setAdvancedSearch(!advancedSearch);
+                                    setSearchResults(null);
+                                }}
+                            />
+                            Use advanced search (better relevance, handles
+                            typos)
+                        </label>
+                    </div>
                 </div>
             )}
 
             {loading ? (
                 <p>Loading PRs...</p>
+            ) : searchLoading ? (
+                <p>Searching...</p>
             ) : (
-                <FileViewer files={filteredFiles} />
+                <FileViewer files={formattedFiles} />
             )}
         </div>
     );
