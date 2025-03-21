@@ -1,13 +1,12 @@
 use std::sync::{Arc, Mutex};
 use std::collections::HashMap;
-use std::io::{Cursor, Read};
+use std::io::Cursor;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 use std::fs;
 use flate2::read::GzDecoder;
 use tar::Archive;
 use tempfile::TempDir;
-use serde_json::Value;
 
 pub struct FileSystem {
     archive_path: Mutex<String>,

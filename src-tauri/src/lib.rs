@@ -2,7 +2,6 @@ mod filesystem;
 mod search;
 
 use std::time::Instant;
-use std::path::Path;
 use serde::{Deserialize, Serialize};
 use tauri::State;
 use filesystem::FileSystem;
