@@ -6,7 +6,7 @@ use std::time::Instant;
 use crate::PrIndexEntry;
 use probly_search::{
     Index,
-    score::{bm25, zero_to_one},
+    score::bm25,
 };
 
 pub struct SearchIndex {

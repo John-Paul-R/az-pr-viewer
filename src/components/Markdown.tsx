@@ -16,6 +16,8 @@ export function Markdown({ markdown }: { markdown: string }) {
                     return match ? (
                         <SyntaxHighlighter
                             {...rest}
+                            // @ts-expect-error I will just assume this ref incompatability is _fine_
+                            ref={rest.ref}
                             PreTag="div"
                             children={String(children).replace(/\n$/, "")}
                             language={match[1]}
