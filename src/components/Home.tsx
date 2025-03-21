@@ -33,8 +33,8 @@ function Home() {
                 multiple: false,
                 filters: [
                     {
-                        name: "Tar GZ files",
-                        extensions: ["gz", "tar.gz"],
+                        name: "ZIP files",
+                        extensions: ["zip"],
                     },
                 ],
             });

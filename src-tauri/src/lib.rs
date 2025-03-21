@@ -1,10 +1,10 @@
-mod filesystem;
+mod zip_filesystem;
 mod search;
 
 use std::time::Instant;
 use serde::{Deserialize, Serialize};
 use tauri::State;
-use filesystem::FileSystem;
+use zip_filesystem::FileSystem;
 use search::SearchIndex;
 
 #[tauri::command(async)]
@@ -64,20 +64,17 @@ fn get_pr_files(state: State<AppState>) -> Result<Vec<PrFile>, String> {
         state.search.rebuild_index(&index_entries)?;
     }
 
-    // Get the temp directory path for file paths
-    let temp_dir = state.fs.ensure_extracted()?;
-
-    // Create files from index
+    // Create files from index without extracting files
     let mut files = Vec::with_capacity(index_entries.len());
     for entry in index_entries {
-        let pr_path = temp_dir.join("prs").join(&entry.filename);
-        let path_str = pr_path.to_string_lossy().to_string();
+        // Construct the PR path relative to the archive (for future reference)
+        let pr_path = format!("prs/{}", entry.filename);
         let pr_number = entry.id.to_string();
 
         files.push(PrFile {
-            filename: entry.filename,
-            path: path_str,
-            pr_number: pr_number,
+            filename: entry.filename.clone(),
+            path: pr_path,  // Store the relative path within the archive
+            pr_number,
             num: entry.id,
             title: Some(entry.title),
             author: Some(entry.created_by),
@@ -113,20 +110,17 @@ fn search_prs(query: String, state: State<AppState>) -> Result<Vec<PrFile>, Stri
     // Search for matching PRs
     let results = state.search.search(&query)?;
 
-    // Get the temp directory path for file paths
-    let temp_dir = state.fs.ensure_extracted()?;
-
-    // Convert results to PrFile objects
+    // Create files from search results without extracting files
     let mut files = Vec::with_capacity(results.len());
     for entry in results {
-        let pr_path = temp_dir.join("prs").join(&entry.filename);
-        let path_str = pr_path.to_string_lossy().to_string();
+        // Construct the PR path relative to the archive
+        let pr_path = format!("prs/{}", entry.filename);
         let pr_number = entry.id.to_string();
 
         files.push(PrFile {
-            filename: entry.filename,
-            path: path_str,
-            pr_number: pr_number,
+            filename: entry.filename.clone(),
+            path: pr_path,  // Store the relative path within the archive
+            pr_number,
             num: entry.id,
             title: Some(entry.title),
             author: Some(entry.created_by),
@@ -162,12 +156,22 @@ fn set_archive_file(new_archive: String, state: State<AppState>) -> Result<(), S
 
 #[tauri::command(async)]
 fn read_pr_file(path: String, state: State<AppState>) -> Result<String, String> {
-    state.fs.read_file(&path)
+    // For better performance, try to read directly from memory if possible
+    match state.fs.read_file_from_memory(&path) {
+        Ok(content) => Ok(content),
+        // Fall back to extracting and reading the file
+        Err(_) => state.fs.read_file(&path)
+    }
 }
 
 #[tauri::command(async)]
 fn get_index_content(state: State<AppState>) -> Result<String, String> {
     state.fs.get_index_content()
+}
+
+#[tauri::command(async)]
+fn list_files(state: State<AppState>) -> Result<Vec<String>, String> {
+    state.fs.list_files()
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -186,7 +190,8 @@ pub fn run() {
             set_archive_file,
             read_pr_file,
             get_index_content,
-            search_prs
+            search_prs,
+            list_files
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
