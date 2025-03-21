@@ -18,6 +18,11 @@ on:
         type: string
         default: ''
 
+permissions:
+  contents: write  # Required for creating releases and uploading artifacts
+  packages: write  # Required for uploading artifacts
+  actions: write   # Required for creating and managing workflow runs
+
 jobs:
   build:
     strategy:
