@@ -86,7 +86,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tauriScript: pnpm tauri
-          args: build --target ${{ matrix.target }} --profile release
+          args: build --target ${{ matrix.target }} -- --profile release
 
       # Create tar.gz for Linux executable
       - name: Create Linux executable tarball
