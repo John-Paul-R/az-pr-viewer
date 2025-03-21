@@ -23,7 +23,6 @@ function Home() {
     const [error, setError] = useState<string>("");
     const [searchTerm, setSearchTerm] = useState<string>("");
     const [searchResults, setSearchResults] = useState<PrFile[] | null>(null);
-    const [advancedSearch, setAdvancedSearch] = useState<boolean>(false);
 
     // Function to select tar.gz file
     async function selectArchiveFile() {
@@ -137,37 +136,6 @@ function Home() {
         }
     }
 
-    // Basic frontend filtering (used when advanced search is disabled)
-    const filterFiles = () => {
-        if (!searchTerm.trim()) return files;
-
-        const startTime = performance.now();
-        const lowercaseSearchTerm = searchTerm.toLowerCase();
-
-        const result = files.filter(
-            (file) =>
-                file.pr_number.includes(searchTerm) ||
-                file.filename?.toLowerCase().includes(lowercaseSearchTerm) ||
-                file.title?.toLowerCase().includes(lowercaseSearchTerm) ||
-                file.author?.toLowerCase().includes(lowercaseSearchTerm),
-        );
-
-        logPerformance(
-            "filter files",
-            startTime,
-            `(${result.length}/${files.length} files)`,
-        );
-        return result;
-    };
-
-    // Determine which files to display
-    const displayFiles =
-        searchResults !== null
-            ? searchResults
-            : advancedSearch && searchTerm.trim()
-              ? []
-              : filterFiles();
-
     // Handle search input changes
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const startTime = performance.now();
@@ -183,15 +151,10 @@ function Home() {
         logPerformance("searchTerm update", startTime);
     };
 
-    // Trigger search when Enter key is pressed
-    const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter" && advancedSearch) {
-            searchPRs();
-        }
-    };
-
     // Format files for the FileViewer component
-    const formattedFiles = displayFiles.map((file) => ({
+    const formattedFiles = (
+        !searchTerm.trim() ? files : searchResults ?? []
+    ).map((file) => ({
         item: file,
         refIndex: -1,
     }));
@@ -219,32 +182,7 @@ function Home() {
                             placeholder="Search PRs by number, title, or author..."
                             value={searchTerm}
                             onChange={handleSearchChange}
-                            onKeyPress={handleKeyPress}
                         />
-
-                        {advancedSearch && (
-                            <button
-                                onClick={searchPRs}
-                                disabled={searchLoading || !searchTerm.trim()}
-                            >
-                                {searchLoading ? "Searching..." : "Search"}
-                            </button>
-                        )}
-                    </div>
-
-                    <div className="search-options">
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={advancedSearch}
-                                onChange={() => {
-                                    setAdvancedSearch(!advancedSearch);
-                                    setSearchResults(null);
-                                }}
-                            />
-                            Use advanced search (better relevance, handles
-                            typos)
-                        </label>
                     </div>
                 </div>
             )}
