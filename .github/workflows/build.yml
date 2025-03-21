@@ -23,17 +23,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
         include:
+          # Linux builds
           - platform: ubuntu-latest
-            target: linux
-            rust_targets: x86_64-unknown-linux-gnu aarch64-unknown-linux-gnu
+            target: x86_64-unknown-linux-gnu
+          - platform: ubuntu-latest
+            target: aarch64-unknown-linux-gnu
+          # MacOS builds
           - platform: macos-latest
-            target: darwin
-            rust_targets: x86_64-apple-darwin aarch64-apple-darwin
+            target: x86_64-apple-darwin
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+          # Windows builds
           - platform: windows-latest
-            target: windows
-            rust_targets: x86_64-pc-windows-msvc aarch64-pc-windows-msvc
+            target: x86_64-pc-windows-msvc
+          - platform: windows-latest
+            target: aarch64-pc-windows-msvc
 
     runs-on: ${{ matrix.platform }}
 
@@ -45,18 +50,18 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 'lts/*'
-
+          
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: latest
           run_install: false
-
+          
       - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
+          
       - name: Setup pnpm cache
         uses: actions/cache@v3
         with:
@@ -68,7 +73,7 @@ jobs:
       - name: Install Rust (nightly)
         uses: dtolnay/rust-toolchain@nightly
         with:
-          targets: ${{ matrix.rust_targets }}
+          targets: ${{ matrix.target }}
           components: rustfmt, clippy
 
       - name: Install dependencies (Linux)
@@ -86,13 +91,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tauriScript: pnpm tauri
-          args: build --target ${{ matrix.target }} -- --profile release
+          args: build --target ${{ matrix.target }} --profile release
 
       # Create tar.gz for Linux executable
       - name: Create Linux executable tarball
         if: matrix.platform == 'ubuntu-latest'
         run: |
-          cd src-tauri/target/release
+          cd src-tauri/target/${{ matrix.target }}/release
           APP_NAME=$(find . -type f -executable -not -path "*/\.*" -not -path "*/deps/*" -not -path "*/build/*" | grep -v "\.d$" | grep -v "\.rlib$" | grep -v "\.rmeta$" | head -1)
           if [ -n "$APP_NAME" ]; then
             APP_NAME=$(basename $APP_NAME)
@@ -107,18 +112,74 @@ jobs:
             exit 1
           fi
 
-      # Handle Linux artifacts specifically
-      - name: Upload Linux artifacts
-        if: matrix.platform == 'ubuntu-latest'
+      # Handle Linux x86_64 artifacts
+      - name: Upload Linux x86_64 artifacts
+        if: matrix.platform == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
         uses: actions/upload-artifact@v4
         with:
-          name: linux-build
+          name: linux-x86_64-build
           path: |
-            src-tauri/target/release/bundle/deb/*.deb
-            src-tauri/target/release/bundle/appimage/*.AppImage
-            src-tauri/target/release/*.tar.gz
+            src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
+            src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
+            src-tauri/target/${{ matrix.target }}/release/*.tar.gz
           if-no-files-found: warn
-
+          
+      # Handle Linux ARM64 artifacts
+      - name: Upload Linux ARM64 artifacts
+        if: matrix.platform == 'ubuntu-latest' && matrix.target == 'aarch64-unknown-linux-gnu'
+        uses: actions/upload-artifact@v4
+        with:
+          name: linux-arm64-build
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
+            src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
+            src-tauri/target/${{ matrix.target }}/release/*.tar.gz
+          if-no-files-found: warn
+          
+      # Handle macOS x86_64 artifacts
+      - name: Upload macOS x86_64 artifacts
+        if: matrix.platform == 'macos-latest' && matrix.target == 'x86_64-apple-darwin'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-x86_64-build
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+            src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz
+          if-no-files-found: warn
+          
+      # Handle macOS ARM64 artifacts
+      - name: Upload macOS ARM64 artifacts
+        if: matrix.platform == 'macos-latest' && matrix.target == 'aarch64-apple-darwin'
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-arm64-build
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
+            src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz
+          if-no-files-found: warn
+          
+      # Handle Windows x86_64 artifacts
+      - name: Upload Windows x86_64 artifacts
+        if: matrix.platform == 'windows-latest' && matrix.target == 'x86_64-pc-windows-msvc'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-x86_64-build
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe
+            src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi
+          if-no-files-found: warn
+          
+      # Handle Windows ARM64 artifacts
+      - name: Upload Windows ARM64 artifacts
+        if: matrix.platform == 'windows-latest' && matrix.target == 'aarch64-pc-windows-msvc'
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-arm64-build
+          path: |
+            src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe
+            src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi
+          if-no-files-found: warn
+          
   # Create GitHub Release if requested via manual trigger
   create-release:
     needs: build
@@ -129,10 +190,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
-
+          
       - name: List artifacts
         run: find artifacts -type f | sort
-
+        
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -140,34 +201,12 @@ jobs:
           name: Release ${{ github.event.inputs.release_tag }}
           draft: true
           files: |
-            artifacts/**/*.deb
-            artifacts/**/*.AppImage
-            artifacts/**/*.tar.gz
-            artifacts/**/*.dmg
-            artifacts/**/*.app.tar.gz
-            artifacts/**/*.exe
-            artifacts/**/*.msi
+            artifacts/**/*-build/**/*.deb
+            artifacts/**/*-build/**/*.AppImage
+            artifacts/**/*-build/**/*.tar.gz
+            artifacts/**/*-build/**/*.dmg
+            artifacts/**/*-build/**/*.app.tar.gz
+            artifacts/**/*-build/**/*.exe
+            artifacts/**/*-build/**/*.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Handle macOS artifacts
-      - name: Upload macOS artifacts
-        if: matrix.platform == 'macos-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-build
-          path: |
-            src-tauri/target/release/bundle/dmg/*.dmg
-            src-tauri/target/release/bundle/macos/*.app.tar.gz
-          if-no-files-found: warn
-
-      # Handle Windows artifacts
-      - name: Upload Windows artifacts
-        if: matrix.platform == 'windows-latest'
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-build
-          path: |
-            src-tauri/target/release/bundle/nsis/*.exe
-            src-tauri/target/release/bundle/msi/*.msi
-          if-no-files-found: warn
