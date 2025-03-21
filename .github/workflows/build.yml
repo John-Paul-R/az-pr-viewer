@@ -1,75 +1,4 @@
-# Separate job for Linux ARM64 using cross-compilation
-  build-linux-arm64:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 'lts/*'
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: latest
-          run_install: false
-
-      - name: Install frontend dependencies
-        run: pnpm install
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build for ARM64 using cross
-        uses: uraimo/run-on-arch-action@v2
-        with:
-          arch: aarch64
-          distro: ubuntu20.04
-          dockerRunArgs: |
-            --volume "${PWD}:/workdir"
-          install: |
-            apt-get update
-            apt-get install -y curl build-essential libssl-dev pkg-config libwebkit2gtk-4.0-dev \
-            libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev patchelf
-            curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-            source "$HOME/.cargo/env"
-            rustup default nightly
-            curl -fsSL https://get.pnpm.io/install.sh | sh -
-          run: |
-            cd /workdir
-            source "$HOME/.cargo/env"
-            export PATH="/root/.local/share/pnpm:$PATH"
-            pnpm tauri build --target aarch64-unknown-linux-gnu --profile release
-
-      - name: Create Linux ARM64 tarball
-        run: |
-          cd src-tauri/target/aarch64-unknown-linux-gnu/release
-          APP_NAME=$(find . -type f -executable -not -path "*/\.*" -not -path "*/deps/*" -not -path "*/build/*" | grep -v "\.d$" | grep -v "\.rlib$" | grep -v "\.rmeta$" | head -1)
-          if [ -n "$APP_NAME" ]; then
-            APP_NAME=$(basename $APP_NAME)
-            mkdir -p linux-package
-            cp $APP_NAME linux-package/
-            cd linux-package
-            tar -czvf ../${APP_NAME}.tar.gz $APP_NAME
-            cd ..
-            echo "Created ${APP_NAME}.tar.gz"
-          else
-            echo "No executable found"
-            exit 1
-          fi
-        continue-on-error: true
-
-      - name: Upload Linux ARM64 artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ubuntu-latest-aarch64-unknown-linux-gnu-build
-          path: |
-            src-tauri/target/aarch64-unknown-linux-gnu/release/bundle/deb/*.deb
-            src-tauri/target/aarch64-unknown-linux-gnu/release/bundle/appimage/*.AppImage
-            src-tauri/target/aarch64-unknown-linux-gnu/release/*.tar.gz
-          if-no-files-found: warnname: Build Tauri App
+name: Build Tauri App
 
 on:
   push:
@@ -95,22 +24,21 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Linux x86_64 build
+          # Linux builds
           - platform: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            arch: x86_64
-          # macOS builds
+          - platform: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+          # MacOS builds
           - platform: macos-latest
             target: x86_64-apple-darwin
-            arch: x86_64
           - platform: macos-latest
             target: aarch64-apple-darwin
-            arch: aarch64
           # Windows builds
           - platform: windows-latest
             target: x86_64-pc-windows-msvc
-            arch: x86_64
-          # We'll handle Linux ARM64 differently, as it requires cross-compilation
+          - platform: windows-latest
+            target: aarch64-pc-windows-msvc
 
     runs-on: ${{ matrix.platform }}
 
@@ -163,7 +91,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tauriScript: pnpm tauri
-          args: build --target ${{ matrix.target }} --profile release
+          args: --target ${{ matrix.target }} -- --profile release
 
       # Create tar.gz for Linux executable
       - name: Create Linux executable tarball
@@ -204,7 +132,7 @@ jobs:
 
   # Create GitHub Release if requested via manual trigger
   create-release:
-    needs: [build, build-linux-arm64]
+    needs: build
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.create_release == 'true' && github.event.inputs.release_tag != ''
     runs-on: ubuntu-latest
     steps:
