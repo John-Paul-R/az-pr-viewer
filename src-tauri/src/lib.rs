@@ -1,9 +1,14 @@
 mod zip_filesystem;
 mod search;
+mod git_lines;
+mod git_commit;
 
-use std::time::Instant;
+use std::{sync::Arc, time::Instant};
+use git2::Repository;
+use git_commit::{get_commit_metadata, CommitMetadata};
+use git_lines::get_file_lines_at_revision;
 use serde::{Deserialize, Serialize};
-use tauri::State;
+use tauri::{async_runtime::Mutex, State};
 use zip_filesystem::FileSystem;
 use search::SearchIndex;
 
@@ -49,6 +54,17 @@ type PrIndex = Vec<PrIndexEntry>;
 struct AppState {
     fs: FileSystem,
     search: SearchIndex,
+    repo: Arc<Mutex<Option<Repository>>>,
+}
+
+impl AppState {
+    fn new(fs: FileSystem, search: SearchIndex) -> Self {
+        Self {
+            fs,
+            search,
+            repo: Arc::new(Mutex::new(None)),
+        }
+    }
 }
 
 #[tauri::command(async)]
@@ -174,6 +190,58 @@ fn list_files(state: State<AppState>) -> Result<Vec<String>, String> {
     state.fs.list_files()
 }
 
+#[tauri::command(async)]
+async fn set_git_repo(
+    file_path: String,
+    state: State<'_, AppState>
+) -> Result<String, String> {
+    let repo = Repository::open(file_path);
+    match repo {
+        Ok(r) => {
+            // Lock the mutex and update the option
+            let mut repo_guard = state.repo.lock().await;
+            *repo_guard = Some(r);
+            Ok("OK".to_string())
+        },
+        Err(err) => Err(err.to_string()),
+    }
+}
+
+#[tauri::command]
+async fn get_git_commit(
+    revision: String,
+    state: State<'_, AppState>
+) -> Result<CommitMetadata, String> {
+    let repo_lock = state.repo.lock().await;
+    match &*repo_lock {
+        Some(r) => {
+            get_commit_metadata(r, &revision)
+                .map_err(|err| err.to_string())
+        },
+        None => Err("No repository selected".to_string()),
+    }
+}
+
+#[tauri::command(async)]
+async fn get_git_file_lines_at_revision(
+    file_path: String,
+    revision: String,
+    start_line: usize,
+    end_line: usize,
+    state: State<'_, AppState>
+) -> Result<Vec<String>, String> {
+    let repo_lock = state.repo.lock().await;
+
+    match &*repo_lock {
+        Some(r) => {
+            get_file_lines_at_revision(r, &file_path, &revision, std::ops::Range { start: start_line, end: end_line })
+                .map_err(|err| err.to_string())
+        },
+        None => Err("No repository selected".to_string()),
+    }
+}
+
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -183,6 +251,7 @@ pub fn run() {
         .manage(AppState {
             fs: FileSystem::new(),
             search: SearchIndex::new(),
+            repo: Arc::new(Mutex::new(None)),
         })
         .invoke_handler(tauri::generate_handler![
             greet,
@@ -191,7 +260,10 @@ pub fn run() {
             read_pr_file,
             get_index_content,
             search_prs,
-            list_files
+            list_files,
+            set_git_repo,
+            get_git_commit,
+            get_git_file_lines_at_revision,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

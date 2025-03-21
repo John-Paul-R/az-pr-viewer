@@ -8,6 +8,8 @@ interface AppContextType {
     setArchiveFile: (file: string) => void;
     files: PrFile[];
     setFiles: (files: PrFile[]) => void;
+    repoPath: string;
+    setRepoPath: (file: string) => void;
 }
 
 const AppContext = createContext<AppContextType | undefined>(undefined);
@@ -16,6 +18,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const [indexData, setIndexData] = useState<PrIndexEntry[]>([]);
     const [archiveFile, setArchiveFile] = useState<string>("");
     const [files, setFiles] = useState<PrFile[]>([]);
+    const [repoPath, setRepoPath] = useState<string>([]);
 
     return (
         <AppContext.Provider
@@ -26,6 +29,8 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 setArchiveFile,
                 files,
                 setFiles,
+                repoPath,
+                setRepoPath,
             }}
         >
             {children}

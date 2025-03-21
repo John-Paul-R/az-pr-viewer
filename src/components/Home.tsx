@@ -16,8 +16,15 @@ const logPerformance = (action: string, startTime: number, extraInfo = "") => {
 };
 
 function Home() {
-    const { setIndexData, archiveFile, setArchiveFile, files, setFiles } =
-        useAppContext();
+    const {
+        setIndexData,
+        archiveFile,
+        setArchiveFile,
+        files,
+        setFiles,
+        repoPath,
+        setRepoPath,
+    } = useAppContext();
     const [loading, setLoading] = useState<boolean>(false);
     const [searchLoading, setSearchLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
@@ -187,6 +194,26 @@ function Home() {
                         </div>
                     </div>
                 )}
+
+                <div className="search-section">
+                    <div className="search-controls">
+                        <input
+                            type="text"
+                            placeholder="Enter path to repository..."
+                            value={repoPath}
+                            onChange={(e) => setRepoPath(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    invoke("set_git_repo", {
+                                        filePath: repoPath,
+                                    }).then((e) => {
+                                        console.log(e);
+                                    });
+                                }
+                            }}
+                        />
+                    </div>
+                </div>
             </div>
 
             <div className="home-content">

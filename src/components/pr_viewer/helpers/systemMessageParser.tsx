@@ -1,6 +1,7 @@
 // components/pr/helpers/systemMessageParser.ts
-import React from "react";
+import React, { useState } from "react";
 import { Comment, Thread } from "../../../types/interfaces";
+import { invoke } from "@tauri-apps/api/core";
 
 /**
  * Parse system messages to enhance their display
@@ -65,6 +66,27 @@ function getVoteText(vote: number): string {
     }
 }
 
+type CommitMetadata = {
+    /// The full commit hash
+    commit_id: string;
+    /// The commit message
+    message: string;
+    /// The commit message summary (first line)
+    summary: string;
+    /// The author's name
+    author_name: string;
+    /// The author's email
+    author_email: string;
+    /// The author time (when the commit was originally created)
+    author_time: Date;
+    /// The committer's name
+    committer_name: string;
+    /// The committer's email
+    committer_email: string;
+    /// The commit time (when the commit was added to the repository)
+    commit_time: Date;
+};
+
 export function RenderCommits({
     commentContent,
     thread,
@@ -72,6 +94,9 @@ export function RenderCommits({
     commentContent: string;
     thread: Thread;
 }): React.ReactNode {
+    const [commitMetas, setCommitMetas] =
+        useState<Map<string, CommitMetadata>>();
+
     if (thread.properties?.CodeReviewRefNewCommits?.$value) {
         // real-world example value:
         // "CodeReviewRefNewCommits": {
@@ -83,6 +108,20 @@ export function RenderCommits({
         if (typeof commitsStr !== "string") {
             throw new Error("got number for commits str");
         }
+        const commitHashes = commitsStr.split(";");
+        if (commitMetas === undefined) {
+            setCommitMetas(new Map());
+            Promise.all(
+                commitHashes.map((hash) =>
+                    invoke<CommitMetadata>("get_git_commit", {
+                        revision: hash,
+                    }),
+                ),
+            ).then((commits) => {
+                console.log(commits);
+                setCommitMetas(new Map(commits.map((c) => [c.commit_id, c])));
+            });
+        }
         return (
             <>
                 {thread.identities?.[1]?.displayName ?? <code>???</code>} pushed{" "}
@@ -90,11 +129,14 @@ export function RenderCommits({
                     "???"}{" "}
                 commit(s):
                 <ul>
-                    {commitsStr.split(";").map((hash) => (
-                        <li>
-                            <code>{hash}</code>
-                        </li>
-                    ))}
+                    {commitHashes.map((hash) => {
+                        const meta = commitMetas?.get(hash);
+                        return (
+                            <li>
+                                {meta?.message} <code>{hash.slice(0, 8)}</code>
+                            </li>
+                        );
+                    })}
                 </ul>
             </>
         );
