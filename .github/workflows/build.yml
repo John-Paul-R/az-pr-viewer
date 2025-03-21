@@ -112,70 +112,20 @@ jobs:
             exit 1
           fi
 
-      # Handle Linux x86_64 artifacts
-      - name: Upload Linux x86_64 artifacts
-        if: matrix.platform == 'ubuntu-latest' && matrix.target == 'x86_64-unknown-linux-gnu'
+      # Upload artifacts for all platforms
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: linux-x86_64-build
+          name: ${{ matrix.platform }}-${{ matrix.target }}-build
           path: |
+            # Linux artifacts
             src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
             src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
             src-tauri/target/${{ matrix.target }}/release/*.tar.gz
-          if-no-files-found: warn
-          
-      # Handle Linux ARM64 artifacts
-      - name: Upload Linux ARM64 artifacts
-        if: matrix.platform == 'ubuntu-latest' && matrix.target == 'aarch64-unknown-linux-gnu'
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-arm64-build
-          path: |
-            src-tauri/target/${{ matrix.target }}/release/bundle/deb/*.deb
-            src-tauri/target/${{ matrix.target }}/release/bundle/appimage/*.AppImage
-            src-tauri/target/${{ matrix.target }}/release/*.tar.gz
-          if-no-files-found: warn
-          
-      # Handle macOS x86_64 artifacts
-      - name: Upload macOS x86_64 artifacts
-        if: matrix.platform == 'macos-latest' && matrix.target == 'x86_64-apple-darwin'
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-x86_64-build
-          path: |
+            # macOS artifacts
             src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
             src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz
-          if-no-files-found: warn
-          
-      # Handle macOS ARM64 artifacts
-      - name: Upload macOS ARM64 artifacts
-        if: matrix.platform == 'macos-latest' && matrix.target == 'aarch64-apple-darwin'
-        uses: actions/upload-artifact@v4
-        with:
-          name: macos-arm64-build
-          path: |
-            src-tauri/target/${{ matrix.target }}/release/bundle/dmg/*.dmg
-            src-tauri/target/${{ matrix.target }}/release/bundle/macos/*.app.tar.gz
-          if-no-files-found: warn
-          
-      # Handle Windows x86_64 artifacts
-      - name: Upload Windows x86_64 artifacts
-        if: matrix.platform == 'windows-latest' && matrix.target == 'x86_64-pc-windows-msvc'
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-x86_64-build
-          path: |
-            src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe
-            src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi
-          if-no-files-found: warn
-          
-      # Handle Windows ARM64 artifacts
-      - name: Upload Windows ARM64 artifacts
-        if: matrix.platform == 'windows-latest' && matrix.target == 'aarch64-pc-windows-msvc'
-        uses: actions/upload-artifact@v4
-        with:
-          name: windows-arm64-build
-          path: |
+            # Windows artifacts
             src-tauri/target/${{ matrix.target }}/release/bundle/nsis/*.exe
             src-tauri/target/${{ matrix.target }}/release/bundle/msi/*.msi
           if-no-files-found: warn
@@ -201,12 +151,12 @@ jobs:
           name: Release ${{ github.event.inputs.release_tag }}
           draft: true
           files: |
-            artifacts/**/*-build/**/*.deb
-            artifacts/**/*-build/**/*.AppImage
-            artifacts/**/*-build/**/*.tar.gz
-            artifacts/**/*-build/**/*.dmg
-            artifacts/**/*-build/**/*.app.tar.gz
-            artifacts/**/*-build/**/*.exe
-            artifacts/**/*-build/**/*.msi
+            artifacts/**/*.deb
+            artifacts/**/*.AppImage
+            artifacts/**/*.tar.gz
+            artifacts/**/*.dmg
+            artifacts/**/*.app.tar.gz
+            artifacts/**/*.exe
+            artifacts/**/*.msi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
