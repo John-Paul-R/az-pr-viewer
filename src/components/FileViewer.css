@@ -12,7 +12,7 @@
 
   .file-header {
     display: grid;
-    grid-template-columns: 80px 1fr 180px 100px 120px;
+    grid-template-columns: 80px 1fr 180px 110px 120px;
     background-color: #f5f5f5;
     font-weight: bold;
     border-bottom: 2px solid #ddd;
@@ -22,7 +22,7 @@
 
   .file-row {
     display: grid;
-    grid-template-columns: 80px 1fr 180px 100px 120px;
+    grid-template-columns: 80px 1fr 180px 110px 120px;
     border-bottom: 1px solid #eee;
     text-decoration: none;
     color: inherit;
@@ -48,6 +48,9 @@
     font-weight: 500;
   }
 
+  .status-cell {
+    text-overflow: clip !important;
+  }
   .status-badge {
     display: inline-block;
     padding: 3px 8px;
