@@ -13,7 +13,6 @@ function App() {
                     <Routes>
                         <Route path="/" element={<Home />} />
                         <Route path="/pr/:prNumber" element={<PrDetails />} />
-                        <Route path="*" element={<div>fallback!</div>} />
                     </Routes>
                 </Router>
             </AppProvider>
