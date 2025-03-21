@@ -43,7 +43,7 @@ function FileViewer({ files }: FileViewerProps) {
                     <div className="file-cell">Status</div>
                     <div className="file-cell">Date</div>
                 </div>
-                {files.map((file) => (
+                {files.slice(0, 100).map((file) => (
                     <Link
                         to={`/pr/${file.pr_number}`}
                         key={file.path}

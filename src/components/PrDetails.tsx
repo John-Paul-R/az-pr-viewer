@@ -1,20 +1,18 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
-import { PrData, PrIndexEntry } from "../types/interfaces";
+import { PrData } from "../types/interfaces";
 import PrViewer from "./PrViewer";
+import { useAppContext } from "../AppContext";
 // import "./PrDetails.css";
 
-interface PrDetailsProps {
-    indexData: PrIndexEntry[];
-}
-
-function PrDetails({ indexData }: PrDetailsProps) {
+function PrDetails() {
     const { prNumber } = useParams<{ prNumber: string }>();
     const navigate = useNavigate();
     const [prData, setPrData] = useState<PrData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>("");
+    const { indexData } = useAppContext();
 
     useEffect(() => {
         async function fetchPrData() {
