@@ -23,7 +23,7 @@ export const PrHeader: React.FC<PrHeaderProps> = ({
     };
 
     return (
-        <div className="pr-header">
+        <div className="pr-details-header">
             <div>
                 <h3 className="pr-title">
                     <code>!{id}</code>: {title}

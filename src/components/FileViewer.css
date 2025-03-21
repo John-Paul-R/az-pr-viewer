@@ -78,6 +78,13 @@
   }
 
   /* PrDetails.css */
+
+  .pr-details-scroll-wrapper {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
   .pr-details {
     max-width: 1000px;
     margin: 0 auto;
@@ -97,12 +104,6 @@
 
   .back-button:hover {
     background-color: #e0e0e0;
-  }
-
-  .pr-header {
-    margin-bottom: 30px;
-    padding-bottom: 20px;
-    border-bottom: 1px solid #eee;
   }
 
   .pr-number {

@@ -36,42 +36,45 @@ const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
     }, [prData.reviewers, prData.threads]);
 
     return (
-        <div className="pr-details">
-            <div className="pr-header">
-                <button onClick={onBack} className="back-button">
-                    Back to PR List
-                </button>
+        <div className="pr-details-scroll-wrapper">
+            <button onClick={onBack} className="back-button">
+                Back to PR List
+            </button>
+            {/* <div className="pr-header">
                 <h1>Pull Request Viewer</h1>
-            </div>
+            </div> */}
+            <div className="pr-details">
+                <div className="pr-card">
+                    <PrHeader
+                        id={prData.id}
+                        title={prData.title}
+                        status={prData.status}
+                        url={prData.url}
+                    />
 
-            <div className="pr-card">
-                <PrHeader
-                    id={prData.id}
-                    title={prData.title}
-                    status={prData.status}
-                    url={prData.url}
-                />
+                    <PrDescription description={prData.description} />
 
-                <PrDescription description={prData.description} />
+                    <PrMetadata
+                        createdBy={prData.created_by}
+                        creationDate={prData.creation_date}
+                        completionDate={prData.completion_date}
+                        repository={prData.repository}
+                        sourceBranch={prData.source_branch}
+                        targetBranch={prData.target_branch}
+                        mergeStatus={prData.merge_status}
+                    />
 
-                <PrMetadata
-                    createdBy={prData.created_by}
-                    creationDate={prData.creation_date}
-                    completionDate={prData.completion_date}
-                    repository={prData.repository}
-                    sourceBranch={prData.source_branch}
-                    targetBranch={prData.target_branch}
-                    mergeStatus={prData.merge_status}
-                />
+                    <PrReviewers reviewers={enrichedReviewers} />
 
-                <PrReviewers reviewers={enrichedReviewers} />
+                    <PrBranches
+                        sourceBranch={prData.source_branch}
+                        targetBranch={prData.target_branch}
+                    />
 
-                <PrBranches
-                    sourceBranch={prData.source_branch}
-                    targetBranch={prData.target_branch}
-                />
-
-                {prData.threads && <ThreadsSection threads={prData.threads} />}
+                    {prData.threads && (
+                        <ThreadsSection threads={prData.threads} />
+                    )}
+                </div>
             </div>
         </div>
     );
