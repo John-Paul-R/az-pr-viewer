@@ -32,6 +32,9 @@ importers:
       react-dom:
         specifier: ^18.3.1
         version: 18.3.1(react@18.3.1)
+      react-error-boundary:
+        specifier: ^5.0.0
+        version: 5.0.0(react@18.3.1)
       react-markdown:
         specifier: ^10.1.0
         version: 10.1.0(@types/react@18.3.19)(react@18.3.1)
@@ -136,6 +139,10 @@ packages:
     engines: {node: '>=6.9.0'}
     peerDependencies:
       '@babel/core': ^7.0.0-0
+
+  '@babel/runtime@7.26.10':
+    resolution: {integrity: sha1-oHtNj6J68TGmM9ezUk24A+tHZMI=}
+    engines: {node: '>=6.9.0'}
 
   '@babel/template@7.26.9':
     resolution: {integrity: sha1-RXetPd9D0ZRSjP9OH6ayMvpgm7I=}
@@ -867,6 +874,11 @@ packages:
     peerDependencies:
       react: ^18.3.1
 
+  react-error-boundary@5.0.0:
+    resolution: {integrity: sha1-a2x+B1ySKvsCgxR+WwhO+kTmhXA=}
+    peerDependencies:
+      react: '>=16.13.1'
+
   react-markdown@10.1.0:
     resolution: {integrity: sha1-4ivCD63bwHYFwVKEJVZTwPO61co=}
     peerDependencies:
@@ -897,6 +909,9 @@ packages:
   react@18.3.1:
     resolution: {integrity: sha1-SauJIAnFOTNiW9FrJTP8dUyrKJE=}
     engines: {node: '>=0.10.0'}
+
+  regenerator-runtime@0.14.1:
+    resolution: {integrity: sha1-NWreECY/aF3aElEAzYYsHbiVMn8=}
 
   rehype-raw@7.0.0:
     resolution: {integrity: sha1-Wdc0j9Xb7zgHu6odRD79LdhezuQ=}
@@ -1130,6 +1145,10 @@ snapshots:
     dependencies:
       '@babel/core': 7.26.10
       '@babel/helper-plugin-utils': 7.26.5
+
+  '@babel/runtime@7.26.10':
+    dependencies:
+      regenerator-runtime: 0.14.1
 
   '@babel/template@7.26.9':
     dependencies:
@@ -1906,6 +1925,11 @@ snapshots:
       react: 18.3.1
       scheduler: 0.23.2
 
+  react-error-boundary@5.0.0(react@18.3.1):
+    dependencies:
+      '@babel/runtime': 7.26.10
+      react: 18.3.1
+
   react-markdown@10.1.0(@types/react@18.3.19)(react@18.3.1):
     dependencies:
       '@types/hast': 3.0.4
@@ -1945,6 +1969,8 @@ snapshots:
   react@18.3.1:
     dependencies:
       loose-envify: 1.4.0
+
+  regenerator-runtime@0.14.1: {}
 
   rehype-raw@7.0.0:
     dependencies:

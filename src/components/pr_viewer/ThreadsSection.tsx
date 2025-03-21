@@ -47,6 +47,7 @@ export const ThreadsSection: React.FC<ThreadsSectionProps> = ({ threads }) => {
             <SystemNotification
               key={`thread-${threadIndex}`}
               comment={thread.comments[0]}
+              thread={thread}
             />
           );
         }
