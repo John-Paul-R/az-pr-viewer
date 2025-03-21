@@ -2,10 +2,14 @@ import { Link, useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import { PrFile } from "../types/interfaces";
 import "./FileViewer.css";
-import { FuseResult, FuseResultMatch } from "fuse.js";
+
+type FuseResultMatch = {
+    refIndex?: number;
+    value?: string;
+};
 
 interface FileViewerProps {
-    files: FuseResult<PrFile>[];
+    files: { item: PrFile; refIndex?: number; matches?: FuseResultMatch[] }[];
 }
 
 function FileViewer({ files }: FileViewerProps) {
@@ -66,12 +70,8 @@ function FileViewer({ files }: FileViewerProps) {
                     <div className="file-cell">Status</div>
                     <div className="file-cell">Date</div>
                 </div>
-                {files.slice(0, 100).map(({ item: file, matches }) => {
-                    const matchByKey = new Map(
-                        // biome-ignore lint/style/noNonNullAssertion: <explanation>
-                        matches?.filter((m) => m.key).map((m) => [m.key!, m]) ??
-                            [],
-                    );
+                {files.slice(0, 100).map(({ item: file }) => {
+                    const matchByKey = new Map();
                     return (
                         <Link
                             to={`/pr/${file.pr_number}`}
