@@ -161,39 +161,43 @@ function Home() {
 
     return (
         <div className="center-container">
-            <h1>PR JSON Viewer</h1>
+            <div className="home-head">
+                <h1>PR JSON Viewer</h1>
 
-            <div className="directory-section">
-                <button type="button" onClick={selectArchiveFile}>
-                    Select PR Archive File
-                </button>
-                <p className="selected-dir">
-                    {archiveFile || "No archive file selected"}
-                </p>
+                <div className="directory-section">
+                    <button type="button" onClick={selectArchiveFile}>
+                        Select PR Archive File
+                    </button>
+                    <p className="selected-dir">
+                        {archiveFile || "No archive file selected"}
+                    </p>
+                </div>
+
+                {error && <div className="error">{error}</div>}
+
+                {archiveFile && (
+                    <div className="search-section">
+                        <div className="search-controls">
+                            <input
+                                type="text"
+                                placeholder="Search PRs by number, title, or author..."
+                                value={searchTerm}
+                                onChange={handleSearchChange}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
 
-            {error && <div className="error">{error}</div>}
-
-            {archiveFile && (
-                <div className="search-section">
-                    <div className="search-controls">
-                        <input
-                            type="text"
-                            placeholder="Search PRs by number, title, or author..."
-                            value={searchTerm}
-                            onChange={handleSearchChange}
-                        />
-                    </div>
-                </div>
-            )}
-
-            {loading ? (
-                <p>Loading PRs...</p>
-            ) : searchLoading ? (
-                <p>Searching...</p>
-            ) : (
-                <FileViewer files={formattedFiles} />
-            )}
+            <div className="home-content">
+                {loading ? (
+                    <p>Loading PRs...</p>
+                ) : searchLoading ? (
+                    <p>Searching...</p>
+                ) : (
+                    <FileViewer files={formattedFiles} />
+                )}
+            </div>
         </div>
     );
 }
