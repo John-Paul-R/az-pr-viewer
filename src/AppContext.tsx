@@ -18,7 +18,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
     const [indexData, setIndexData] = useState<PrIndexEntry[]>([]);
     const [archiveFile, setArchiveFile] = useState<string>("");
     const [files, setFiles] = useState<PrFile[]>([]);
-    const [repoPath, setRepoPath] = useState<string>([]);
+    const [repoPath, setRepoPath] = useState<string>("");
 
     return (
         <AppContext.Provider
