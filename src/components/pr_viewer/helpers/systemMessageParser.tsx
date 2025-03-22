@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import { Comment, Thread } from "../../../types/interfaces";
 import { invoke } from "@tauri-apps/api/core";
+import style from "../../PrViewer.module.css" with { type: "css" };
 
 /**
  * Parse system messages to enhance their display
@@ -21,7 +22,11 @@ export function enhanceSystemMessage(comment: Comment): React.ReactNode {
         return (
             <>
                 <strong>{userName}</strong> {getVoteActionText(vote)}
-                <span className={`inline-vote-badge vote-${vote}`}>
+                <span
+                    className={`${style["inline-vote-badge"]} ${
+                        style[`vote-${vote}`]
+                    }`}
+                >
                     {getVoteText(vote)}
                 </span>
             </>

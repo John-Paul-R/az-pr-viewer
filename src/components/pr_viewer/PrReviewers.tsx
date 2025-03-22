@@ -60,7 +60,9 @@ export const PrReviewers: React.FC<PrReviewersProps> = ({ reviewers }) => {
                         </div>
                         <div className={style["reviewer-status"]}>
                             <span
-                                className={`vote-badge vote-${reviewer.vote}`}
+                                className={`${style["vote-badge"]} ${
+                                    style[`vote-${reviewer.vote}`]
+                                }`}
                             >
                                 {getVoteText(reviewer.vote)}
                             </span>

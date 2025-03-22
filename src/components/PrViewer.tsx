@@ -36,15 +36,15 @@ const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
     }, [prData.reviewers, prData.threads]);
 
     return (
-        <div className="pr-details-scroll-wrapper">
+        <div className={style["pr-details-scroll-wrapper"]}>
             <button onClick={onBack} className={style["back-button"]}>
                 Back to PR List
             </button>
             {/* <div className="pr-header">
                 <h1>Pull Request Viewer</h1>
             </div> */}
-            <div className="pr-details">
-                <div className="pr-card">
+            <div className={style["pr-details"]}>
+                <div className={style["pr-card"]}>
                     <PrHeader
                         id={prData.id}
                         title={prData.title}
