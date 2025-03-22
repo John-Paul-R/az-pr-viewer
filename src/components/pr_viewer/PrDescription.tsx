@@ -1,5 +1,6 @@
 import React from "react";
 import { Markdown } from "../Markdown";
+import style from "../PrViewer.module.css" with { type: "css" };
 
 interface PrDescriptionProps {
     description?: string;
@@ -11,9 +12,9 @@ export const PrDescription: React.FC<PrDescriptionProps> = ({
     if (!description) return null;
 
     return (
-        <div className="pr-description">
-            <h4 className="description-title">Description</h4>
-            <div className="description-content">
+        <div className={style["pr-description"]}>
+            <h4 className={style["description-title"]}>Description</h4>
+            <div className={style["description-content"]}>
                 <Markdown markdown={description} />
             </div>
         </div>

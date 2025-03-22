@@ -1,4 +1,5 @@
 import React from "react";
+import style from "../PrViewer.module.css" with { type: "css" };
 
 interface PrHeaderProps {
     id: number;
@@ -16,22 +17,26 @@ export const PrHeader: React.FC<PrHeaderProps> = ({
     // Determine status class for styling
     const getStatusClass = (status: string | undefined): string => {
         if (!status) return "";
-        if (status.toLowerCase() === "active") return "status-active";
-        if (status.toLowerCase() === "completed") return "status-completed";
-        if (status.toLowerCase() === "abandoned") return "status-abandoned";
+        if (status.toLowerCase() === "active") return style["status-active"];
+        if (status.toLowerCase() === "completed")
+            return style["status-completed"];
+        if (status.toLowerCase() === "abandoned")
+            return style["status-abandoned"];
         return "";
     };
 
     return (
-        <div className="pr-details-header">
+        <div className={style["pr-details-header"]}>
             <div>
-                <h3 className="pr-title">
+                <h3 className={style["pr-title"]}>
                     <code>!{id}</code>: {title}
                 </h3>
                 <div>
                     {status && (
                         <span
-                            className={`status-badge ${getStatusClass(status)}`}
+                            className={`${
+                                style["status-badge"]
+                            } ${getStatusClass(status)}`}
                         >
                             {status}
                         </span>
@@ -39,7 +44,7 @@ export const PrHeader: React.FC<PrHeaderProps> = ({
                 </div>
             </div>
             {url && (
-                <div className="external-link">
+                <div className={style["external-link"]}>
                     <a href={url} target="_blank" rel="noopener noreferrer">
                         View in Browser
                     </a>

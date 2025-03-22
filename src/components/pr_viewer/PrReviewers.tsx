@@ -1,5 +1,6 @@
 // components/pr/PrReviewers.tsx
 import React from "react";
+import style from "../PrViewer.module.css" with { type: "css" };
 
 interface Reviewer {
     id: string;
@@ -35,36 +36,38 @@ export const PrReviewers: React.FC<PrReviewersProps> = ({ reviewers }) => {
     };
 
     return (
-        <div className="pr-reviewers-section">
-            <h4 className="reviewers-title">Reviewers</h4>
-            <div className="reviewers-container">
+        <div className={style["pr-reviewers-section"]}>
+            <h4 className={style["reviewers-title"]}>Reviewers</h4>
+            <div className={style["reviewers-container"]}>
                 {reviewers.map((reviewer) => (
-                    <div key={reviewer.id} className="reviewer-card">
-                        <div className="reviewer-info">
+                    <div key={reviewer.id} className={style["reviewer-card"]}>
+                        <div className={style["reviewer-info"]}>
                             {/* {reviewer.imageUrl && (
-                <div className="reviewer-avatar">
+                <div className={style["reviewer-avatar"]}>
                   <img
                     src={reviewer.imageUrl}
                     alt={`${reviewer.displayName}'s avatar`}
-                    className="avatar-image"
+                    className={style["avatar-image"]}
                   />
                 </div>
               )} */}
                             <div
-                                className="reviewer-name"
+                                className={style["reviewer-name"]}
                                 title={reviewer.displayName}
                             >
                                 {reviewer.displayName}
                             </div>
                         </div>
-                        <div className="reviewer-status">
+                        <div className={style["reviewer-status"]}>
                             <span
                                 className={`vote-badge vote-${reviewer.vote}`}
                             >
                                 {getVoteText(reviewer.vote)}
                             </span>
                             {reviewer.isRequired && (
-                                <span className="required-badge">Required</span>
+                                <span className={style["required-badge"]}>
+                                    Required
+                                </span>
                             )}
                         </div>
                     </div>

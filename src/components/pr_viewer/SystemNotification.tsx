@@ -6,6 +6,7 @@ import {
     enhanceSystemMessage,
     RenderCommits,
 } from "./helpers/systemMessageParser";
+import style from "../PrViewer.module.css" with { type: "css" };
 
 interface SystemNotificationProps {
     comment: Comment;
@@ -33,11 +34,11 @@ export const SystemNotification: React.FC<SystemNotificationProps> = ({
                 </div>
             )}
         >
-            <div className="system-notification">
-                <div className="notification-time">
+            <div className={style["system-notification"]}>
+                <div className={style["notification-time"]}>
                     {new Date(comment.publishedDate).toLocaleString()}
                 </div>
-                <div className="notification-content">
+                <div className={style["notification-content"]}>
                     {comment.content &&
                         (isVoteMessage ? (
                             enhanceSystemMessage(comment)

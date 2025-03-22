@@ -1,6 +1,7 @@
 import React from "react";
 import { Comment, ThreadProperties } from "../../types/interfaces";
 import { Markdown } from "../Markdown";
+import style from "../PrViewer.module.css" with { type: "css" };
 
 interface ThreadCommentProps {
     comment: Comment;
@@ -19,18 +20,18 @@ export const ThreadComment: React.FC<ThreadCommentProps> = ({
             .$value === 1;
 
     return (
-        <div className="comment">
-            <div className="comment-header">
-                <div className="comment-author">
+        <div className={style.comment}>
+            <div className={style["comment-header"]}>
+                <div className={style["comment-author"]}>
                     {comment.author && comment.author.displayName
                         ? comment.author.displayName
                         : "Unknown"}
                 </div>
-                <div className="comment-date">
+                <div className={style["comment-date"]}>
                     {new Date(comment.publishedDate).toLocaleString()}
                 </div>
             </div>
-            <div className="comment-content">
+            <div className={style["comment-content"]}>
                 {comment.content &&
                     (supportsMarkdown ? (
                         <Markdown markdown={comment.content} />

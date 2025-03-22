@@ -10,7 +10,7 @@ import {
     PrReviewers,
 } from "./pr_viewer";
 import { enrichReviewersWithAvatars } from "./pr_viewer/helpers/voteParser";
-import "./PrViewer.css";
+import style from "./PrViewer.module.css" with { type: "css" };
 
 interface PrViewerProps {
     prData: PrData | null;
@@ -37,7 +37,7 @@ const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
 
     return (
         <div className="pr-details-scroll-wrapper">
-            <button onClick={onBack} className="back-button">
+            <button onClick={onBack} className={style["back-button"]}>
                 Back to PR List
             </button>
             {/* <div className="pr-header">

@@ -1,6 +1,7 @@
 import React from "react";
 import { Thread } from "../../types/interfaces";
 import { ThreadComment } from "./ThreadComment";
+import style from "../PrViewer.module.css" with { type: "css" };
 
 interface ThreadContainerProps {
     thread: Thread;
@@ -30,14 +31,16 @@ export const ThreadContainer: React.FC<ThreadContainerProps> = ({ thread }) => {
     }
 
     return (
-        <div className="thread">
-            <div className="thread-header">
+        <div className={style.thread}>
+            <div className={style["thread-header"]}>
                 <div>
                     {filePath ? (
-                        <span className="file-path">
+                        <span className={style["file-path"]}>
                             {filePath}
                             {lineRange && (
-                                <span className="line-range">{lineRange}</span>
+                                <span className={style["line-range"]}>
+                                    {lineRange}
+                                </span>
                             )}
                         </span>
                     ) : (
@@ -62,7 +65,7 @@ export const ThreadContainer: React.FC<ThreadContainerProps> = ({ thread }) => {
                         />
                     ))
             ) : (
-                <div className="comment">No comments in this thread.</div>
+                <div className={style.comment}>No comments in this thread.</div>
             )}
         </div>
     );
