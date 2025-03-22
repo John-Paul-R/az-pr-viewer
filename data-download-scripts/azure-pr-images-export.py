@@ -1,26 +1,27 @@
 #!/usr/bin/env python3
+"""
+Extract and download images from exported Azure DevOps PR data.
+"""
+
 import os
 import re
 import json
-import base64
 import logging
 import argparse
-import requests
 import urllib.parse
 from pathlib import Path
 from concurrent.futures import ThreadPoolExecutor
+from az_requests import AzureDevOpsClient
 
 # Setup argument parser
 parser = argparse.ArgumentParser(description='Extract and download images from exported Azure DevOps PR data')
 parser.add_argument('--input-dir', required=True, help='Directory containing exported PR data')
 parser.add_argument('--output-dir', required=True, help='Directory to save downloaded images')
-#parser.add_argument('--pat', help='Personal Access Token for Azure DevOps')
+parser.add_argument('--org', help='Azure DevOps organization name')
 parser.add_argument('--workers', type=int, default=4, help='Number of parallel download workers')
 parser.add_argument('--dry-run', action='store_true', help='Only detect images without downloading')
 parser.add_argument('--update-json', action='store_true', help='Update the JSON files with local image paths')
 args = parser.parse_args()
-
-personal_access_token = pat = os.environ.get("AZ_TOKEN")
 
 # Set up logging
 logging.basicConfig(
@@ -36,19 +37,12 @@ logger = logging.getLogger()
 # Create output directory
 os.makedirs(args.output_dir, exist_ok=True)
 
-has_token = False
-# Setup auth header if PAT is provided
-auth_header = {}
-if personal_access_token:
-    has_token = True
-    auth_header = {
-        "Authorization": "Basic " + base64.b64encode(f":{personal_access_token}".encode()).decode()
-    }
+# Initialize Azure DevOps client
+client = None
+if args.org:
+    client = AzureDevOpsClient(organization=args.org)
+    logger.info(f"Initialized Azure DevOps client for organization: {args.org}")
 
-# if args.pat:
-#     auth_header = {
-#         "Authorization": "Basic " + base64.b64encode(f":{args.pat}".encode()).decode()
-#     }
 # Function to extract markdown image URLs handling nested parentheses
 def extract_markdown_image_urls(text):
     """Extract image URLs from markdown content handling nested parentheses"""
@@ -157,21 +151,27 @@ def download_image(url, filename, counter=0):
             logger.info(f"File already exists: {filename}")
             return True, filename
         
-        # Determine if we need to use auth header (only for Azure DevOps URLs)
-        headers = {}
-        if has_token and "dev.azure.com" in url.lower():
-            headers = auth_header
-        
-        # Download the image
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            with open(full_path, 'wb') as f:
-                f.write(response.content)
-            logger.info(f"Downloaded: {filename}")
-            return True, filename
+        # Use the Azure DevOps client for Azure URLs, direct requests otherwise
+        if client and "dev.azure.com" in url.lower():
+            success = client.download_file(url, full_path, use_content_headers=True)
+            if success:
+                logger.info(f"Downloaded: {filename}")
+                return True, filename
+            else:
+                logger.warning(f"Failed to download {url}")
+                return False, None
         else:
-            logger.warning(f"Failed to download {url}: HTTP {response.status_code}")
-            return False, None
+            # For non-Azure URLs or if no client is available
+            import requests
+            response = requests.get(url)
+            if response.status_code == 200:
+                with open(full_path, 'wb') as f:
+                    f.write(response.content)
+                logger.info(f"Downloaded: {filename}")
+                return True, filename
+            else:
+                logger.warning(f"Failed to download {url}: HTTP {response.status_code}")
+                return False, None
     except Exception as e:
         logger.error(f"Error downloading {url}: {str(e)}")
         return False, None
@@ -190,7 +190,7 @@ def is_likely_image_url(url):
         return True
     
     # Parse URL to look for image-related parameters
-    parsed_url = urlparse(url)
+    parsed_url = urllib.parse.urlparse(url)
     query_params = urllib.parse.parse_qs(parsed_url.query)
     
     # Check for image-related query parameters
