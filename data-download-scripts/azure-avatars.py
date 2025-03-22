@@ -25,6 +25,16 @@ output_dir = args.output_dir
 pat = os.environ.get("AZ_TOKEN")
 cookie = os.environ.get("AZ_IMG_COOKIE")
 # Create the authorization header using your PAT
+# +----------------------------------------------------------+
+# | There are two different API sets we need to hit. One     |
+# | for retrieving the list of teams, and one for            |
+# | retrieving the avatar content. These use different auth  |
+# | schemes (Cookie for content, because it has to be        |
+# | accessible from `img` element requests, so we set up     |
+# | both here and choose which to use later. (must not have  |
+# | Authorization` specified for image requests, or you'll   |
+# | get a 401'))                                             |
+# +----------------------------------------------------------+
 authorization = str(base64.b64encode(f":{pat}".encode("utf-8")), "utf-8")
 teams_headers = {
     "Authorization": f"Basic {authorization}",
