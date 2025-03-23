@@ -154,34 +154,42 @@ function Home() {
                     <ThemePicker />
                 </div>
 
-                <div className="directory-section">
-                    <button type="button" onClick={selectArchiveFile}>
-                        Select PR Archive File
-                    </button>
-                    <p className="selected-dir">
-                        {archiveFile || "No archive file selected"}
-                    </p>
+                <div className="tools-container">
+                    <fieldset className="directory-section">
+                        <legend>PR Archive</legend>
+
+                        <button type="button" onClick={selectArchiveFile}>
+                            Select PR Archive File
+                        </button>
+                        <p className="selected-dir">
+                            {archiveFile || "No archive file selected"}
+                        </p>
+                    </fieldset>
+
+                    <fieldset className="repo-section">
+                        <legend>Git Repository</legend>
+
+                        <div>
+                            <input
+                                type="text"
+                                placeholder="Enter path to repository..."
+                                value={repoPath}
+                                onChange={(e) => setRepoPath(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        invoke("set_git_repo", {
+                                            filePath: repoPath,
+                                        }).then((e) => {
+                                            console.log(e);
+                                        });
+                                    }
+                                }}
+                            />
+                        </div>
+                    </fieldset>
                 </div>
 
                 {error && <div className="error">{error}</div>}
-
-                <div className="search-controls">
-                    <input
-                        type="text"
-                        placeholder="Enter path to repository..."
-                        value={repoPath}
-                        onChange={(e) => setRepoPath(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                                invoke("set_git_repo", {
-                                    filePath: repoPath,
-                                }).then((e) => {
-                                    console.log(e);
-                                });
-                            }
-                        }}
-                    />
-                </div>
 
                 {archiveFile && (
                     <div className="search-controls">

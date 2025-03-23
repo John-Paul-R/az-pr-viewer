@@ -10,6 +10,44 @@ p, ol {
   line-height: 1.5;
 }
 
+.tools-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+.tools-container > * {
+  min-width: 0;
+}
+
+.directory-section, .repo-section {
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.repo-section > div {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.directory-section button {
+  width: auto;
+}
+
+.selected-dir {
+  direction: rtl;
+  font-size: 0.9em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 body {
   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
   font-size: 16px;
