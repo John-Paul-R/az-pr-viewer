@@ -1,11 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-    useParams,
-    useNavigate,
-    Routes,
-    Route,
-    Outlet,
-} from "react-router-dom";
+import { useParams, useNavigate, Routes, Route } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import { PrData } from "../types/interfaces";
 import PrViewer from "./PrViewer";

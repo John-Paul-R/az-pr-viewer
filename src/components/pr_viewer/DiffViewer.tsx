@@ -347,7 +347,7 @@ const FileHeader = memo(
         onToggle: () => void;
     }) => {
         // Create a custom style that enhances the sticky behavior
-        const headerStyle = {
+        const headerStyle: React.CSSProperties = {
             position: "sticky",
             top: 0,
             zIndex: 10,
@@ -355,10 +355,13 @@ const FileHeader = memo(
         };
 
         return (
+            // biome-ignore lint/a11y/useKeyWithClickEvents: you can use tabindex instead
             <div
                 className={style["diff-file-header"]}
                 onClick={onToggle}
                 style={headerStyle}
+                // biome-ignore lint/a11y/noNoninteractiveTabindex: goddamnit biome lol
+                tabIndex={0}
             >
                 <span className={style["diff-file-status"]}>
                     {file.status === "A"
@@ -439,8 +442,8 @@ const FileView = memo(
         // Style for the container div that adapts based on expanded state
         const containerStyle: React.CSSProperties = {
             ...stickyWrapperStyle,
-            borderRadius: '8px',
-            overflow: isExpanded ? 'visible' : 'hidden',
+            borderRadius: "8px",
+            overflow: isExpanded ? "visible" : "hidden",
         };
 
         return (
@@ -482,7 +485,6 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
         {},
     );
     const [fileToScrollTo, setFileToScrollTo] = useState<string | null>(null);
-    const [lineRange, setLineRange] = useState<string | null>(null);
     const [parsedLineRange, setParsedLineRange] = useState<{
         start: number;
         end: number;
@@ -497,8 +499,6 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
             const scrollToLineRange =
                 sessionStorage.getItem("scrollToLineRange");
             if (scrollToLineRange) {
-                setLineRange(scrollToLineRange);
-
                 // Parse the line range string to get start and end line numbers
                 const lineMatch =
                     scrollToLineRange.match(/Line (\d+)/) ||
