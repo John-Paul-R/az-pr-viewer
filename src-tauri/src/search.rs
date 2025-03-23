@@ -109,10 +109,10 @@ impl SearchIndex {
             // Field weights: title=1.0, author=0.5
             let field_weights = &[1.0, 1.0];
 
-            // Search with BM25 scoring
+            // Search with scoring
             let results = index.query(
                 query_trimmed,
-                &mut bm25::new(),
+                &mut probly_search::score::zero_to_one::new(),
                 tokenizer,
                 field_weights,
             );
