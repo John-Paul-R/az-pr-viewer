@@ -47,3 +47,16 @@ This little command will be our savior for today. Simply pipe your output file
 (which should have one commit per line) into this bad boy, and you'll have your
 list of "missing in local, present in remote" commits in no time! (well, not no
 time, but way less time than if you tried to handroll it!)
+
+Now, for the fetch itself, while it is appealing to parallelize this task to
+hell and back, a better approach awaits us: Batching! (Yes, you can parallelize
+to, ymmv)
+
+In particular, the `git fetch` command actually accepts an arbitarary list of
+revisions to fetch. In my case, going in batches of 100 proved fairly effective.
+
+A simple bit of `xargs` fun can trivialize this bit, like so:
+
+```
+TODO: actually retrieve the scripts I used!
+```
