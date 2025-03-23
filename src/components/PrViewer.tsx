@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { PrData } from "../types/interfaces";
 import {
     PrHeader,
@@ -19,6 +19,10 @@ interface PrViewerProps {
 }
 
 const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
+    const [activeTab, setActiveTab] = useState<"overview" | "changes">(
+        "overview",
+    );
+
     if (!prData) {
         return (
             <ErrorContainer
@@ -41,9 +45,6 @@ const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
             <button onClick={onBack} className={style["back-button"]}>
                 Back to PR List
             </button>
-            {/* <div className="pr-header">
-                <h1>Pull Request Viewer</h1>
-            </div> */}
             <div className={style["pr-details"]}>
                 <div className={style["pr-card"]}>
                     <PrHeader
@@ -53,39 +54,78 @@ const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
                         url={prData.url}
                     />
 
-                    <PrDescription description={prData.description} />
+                    <div className={style["pr-tabs"]}>
+                        <button
+                            type="button"
+                            className={`${style["tab-button"]} ${
+                                activeTab === "overview"
+                                    ? style["active-tab"]
+                                    : ""
+                            }`}
+                            onClick={() => setActiveTab("overview")}
+                        >
+                            Overview
+                        </button>
+                        <button
+                            type="button"
+                            className={`${style["tab-button"]} ${
+                                activeTab === "changes"
+                                    ? style["active-tab"]
+                                    : ""
+                            }`}
+                            onClick={() => setActiveTab("changes")}
+                        >
+                            Changes
+                        </button>
+                    </div>
 
-                    <PrMetadata
-                        createdBy={prData.created_by}
-                        creationDate={prData.creation_date}
-                        completionDate={prData.completion_date}
-                        repository={prData.repository}
-                        sourceBranch={prData.source_branch}
-                        targetBranch={prData.target_branch}
-                        mergeStatus={prData.merge_status}
-                    />
+                    {activeTab === "overview" && (
+                        <>
+                            <PrDescription description={prData.description} />
 
-                    <PrReviewers reviewers={enrichedReviewers} />
+                            <PrMetadata
+                                createdBy={prData.created_by}
+                                creationDate={prData.creation_date}
+                                completionDate={prData.completion_date}
+                                repository={prData.repository}
+                                sourceBranch={prData.source_branch}
+                                targetBranch={prData.target_branch}
+                                mergeStatus={prData.merge_status}
+                            />
 
-                    <PrBranches
-                        sourceBranch={prData.source_branch}
-                        targetBranch={prData.target_branch}
-                    />
+                            <PrReviewers reviewers={enrichedReviewers} />
 
-                    {/* {JSON.stringify(prData)} */}
-                    {prData.last_merge_source_commit &&
-                    prData.last_merge_target_commit ? (
-                        <DiffViewer
-                            sourceBranch={prData.last_merge_source_commit}
-                            targetBranch={prData.last_merge_target_commit}
-                        />
-                    ) : (
-                        <>cannot display diff data</>
+                            <PrBranches
+                                sourceBranch={prData.source_branch}
+                                targetBranch={prData.target_branch}
+                            />
+
+                            {prData.threads && (
+                                <ThreadsSection threads={prData.threads} />
+                            )}
+                        </>
                     )}
 
-                    {prData.threads && (
-                        <ThreadsSection threads={prData.threads} />
-                    )}
+                    {activeTab === "changes" &&
+                        prData.last_merge_source_commit &&
+                        prData.last_merge_target_commit && (
+                            <DiffViewer
+                                sourceBranch={prData.last_merge_source_commit}
+                                targetBranch={prData.last_merge_target_commit}
+                            />
+                        )}
+
+                    {activeTab === "changes" &&
+                        (!prData.last_merge_source_commit ||
+                            !prData.last_merge_target_commit) && (
+                            <div className={style["pr-section"]}>
+                                <h3>Changes</h3>
+                                <p>
+                                    Cannot display diff data. Missing commit
+                                    information.
+                                </p>
+                            </div>
+                        )}
                 </div>
             </div>
         </div>

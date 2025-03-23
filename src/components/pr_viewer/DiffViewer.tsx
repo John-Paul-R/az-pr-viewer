@@ -229,8 +229,10 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
 
     return (
         <div className={style["pr-section"]}>
-            <h3>Changes</h3>
-            {metadata}
+            <div className={style["diff-header"]}>
+                <h3>Files Changed</h3>
+                {metadata}
+            </div>
             <div className={style["diff-container"]}>
                 {treeDiff.files.map((file, fileIndex) => (
                     <FileView
