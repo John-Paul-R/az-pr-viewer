@@ -150,7 +150,7 @@ function Home() {
         <div className="center-container">
             <div className="home-head">
                 <div className="header-top">
-                    <h1>PR JSON Viewer</h1>
+                    <h1>az-pr-viewer</h1>
                     <ThemePicker />
                 </div>
 
