@@ -4,6 +4,7 @@
   --primary-color: #0078d7;
   --secondary-color: #005a9e;
   --link-hover-color: #50a8ff;
+  --line-range-bg: #e0e0e0;
   --background-color: #f9f9f9;
   --card-background: #ffffff;
   --border-color: #e0e0e0;
@@ -63,6 +64,7 @@
   --comment-bg: #2d2d2d;
   --hover-color: #333333;
   --selected-color: #103a6f;
+  --line-range-bg: #2a2a2a;
 
   /* Badge colors */
   --vote-10-bg: #132f14;
@@ -106,6 +108,7 @@
   --comment-bg: #f3f2f1;
   --hover-color: #f3f2f1;
   --selected-color: #edebe9;
+  --line-range-bg: #e1ebf4;
 
   /* Badge colors */
   --vote-10-bg: #dff6dd;
