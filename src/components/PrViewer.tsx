@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useNavigate, useParams, useLocation, Link, Outlet } from "react-router-dom";
+import { useParams, useLocation, Link } from "react-router-dom";
 import { PrData } from "../types/interfaces";
 import {
     PrHeader,
@@ -23,7 +23,6 @@ const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
     const location = useLocation();
     const { pathname } = location;
     const activeTab = pathname.includes("/changes") ? "changes" : "overview";
-    const navigate = useNavigate();
     const { prNumber } = useParams<{ prNumber: string }>();
 
     if (!prData) {

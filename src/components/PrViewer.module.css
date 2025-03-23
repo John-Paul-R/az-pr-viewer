@@ -195,6 +195,10 @@ p, ul {
     top: 0;
     padding-top: 16px;
 }
+.pr-details-header--titlestatus {
+    /* display: flex; */
+    /* flex-direction: row; */
+}
 
 .pr-card {
     background-color: var(--card-background);
@@ -219,6 +223,8 @@ p, ul {
     font-size: 20px;
     margin: 0 0 10px 0;
     color: var(--primary-color);
+    max-lines: 1;
+    text-overflow: ellipsis;
 }
 
 .pr-metadata {
@@ -621,7 +627,7 @@ p, ul {
     margin-bottom: 15px;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    overflow: hidden;
+    overflow: visible; /* Changed from hidden to allow header to stick out */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
@@ -635,11 +641,17 @@ p, ul {
     padding: 10px 15px;
     background-color: var(--hover-color);
     border-bottom: 1px solid var(--border-color);
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
     cursor: pointer;
     user-select: none;
     font-size: 14px;
     font-weight: 500;
     color: var(--text-secondary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .diff-file-status {

@@ -27,7 +27,7 @@ export const PrHeader: React.FC<PrHeaderProps> = ({
 
     return (
         <div className={style["pr-details-header"]}>
-            <div>
+            <div className={style["pr-details-header--titlestatus"]}>
                 <h3 className={style["pr-title"]}>
                     <code>!{id}</code>: {title}
                 </h3>

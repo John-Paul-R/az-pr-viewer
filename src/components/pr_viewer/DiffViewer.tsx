@@ -346,8 +346,20 @@ const FileHeader = memo(
         isExpanded: boolean;
         onToggle: () => void;
     }) => {
+        // Create a custom style that enhances the sticky behavior
+        const headerStyle = {
+            position: "sticky",
+            top: 0,
+            zIndex: 10,
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+        };
+
         return (
-            <div className={style["diff-file-header"]} onClick={onToggle}>
+            <div
+                className={style["diff-file-header"]}
+                onClick={onToggle}
+                style={headerStyle}
+            >
                 <span className={style["diff-file-status"]}>
                     {file.status === "A"
                         ? "Added"
@@ -386,6 +398,7 @@ const FileView = memo(
         highlightLineRange?: { start: number; end: number } | null;
     }) => {
         const fileRef = React.useRef<HTMLDivElement>(null);
+        const headerRef = React.useRef<HTMLDivElement>(null);
 
         // Scroll to this file if it's the target file
         // The specific line scrolling is handled by the FileContentGrid
@@ -401,19 +414,51 @@ const FileView = memo(
             }
         }, [isTargetFile, isExpanded]);
 
+        // Custom styles to ensure the sticky header works correctly
+        const stickyWrapperStyle: React.CSSProperties = {
+            position: "relative",
+        };
+
+        // Set the sticky position directly on the header element
+        // Position this below the PR header (currently exactly 92px, we should
+        // probably change this to be less...)
+        const headerStyle: React.CSSProperties = {
+            position: "sticky",
+            top: "92px",
+            zIndex: 98, // Below the main PR header
+            backgroundColor: "var(--hover-color)",
+            borderBottom: "1px solid var(--border-color)",
+            borderTopLeftRadius: "8px",
+            borderTopRightRadius: "8px",
+            // Only include bottom border radius when collapsed
+            borderBottomLeftRadius: isExpanded ? "0" : "8px",
+            borderBottomRightRadius: isExpanded ? "0" : "8px",
+            boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
+        };
+
+        // Style for the container div that adapts based on expanded state
+        const containerStyle: React.CSSProperties = {
+            ...stickyWrapperStyle,
+            borderRadius: '8px',
+            overflow: isExpanded ? 'visible' : 'hidden',
+        };
+
         return (
             <div
                 ref={fileRef}
                 key={`file-${fileIndex}`}
+                style={containerStyle}
                 className={`${style["diff-file"]} ${
                     isTargetFile ? style["diff-file-highlight"] : ""
                 }`}
             >
-                <FileHeader
-                    file={file}
-                    isExpanded={isExpanded}
-                    onToggle={onToggle}
-                />
+                <div ref={headerRef} style={headerStyle}>
+                    <FileHeader
+                        file={file}
+                        isExpanded={isExpanded}
+                        onToggle={onToggle}
+                    />
+                </div>
                 <FileContent
                     file={file}
                     isExpanded={isExpanded}
