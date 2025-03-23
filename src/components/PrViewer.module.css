@@ -524,6 +524,7 @@ p, ul {
     font-family: monospace;
     font-size: 0.9rem;
     line-height: 1.5;
+    contain: content;
 }
 
 .diff-binary {
@@ -552,4 +553,5 @@ p, ul {
 
 .diff-line-content {
     white-space: pre;
+    contain: content;
 }

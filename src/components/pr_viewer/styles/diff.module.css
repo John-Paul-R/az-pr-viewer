@@ -1,9 +1,71 @@
 
-.diffAdd {
+/* Grid-based layout for diff content */
+.diffGrid {
+    display: grid;
+    grid-template-columns: 40px 40px 1fr;
+    width: 100%;
+    font-family: monospace;
+    line-height: 1.5;
+    position: relative;
+    contain: content;
+}
+
+/* Gutter column styles */
+.gutterColumn {
+    user-select: none;
+    text-align: right;
+    background-color: var(--code-bg-color);
+    border-right: 1px solid var(--border-color);
+    z-index: 1;
+    contain: content;
+}
+
+/* Gutter line styles */
+.gutterLine {
+    height: 1.5em;
+    padding: 0 4px;
+    padding-right: 8px;
+    color: var(--text-secondary);
+    contain: content;
+}
+
+/* Content column styles */
+.contentColumn {
+    overflow-x: auto;
+    white-space: pre;
+    z-index: 0;
+    contain: content;
+}
+
+/* Content line styles */
+.contentLine {
+    height: 1.5em;
+    padding: 0 8px;
+    white-space: pre;
+    contain: content;
+}
+
+/* Apply diff styles using data attributes (more efficient) */
+.gutterLine[data-diff-type="add"],
+.contentLine[data-diff-type="add"] {
     background-color: var(--success-color-light);
 }
-.diffRemove {
+
+.gutterLine[data-diff-type="remove"],
+.contentLine[data-diff-type="remove"] {
     background-color: var(--error-color-light);
 }
 
-.diffUnchanged {}
+/* Style for metadata lines (like hunk headers) */
+.gutterLine[data-diff-type="metadata"],
+.contentLine[data-diff-type="metadata"] {
+    background-color: var(--hover-color);
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+/* Visual indicator for empty/filled line numbers */
+.gutterLine[data-diff-type="add"]:first-child,
+.gutterLine[data-diff-type="remove"]:last-child {
+    color: transparent;
+}

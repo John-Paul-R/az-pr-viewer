@@ -1,5 +1,5 @@
 use git2::{Diff, DiffDelta, DiffFormat, DiffLine, DiffOptions, Error, Object, ObjectType, Repository};
-use std::path::Path;
+use std::{collections::HashMap, path::Path};
 use std::str;
 use serde::{Deserialize, Serialize};
 
@@ -104,9 +104,10 @@ pub fn get_tree_diff_between_revisions<'a>(
 
 fn process_tree_diff(diff: Diff) -> Result<TreeDiff, Error> {
     let mut files = Vec::new();
+    let mut file_line_map = HashMap::new();
 
-    // Process each file delta using the iterator pattern
-    for delta in diff.deltas() {
+    // First pass: create file entries and initialize their line collections
+    for (file_index, delta) in diff.deltas().enumerate() {
         let status = match delta.status() {
             git2::Delta::Added => 'A',
             git2::Delta::Deleted => 'D',
@@ -123,39 +124,70 @@ fn process_tree_diff(diff: Diff) -> Result<TreeDiff, Error> {
 
         let binary = delta.old_file().is_binary() || delta.new_file().is_binary();
 
-        let mut lines = Vec::new();
+        // Create new file entry
+        files.push(FileDiff {
+            old_file: delta.old_file().path().and_then(|p| p.to_str()).unwrap_or("").to_string(),
+            new_file: delta.new_file().path().and_then(|p| p.to_str()).unwrap_or("").to_string(),
+            status,
+            lines: Vec::new(), // Start with empty lines vector
+            binary,
+        });
 
+        // Only set up line tracking for non-binary files
         if !binary {
-            // Use print method to get line information for this specific delta
-            diff.print(git2::DiffFormat::Patch, |_print_delta, _hunk, line| {
-                // Extract line information
-                let origin = line.origin();
-                let content = match str::from_utf8(line.content()) {
-                    Ok(s) => s.trim_end().to_string(),
-                    Err(_) => "[Binary content]".to_string(),
-                };
+            file_line_map.insert(file_index, Vec::new());
+        }
+    }
 
-                let old_lineno = line.old_lineno();
-                let new_lineno = line.new_lineno();
+    // Second pass: populate line information
+    if !file_line_map.is_empty() {
+        // Use a file index to track which file we're currently processing
+        let mut current_file_index = 0;
 
-                // Add line info
+        diff.print(git2::DiffFormat::Patch, |print_delta, _hunk, line| {
+            // Delta header indicates we're moving to a new file
+            if print_delta.status() != git2::Delta::Unmodified {
+                // Find the corresponding file index for this delta
+                if let Some(index) = files.iter().position(|f| {
+                    let old_match = print_delta.old_file().path().and_then(|p| p.to_str())
+                        .map_or(false, |path| path == f.old_file);
+                    let new_match = print_delta.new_file().path().and_then(|p| p.to_str())
+                        .map_or(false, |path| path == f.new_file);
+                    old_match || new_match
+                }) {
+                    current_file_index = index;
+                }
+            }
+
+            // Extract line information
+            let origin = line.origin();
+            let content = match str::from_utf8(line.content()) {
+                Ok(s) => s.trim_end().to_string(),
+                Err(_) => "[Binary content]".to_string(),
+            };
+
+            let old_lineno = line.old_lineno();
+            let new_lineno = line.new_lineno();
+
+            // Add line info to the current file's lines collection
+            if let Some(lines) = file_line_map.get_mut(&current_file_index) {
                 lines.push(LineDiff {
                     old_lineno,
                     new_lineno,
                     content,
                     origin,
                 });
-                true
-            })?;
-        }
+            }
 
-        files.push(FileDiff {
-            old_file: delta.old_file().path().and_then(|p| p.to_str()).unwrap_or("").to_string(),
-            new_file: delta.new_file().path().and_then(|p| p.to_str()).unwrap_or("").to_string(),
-            status,
-            lines,
-            binary,
-        });
+            true
+        })?;
+    }
+
+    // Final pass: update each file with its line information
+    for (index, lines) in file_line_map {
+        if let Some(file) = files.get_mut(index) {
+            file.lines = lines;
+        }
     }
 
     Ok(TreeDiff { files })
