@@ -6,7 +6,7 @@ import "../FilesApp.css";
 import { useAppContext } from "../AppContext";
 import FileViewer from "./FileViewer";
 import ThemePicker from "./ThemePicker";
-import { PrFile } from "../types/interfaces";
+import type { PrFile } from "../types/interfaces";
 
 // Performance logging helper
 const logPerformance = (action: string, startTime: number, extraInfo = "") => {

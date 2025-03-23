@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Routes, Route } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
-import { PrData } from "../types/interfaces";
+import type { PrData } from "../types/interfaces";
 import PrViewer from "./PrViewer";
 import { useAppContext } from "../AppContext";
 import style from "./PrViewer.module.css" with { type: "css" };

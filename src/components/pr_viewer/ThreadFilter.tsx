@@ -1,4 +1,4 @@
-import { useRef, KeyboardEvent } from "react";
+import { useRef, type KeyboardEvent } from "react";
 import "./styles/ThreadFilter.css";
 
 type FilterOption = "all" | "comments";

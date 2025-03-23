@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 import { Markdown } from "../Markdown";
 import style from "../PrViewer.module.css" with { type: "css" };
 

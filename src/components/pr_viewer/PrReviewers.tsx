@@ -1,5 +1,5 @@
 // components/pr/PrReviewers.tsx
-import React from "react";
+import type React from "react";
 import style from "../PrViewer.module.css" with { type: "css" };
 
 interface Reviewer {

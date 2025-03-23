@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, memo } from "react";
 import { invoke } from "@tauri-apps/api/core";
-import { TreeDiff, FileDiff, DiffLine } from "../../types/interfaces";
+import type { TreeDiff, FileDiff, DiffLine } from "../../types/interfaces";
 import diffstyle from "./styles/diff.module.css";
 import style from "../PrViewer.module.css" with { type: "css" };
 import { Highlight, themes } from "prism-react-renderer";
@@ -511,15 +511,15 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
                 if (lineMatch) {
                     if (lineMatch.length === 2) {
                         // Single line format: "Line X"
-                        const lineNumber = parseInt(lineMatch[1], 10);
+                        const lineNumber = Number.parseInt(lineMatch[1], 10);
                         setParsedLineRange({
                             start: lineNumber,
                             end: lineNumber,
                         });
                     } else if (lineMatch.length === 3) {
                         // Range format: "Lines X-Y"
-                        const startLine = parseInt(lineMatch[1], 10);
-                        const endLine = parseInt(lineMatch[2], 10);
+                        const startLine = Number.parseInt(lineMatch[1], 10);
+                        const endLine = Number.parseInt(lineMatch[2], 10);
                         setParsedLineRange({ start: startLine, end: endLine });
                     }
                 }

@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Thread } from "../../types/interfaces";
+import type React from "react";
+import { useState } from "react";
+import type { Thread } from "../../types/interfaces";
 import { SystemNotification } from "./SystemNotification";
 import { ThreadContainer } from "./ThreadContainer";
 import { ThreadFilter } from "./ThreadFilter";

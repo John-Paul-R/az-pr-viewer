@@ -1,11 +1,11 @@
 import {
     createContext,
     useState,
-    ReactNode,
+    type ReactNode,
     useContext,
     useEffect,
 } from "react";
-import { PrFile } from "./types/interfaces";
+import type { PrFile } from "./types/interfaces";
 import { invoke } from "@tauri-apps/api/core";
 
 interface AppContextType {

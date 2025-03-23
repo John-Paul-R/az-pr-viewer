@@ -9,7 +9,9 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "fmt:check": "biome format",
-    "fmt": "biome format --write"
+    "fmt": "biome format --write",
+    "lint:check": "biome lint",
+    "lint": "biome lint --write"
   },
   "dependencies": {
     "@speed-highlight/core": "^1.2.7",

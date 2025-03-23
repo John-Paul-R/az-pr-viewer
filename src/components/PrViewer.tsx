@@ -1,6 +1,7 @@
-import React, { useMemo } from "react";
+import type React from "react";
+import { useMemo } from "react";
 import { useParams, useLocation, Link } from "react-router-dom";
-import { PrData } from "../types/interfaces";
+import type { PrData } from "../types/interfaces";
 import {
     PrHeader,
     PrMetadata,

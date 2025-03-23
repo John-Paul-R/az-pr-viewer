@@ -1,4 +1,4 @@
-import { Thread } from "../../../types/interfaces";
+import type { Thread } from "../../../types/interfaces";
 
 /**
  * Find all vote events in threads and extract relevant information
@@ -44,7 +44,7 @@ export function parseVoteEvents(threads: Thread[] = []) {
             vote:
                 typeof voteValue === "number"
                     ? voteValue
-                    : parseInt(voteValue, 10),
+                    : Number.parseInt(voteValue, 10),
             date,
             imageUrl: voter.imageUrl || voter._links?.avatar?.href,
         });

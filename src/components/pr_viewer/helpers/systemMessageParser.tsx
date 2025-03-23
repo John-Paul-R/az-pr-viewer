@@ -1,6 +1,7 @@
 // components/pr/helpers/systemMessageParser.ts
-import React, { useState } from "react";
-import { Comment, Thread } from "../../../types/interfaces";
+import type React from "react";
+import { useState } from "react";
+import type { Comment, Thread } from "../../../types/interfaces";
 import { invoke } from "@tauri-apps/api/core";
 import style from "../../PrViewer.module.css" with { type: "css" };
 
@@ -17,7 +18,7 @@ export function enhanceSystemMessage(comment: Comment): React.ReactNode {
 
     if (match) {
         const [_, userName, voteValue] = match;
-        const vote = parseInt(voteValue, 10);
+        const vote = Number.parseInt(voteValue, 10);
 
         return (
             <>

@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
-import React, { DependencyList, ReactNode, useEffect, useState } from "react";
+import React, { type DependencyList, type ReactNode, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Thread } from "../../types/interfaces";
+import type { Thread } from "../../types/interfaces";
 import style from "../PrViewer.module.css" with { type: "css" };
 import { ThreadComment } from "./ThreadComment";
 import diffstyle from "./styles/diff.module.css";

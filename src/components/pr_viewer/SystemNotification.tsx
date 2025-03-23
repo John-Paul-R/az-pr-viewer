@@ -1,7 +1,7 @@
-import React from "react";
+import type React from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import ReactMarkdown from "react-markdown";
-import { Comment, Thread } from "../../types/interfaces";
+import type { Comment, Thread } from "../../types/interfaces";
 import {
     enhanceSystemMessage,
     RenderCommits,

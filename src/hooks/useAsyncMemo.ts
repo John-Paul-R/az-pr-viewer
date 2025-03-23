@@ -1,4 +1,4 @@
-import { DependencyList, useState, useEffect } from "react";
+import { type DependencyList, useState, useEffect } from "react";
 
 export function useAsyncMemo<T>(
     fn: () => Promise<T>,
