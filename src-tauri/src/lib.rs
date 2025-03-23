@@ -6,7 +6,7 @@ mod git_commit;
 use std::{sync::Arc, time::Instant};
 use git2::Repository;
 use git_commit::{get_commit_metadata, CommitMetadata};
-use git_lines::get_file_lines_at_revision;
+use git_lines::{get_file_diff_as_strings, get_file_lines_at_revision};
 use serde::{Deserialize, Serialize};
 use tauri::{async_runtime::Mutex, State};
 use zip_filesystem::FileSystem;
@@ -241,6 +241,32 @@ async fn get_git_file_lines_at_revision(
     }
 }
 
+#[tauri::command(async)]
+async fn git_get_file_diff_between_revisions(
+    file_path: String,
+    from_revision: String,
+    to_revision: String,
+    start_line: usize,
+    end_line: usize,
+    state: State<'_, AppState>
+) -> Result<String, String> {
+    let repo_lock = state.repo.lock().await;
+
+    match &*repo_lock {
+        Some(r) => {
+            get_file_diff_as_strings(
+                r,
+                &file_path,
+                &from_revision,
+                &to_revision,
+                std::ops::Range { start: start_line, end: end_line }
+            )
+                .map_err(|err| err.to_string())
+        },
+        None => Err("No repository selected".to_string()),
+    }
+}
+
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
@@ -264,6 +290,7 @@ pub fn run() {
             set_git_repo,
             get_git_commit,
             get_git_file_lines_at_revision,
+            git_get_file_diff_between_revisions,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
