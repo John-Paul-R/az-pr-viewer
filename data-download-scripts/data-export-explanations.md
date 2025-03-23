@@ -1,8 +1,8 @@
-## Data Export
+# Data Export
 
-### Git Revisions
+## Git Revisions
 
-#### Where are all the old commits?
+### Where are all the old commits?
 
 One thing you'll quickly notice if you attempt to assemble complete PR
 information using a regular old clone of the relevant Azure git repository is
@@ -21,7 +21,7 @@ One thing that _does_ work, thankfully, is `get fetch`-ing a 'deleted' commit
 hash. So, if we can list all the commit hashes our local repo doesn't know
 about...
 
-#### Listing historical commits -- "Commits API"
+### Listing historical commits -- "Commits API"
 
 Azure has to expose this information somehow, and they do. They have a paged
 JSON-based API for retrieving commit information -- all of it, even the elusive
@@ -31,7 +31,7 @@ later processing).
 
 TODO: include commits script
 
-#### Fetching the commit content
+### Fetching the commit content
 
 Once you have a list of all the commits that the remote knows about, we have the
 simpler problem of seeing which of those your local git instance doesn't know
