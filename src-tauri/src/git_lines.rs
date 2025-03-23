@@ -342,6 +342,7 @@ pub fn get_file_diff_as_strings<'a>(
         match line.origin {
             '+' | '-' | ' ' => {
                 result.push(line.origin);
+                result.push_str(&line.new_lineno.or(line.old_lineno).map(|lineno| lineno.to_string()).unwrap_or_else(|| "?".to_string()));
                 result.push_str(&line.content);
                 if !line.content.ends_with('\n') {
                     result.push('\n');
