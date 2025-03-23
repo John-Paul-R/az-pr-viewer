@@ -4,6 +4,7 @@ import { TreeDiff, FileDiff, DiffLine } from "../../types/interfaces";
 import diffstyle from "./styles/diff.module.css";
 import style from "../PrViewer.module.css" with { type: "css" };
 import { Highlight, themes } from "prism-react-renderer";
+import "./styles/diff.overrides.css";
 
 function createCodeHunks(
     lines: DiffLine[],

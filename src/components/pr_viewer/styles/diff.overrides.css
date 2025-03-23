@@ -1,0 +1,5 @@
+
+/* override Prism syntax highlighting background styles */
+.token.operator {
+    background: initial !important;
+}
