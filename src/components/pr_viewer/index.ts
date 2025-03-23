@@ -8,3 +8,4 @@ export { ThreadsSection } from "./ThreadsSection";
 export { ErrorContainer } from "./ErrorContainer";
 export { PrDescription } from "./PrDescription";
 export { PrReviewers } from "./PrReviewers";
+export { ThreadFilter } from "./ThreadFilter";
