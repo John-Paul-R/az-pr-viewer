@@ -168,3 +168,15 @@
     margin-bottom: 20px;
     border: 1px solid var(--error-color-alt);
   }
+
+  .loading-indicator {
+    text-align: center;
+    padding: 15px;
+    grid-column: 1 / -1;
+    color: var(--text-secondary);
+    font-style: italic;
+    height: 50px; /* Ensure the loader has enough height to be visible */
+    display: grid;
+    grid-template-columns: 80px 1fr 180px 110px 120px;
+    border-bottom: 1px solid var(--border-color);
+  }

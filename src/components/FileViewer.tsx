@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import { PrFile } from "../types/interfaces";
 import "./FileViewer.css";
+import { useEffect, useRef, useState, useCallback } from "react";
 
 type FuseResultMatch = {
     refIndex?: number;
@@ -14,6 +15,9 @@ interface FileViewerProps {
 
 function FileViewer({ files }: FileViewerProps) {
     const navigate = useNavigate();
+    const [visibleCount, setVisibleCount] = useState(50);
+    const loaderRef = useRef<HTMLDivElement | null>(null);
+    const CHUNK_SIZE = 100;
 
     async function handleFileClick(file: PrFile) {
         try {
@@ -32,6 +36,42 @@ function FileViewer({ files }: FileViewerProps) {
             alert(`Error reading file: ${err}`);
         }
     }
+
+    const loadMoreItems = useCallback(() => {
+        if (visibleCount < files.length) {
+            setVisibleCount((prevCount) =>
+                Math.min(prevCount + CHUNK_SIZE, files.length),
+            );
+        }
+    }, [visibleCount, files.length]);
+
+    // Reset visible count when files array changes
+    useEffect(() => {
+        setVisibleCount(100);
+    }, [files]);
+
+    useEffect(() => {
+        const observer = new IntersectionObserver(
+            (entries) => {
+                if (entries[0].isIntersecting) {
+                    loadMoreItems();
+                }
+            },
+            { rootMargin: "200px", threshold: 0.1 },
+        );
+
+        const currentLoaderRef = loaderRef.current;
+        if (currentLoaderRef) {
+            observer.observe(currentLoaderRef);
+        }
+
+        return () => {
+            if (currentLoaderRef) {
+                observer.unobserve(currentLoaderRef);
+            }
+            observer.disconnect();
+        };
+    }, [loadMoreItems, visibleCount]);
 
     if (files.length === 0) {
         return <p>No PR files found in the selected directory.</p>;
@@ -69,7 +109,7 @@ function FileViewer({ files }: FileViewerProps) {
                     <div className="file-cell">Status</div>
                     <div className="file-cell">Date</div>
                 </div>
-                {files.slice(0, 100).map(({ item: file }) => {
+                {files.slice(0, visibleCount).map(({ item: file }) => {
                     const matchByKey = new Map();
                     return (
                         <Link
@@ -116,6 +156,14 @@ function FileViewer({ files }: FileViewerProps) {
                         </Link>
                     );
                 })}
+                {visibleCount < files.length && (
+                    <div ref={loaderRef} className="loading-indicator">
+                        <div className="file-cell" colSpan={5}>
+                            Loading more items ({visibleCount} of {files.length}
+                            )...
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
