@@ -1,43 +1,58 @@
-use git2::{Repository, ObjectType, Oid};
+use git2::{Error, Object, ObjectType, Oid, Repository};
 use std::io::{self, BufRead};
 use std::ops::Range;
 use std::path::Path;
 
 /// Error type for file line retrieval operations
 #[derive(Debug)]
-pub enum FileLineError {
+pub enum FileLineError<'a> {
     Git(git2::Error),
     Io(io::Error),
     InvalidRange,
     FileNotFound,
-    RevisionNotFound,
+    Generic(String),
+    RevisionNotFound(&'a str),
 }
 
-impl From<git2::Error> for FileLineError {
+impl From<git2::Error> for FileLineError<'_> {
     fn from(err: git2::Error) -> Self {
         FileLineError::Git(err)
     }
 }
 
-impl From<io::Error> for FileLineError {
+impl From<io::Error> for FileLineError<'_> {
     fn from(err: io::Error) -> Self {
         FileLineError::Io(err)
     }
 }
 
-impl std::fmt::Display for FileLineError {
+impl std::fmt::Display for FileLineError<'_> {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             FileLineError::Git(err) => write!(f, "Git error: {}", err),
             FileLineError::Io(err) => write!(f, "IO error: {}", err),
             FileLineError::InvalidRange => write!(f, "Invalid line range"),
             FileLineError::FileNotFound => write!(f, "File not found in the specified revision"),
-            FileLineError::RevisionNotFound => write!(f, "Revision not found"),
+            FileLineError::Generic(message) => write!(f, "Generic Err: {}", message),
+            FileLineError::RevisionNotFound(path) => write!(f, "Revision not found: {}", path),
         }
     }
 }
 
-impl std::error::Error for FileLineError {}
+impl std::error::Error for FileLineError<'_> {}
+
+fn tree_to_treeish<'a>(
+    repo: &'a Repository,
+    arg: Option<&String>,
+) -> Result<Option<Object<'a>>, Error> {
+    let arg = match arg {
+        Some(s) => s,
+        None => return Ok(None),
+    };
+    let obj = repo.revparse_single(arg)?;
+    let tree = obj.peel(ObjectType::Tree)?;
+    Ok(Some(tree))
+}
 
 /// Retrieves specific lines from a file at a specific Git revision using libgit2.
 ///
@@ -52,12 +67,12 @@ impl std::error::Error for FileLineError {}
 ///
 /// * `Result<Vec<String>, FileLineError>` - The requested lines or an error
 ///
-pub fn get_file_lines_at_revision(
+pub fn get_file_lines_at_revision<'a>(
     repo: &Repository,
     file_path: &str,
-    revision: &str,
+    revision: &'a str,
     line_range: Range<usize>,
-) -> Result<Vec<String>, FileLineError> {
+) -> Result<Vec<String>, FileLineError<'a>> {
     // Validate the range
     if line_range.start < 1 || line_range.start > line_range.end {
         return Err(FileLineError::InvalidRange);
@@ -69,7 +84,7 @@ pub fn get_file_lines_at_revision(
     // Resolve the revision to a commit
     let obj = match repo.revparse_single(revision) {
         Ok(obj) => obj,
-        Err(_) => return Err(FileLineError::RevisionNotFound),
+        Err(_) => return Err(FileLineError::RevisionNotFound(revision)),
     };
 
     // Get the commit from the revision
@@ -79,7 +94,7 @@ pub fn get_file_lines_at_revision(
             // If it's not directly a commit (e.g., it's a tag), try to peel it to a commit
             match obj.peel(ObjectType::Commit)?.into_commit() {
                 Ok(commit) => commit,
-                Err(_) => return Err(FileLineError::RevisionNotFound),
+                Err(_) => return Err(FileLineError::RevisionNotFound(revision)),
             }
         }
     };
@@ -90,7 +105,7 @@ pub fn get_file_lines_at_revision(
     // Try to find the file in the tree
     let entry: git2::TreeEntry<'_> = match tree.get_path(Path::new(file_path)) {
         Ok(entry) => entry,
-        Err(_) => return Err(FileLineError::FileNotFound),
+        Err(data) => return Err(FileLineError::Generic(data.message().to_string())),
     };
 
     // Get the object for the file
