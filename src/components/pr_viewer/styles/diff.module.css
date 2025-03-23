@@ -47,12 +47,14 @@
 
 /* Apply diff styles using data attributes (more efficient) */
 .gutterLine[data-diff-type="add"],
-.contentLine[data-diff-type="add"] {
+.contentLine[data-diff-type="add"],
+.diffAdd {
     background-color: var(--success-color-light);
 }
 
 .gutterLine[data-diff-type="remove"],
-.contentLine[data-diff-type="remove"] {
+.contentLine[data-diff-type="remove"],
+.diffRemove {
     background-color: var(--error-color-light);
 }
 
