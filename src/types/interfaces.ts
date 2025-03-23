@@ -43,6 +43,25 @@ export type UserIdentity = {
 };
 
 // PR Data type
+export interface DiffLine {
+    old_lineno: number | null;
+    new_lineno: number | null;
+    content: string;
+    origin: string; // '+' for addition, '-' for deletion, ' ' for context
+}
+
+export interface FileDiff {
+    old_file: string;
+    new_file: string;
+    status: string; // 'A' for added, 'M' for modified, 'D' for deleted
+    lines: DiffLine[];
+    binary: boolean;
+}
+
+export interface TreeDiff {
+    files: FileDiff[];
+}
+
 export interface PrData {
     id: number;
     title: string;

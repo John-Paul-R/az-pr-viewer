@@ -479,3 +479,77 @@ p, ul {
     text-align: center;
     padding: 40px 20px;
 }
+
+/* Diff viewer styles */
+.diff-container {
+    margin-top: 10px;
+}
+
+.diff-file {
+    margin-bottom: 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.diff-file-header {
+    display: flex;
+    padding: 10px 15px;
+    background-color: var(--hover-color);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    user-select: none;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.diff-file-status {
+    margin-right: 10px;
+    font-weight: bold;
+}
+
+.diff-file-name {
+    flex-grow: 1;
+    font-family: monospace;
+}
+
+.diff-file-toggle {
+    margin-left: 10px;
+}
+
+.diff-file-content {
+    overflow-x: auto;
+    background-color: var(--code-bg-color);
+    font-family: monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.diff-binary {
+    padding: 10px;
+    font-style: italic;
+    color: var(--text-secondary);
+}
+
+.diff-line-numbers {
+    display: inline-block;
+    width: 80px;
+    color: var(--text-secondary);
+    border-right: 1px solid var(--border-color);
+    padding-right: 5px;
+    margin-right: 10px;
+    text-align: right;
+    user-select: none;
+}
+
+.diff-old-line-number, .diff-new-line-number {
+    display: inline-block;
+    width: 35px;
+    text-align: right;
+    padding: 0 3px;
+}
+
+.diff-line-content {
+    white-space: pre;
+}

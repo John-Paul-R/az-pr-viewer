@@ -10,9 +10,9 @@ interface ThreadsSectionProps {
 }
 
 export const ThreadsSection: React.FC<ThreadsSectionProps> = ({ threads }) => {
-    const [filterType, setFilterType] = useState<'all' | 'comments'>('all');
+    const [filterType, setFilterType] = useState<"all" | "comments">("all");
     const activeThreads = threads.filter((thread) => !thread.isDeleted);
-    
+
     if (activeThreads.length === 0) {
         return (
             <div className={style["threads-section"]}>
@@ -23,12 +23,17 @@ export const ThreadsSection: React.FC<ThreadsSectionProps> = ({ threads }) => {
     }
 
     // Filter threads based on selected filter type
-    const filteredThreads = filterType === 'all' 
-        ? activeThreads 
-        : activeThreads.filter(thread => 
-            thread.comments && 
-            thread.comments.length > 0 && 
-            thread.comments.some(comment => comment.commentType === 'text'));
+    const filteredThreads =
+        filterType === "all"
+            ? activeThreads
+            : activeThreads.filter(
+                  (thread) =>
+                      thread.comments &&
+                      thread.comments.length > 0 &&
+                      thread.comments.some(
+                          (comment) => comment.commentType === "text",
+                      ),
+              );
 
     // Sort threads by reverse publishedDate
     const sortedThreads = [...filteredThreads].sort(
@@ -41,7 +46,7 @@ export const ThreadsSection: React.FC<ThreadsSectionProps> = ({ threads }) => {
         <div className={style["threads-section"]}>
             <h3>
                 Activity ({filteredThreads.length} items)
-                <ThreadFilter 
+                <ThreadFilter
                     currentFilter={filterType}
                     onFilterChange={setFilterType}
                 />

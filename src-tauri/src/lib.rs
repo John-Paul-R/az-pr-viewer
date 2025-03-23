@@ -2,10 +2,12 @@ mod zip_filesystem;
 mod search;
 mod git_lines;
 mod git_commit;
+mod git_diff;
 
 use std::{sync::Arc, time::Instant};
 use git2::Repository;
 use git_commit::{get_commit_metadata, CommitMetadata};
+use git_diff::{get_tree_diff_between_revisions, get_filtered_tree_diff, TreeDiff};
 use git_lines::{get_file_diff_as_strings, get_file_lines_at_revision};
 use serde::{Deserialize, Serialize};
 use tauri::{async_runtime::Mutex, State};
@@ -261,6 +263,50 @@ async fn git_get_file_diff_between_revisions(
     }
 }
 
+#[tauri::command(async)]
+async fn git_get_tree_diff_between_revisions(
+    from_revision: String,
+    to_revision: String,
+    state: State<'_, AppState>
+) -> Result<TreeDiff, String> {
+    let repo_lock = state.repo.lock().await;
+
+    match &*repo_lock {
+        Some(r) => {
+            get_tree_diff_between_revisions(
+                r,
+                &from_revision,
+                &to_revision
+            )
+                .map_err(|err| err.to_string())
+        },
+        None => Err("No repository selected".to_string()),
+    }
+}
+
+#[tauri::command(async)]
+async fn git_get_filtered_tree_diff(
+    from_revision: String,
+    to_revision: String,
+    file_pattern: String,
+    state: State<'_, AppState>
+) -> Result<TreeDiff, String> {
+    let repo_lock = state.repo.lock().await;
+
+    match &*repo_lock {
+        Some(r) => {
+            get_filtered_tree_diff(
+                r,
+                &from_revision,
+                &to_revision,
+                &file_pattern,
+            )
+                .map_err(|err| err.to_string())
+        },
+        None => Err("No repository selected".to_string()),
+    }
+}
+
 // Define the InitialState struct
 pub struct InitialState {
     pub archive_path: Option<String>,
@@ -327,6 +373,8 @@ pub fn run(initial_state: Option<InitialState>) -> Result<(), String> {
             get_git_commit,
             get_git_file_lines_at_revision,
             git_get_file_diff_between_revisions,
+            git_get_tree_diff_between_revisions,
+            git_get_filtered_tree_diff,
             get_git_repo,
             get_archive_path,
         ])

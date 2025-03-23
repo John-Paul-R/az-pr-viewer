@@ -8,6 +8,7 @@ import {
     ErrorContainer,
     PrDescription,
     PrReviewers,
+    DiffViewer,
 } from "./pr_viewer";
 import { enrichReviewersWithAvatars } from "./pr_viewer/helpers/voteParser";
 import style from "./PrViewer.module.css" with { type: "css" };
@@ -70,6 +71,17 @@ const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
                         sourceBranch={prData.source_branch}
                         targetBranch={prData.target_branch}
                     />
+
+                    {/* {JSON.stringify(prData)} */}
+                    {prData.last_merge_source_commit &&
+                    prData.last_merge_target_commit ? (
+                        <DiffViewer
+                            sourceBranch={prData.last_merge_source_commit}
+                            targetBranch={prData.last_merge_target_commit}
+                        />
+                    ) : (
+                        <>cannot display diff data</>
+                    )}
 
                     {prData.threads && (
                         <ThreadsSection threads={prData.threads} />
