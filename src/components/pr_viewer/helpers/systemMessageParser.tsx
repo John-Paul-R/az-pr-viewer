@@ -138,7 +138,7 @@ export function RenderCommits({
                         const meta = commitMetas?.get(hash);
                         return (
                             <li>
-                                {meta?.message} <code>{hash.slice(0, 8)}</code>
+                                {meta?.message} <code>{hash}</code>
                             </li>
                         );
                     })}
