@@ -25,6 +25,8 @@ function Home() {
         repoPath,
         setRepoPath,
     } = useAppContext();
+    const [repoPathInputValue, setRepoPathInputValue] =
+        useState<string>(repoPath);
     const [loading, setLoading] = useState<boolean>(false);
     const [searchLoading, setSearchLoading] = useState<boolean>(false);
     const [error, setError] = useState<string>("");
@@ -167,24 +169,28 @@ function Home() {
                     </fieldset>
 
                     <fieldset className="repo-section">
-                        <legend>Git Repository</legend>
+                        <legend>
+                            Git Repository{" "}
+                            {repoPath && repoPath !== repoPathInputValue ? (
+                                <>(current: {repoPath})</>
+                            ) : (
+                                <></>
+                            )}
+                        </legend>
 
                         <div>
                             <input
                                 type="text"
                                 placeholder="Enter path to repository..."
-                                value={repoPath}
-                                onChange={(e) => setRepoPath(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                        invoke("set_git_repo", {
-                                            filePath: repoPath,
-                                        }).then((e) => {
-                                            console.log(e);
-                                        });
-                                    }
+                                value={repoPathInputValue}
+                                onChange={(e) => {
+                                    setRepoPathInputValue(e.target.value);
+                                    setRepoPath(e.target.value);
                                 }}
                             />
+                            <span title={repoPath}>
+                                {repoPath ? "✅" : "🟥"}
+                            </span>
                         </div>
                     </fieldset>
                 </div>
