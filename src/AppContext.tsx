@@ -5,12 +5,10 @@ import {
     useContext,
     useEffect,
 } from "react";
-import { PrFile, PrIndexEntry } from "./types/interfaces";
+import { PrFile } from "./types/interfaces";
 import { invoke } from "@tauri-apps/api/core";
 
 interface AppContextType {
-    indexData: PrIndexEntry[];
-    setIndexData: (data: PrIndexEntry[]) => void;
     archiveFile: string;
     setArchiveFile: (file: string) => void;
     files: PrFile[];
@@ -22,7 +20,6 @@ interface AppContextType {
 const AppContext = createContext<AppContextType | undefined>(undefined);
 
 export function AppProvider({ children }: { children: ReactNode }) {
-    const [indexData, setIndexData] = useState<PrIndexEntry[]>([]);
     const [archiveFile, setArchiveFile] = useState<string>("");
     const [files, setFiles] = useState<PrFile[]>([]);
     const [repoPath, setRepoPath] = useState<string>("");
@@ -69,8 +66,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
     return (
         <AppContext.Provider
             value={{
-                indexData,
-                setIndexData,
                 archiveFile,
                 setArchiveFile,
                 files,

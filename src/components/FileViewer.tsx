@@ -17,16 +17,16 @@ function FileViewer({ files }: FileViewerProps) {
 
     async function handleFileClick(file: PrFile) {
         try {
+            // Navigate to detail page
+            navigate(`/pr/${file.pr_number}`);
+
             // Read the file content
             const content = await invoke<string>("read_pr_file", {
-                path: file.path,
+                path: file.archive_path,
             });
 
             // Store content in localStorage to pass to detail page
             localStorage.setItem("currentPrData", content);
-
-            // Navigate to detail page
-            navigate(`/pr/${file.pr_number}`);
         } catch (err) {
             console.error("Failed to read PR file:", err);
             alert(`Error reading file: ${err}`);

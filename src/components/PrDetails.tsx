@@ -7,12 +7,14 @@ import { useAppContext } from "../AppContext";
 import style from "./PrViewer.module.css" with { type: "css" };
 
 function PrDetails() {
-    const { prNumber } = useParams<{ prNumber: string }>();
+    const { prNumber: prNumberStr } = useParams<{ prNumber: string }>();
     const navigate = useNavigate();
     const [prData, setPrData] = useState<PrData | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string>("");
-    const { indexData } = useAppContext();
+    const { files: indexData } = useAppContext();
+
+    const prNumber = Number(prNumberStr);
 
     useEffect(() => {
         async function fetchPrData() {
@@ -22,7 +24,7 @@ function PrDetails() {
             try {
                 // Find the corresponding index entry
                 const entry = indexData.find(
-                    (entry) => entry.id.toString() === prNumber,
+                    (entry) => entry.pr_number === prNumber,
                 );
 
                 if (!entry) {
@@ -31,9 +33,9 @@ function PrDetails() {
                     return;
                 }
 
-                // Construct the path to the PR file in the archive
-                const path = `prs/${entry.filename}`;
-                const content = await invoke<string>("read_pr_file", { path });
+                const content = await invoke<string>("read_pr_file", {
+                    path: entry.archive_path,
+                });
 
                 // Parse the PR JSON data
                 const parsedData: PrData = JSON.parse(content);
@@ -41,13 +43,13 @@ function PrDetails() {
                 // Merge index entry data with PR data if needed fields are missing
                 const enhancedData: PrData = {
                     ...parsedData,
-                    id: parsedData.id || entry.id,
+                    id: parsedData.id || entry.pr_number,
                     title: parsedData.title || entry.title,
-                    created_by: parsedData.created_by || entry.created_by,
+                    created_by: parsedData.created_by || entry.author,
                     creation_date:
                         parsedData.creation_date || entry.creation_date,
                     status: parsedData.status || entry.status,
-                    repository: parsedData.repository || entry.repository,
+                    repository: parsedData.repository,
                     source_branch:
                         parsedData.source_branch || entry.source_branch,
                     target_branch:

@@ -1,16 +1,13 @@
 export interface PrFile {
-    filename: string;
-    path: string;
-    pr_number: string;
-    num: number;
+    archive_path: string;
+    pr_number: number;
     // Added fields from index data
-    title?: string;
-    author?: string;
-    status?: string;
-    creation_date?: string;
-    repository?: string;
-    source_branch?: string;
-    target_branch?: string;
+    title: string;
+    author: string;
+    status: string;
+    creation_date: string;
+    source_branch: string;
+    target_branch: string;
 }
 
 export interface PrIndexEntry {

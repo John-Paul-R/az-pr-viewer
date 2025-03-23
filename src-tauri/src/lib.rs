@@ -22,17 +22,14 @@ fn greet(name: &str) -> String {
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 struct PrFile {
-    filename: String,
-    path: String,
-    pr_number: String,
-    num: i32,
-    title: Option<String>,
-    author: Option<String>,
-    status: Option<String>,
-    creation_date: Option<String>,
-    repository: Option<String>,
-    source_branch: Option<String>,
-    target_branch: Option<String>,
+    archive_path: String,
+    pr_number: i32,
+    title: String,
+    author: String,
+    status: String,
+    creation_date: String,
+    source_branch: String,
+    target_branch: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
@@ -42,7 +39,6 @@ struct PrIndexEntry {
     created_by: String,
     creation_date: String,
     status: String,
-    repository: String,
     source_branch: String,
     target_branch: String,
     filename: String,
@@ -57,14 +53,27 @@ struct AppState {
     repo: Arc<Mutex<Option<Repository>>>,
 }
 
-impl AppState {
-    fn new(fs: FileSystem, search: SearchIndex) -> Self {
-        Self {
-            fs,
-            search,
-            repo: Arc::new(Mutex::new(None)),
-        }
+// Helper function to convert index entries to PrFile objects
+fn index_entries_to_pr_files(entries: Vec<PrIndexEntry>) -> Vec<PrFile> {
+    let mut files = Vec::with_capacity(entries.len());
+
+    for entry in entries {
+        // Construct the PR path relative to the archive (for future reference)
+        let pr_path = format!("prs/{}", entry.filename);
+
+        files.push(PrFile {
+            archive_path: pr_path,
+            pr_number: entry.id,
+            title: entry.title,
+            author: entry.created_by,
+            status: entry.status,
+            creation_date: entry.creation_date,
+            source_branch: entry.source_branch,
+            target_branch: entry.target_branch,
+        });
     }
+
+    files
 }
 
 #[tauri::command(async)]
@@ -80,30 +89,11 @@ fn get_pr_files(state: State<AppState>) -> Result<Vec<PrFile>, String> {
         state.search.rebuild_index(&index_entries)?;
     }
 
-    // Create files from index without extracting files
-    let mut files = Vec::with_capacity(index_entries.len());
-    for entry in index_entries {
-        // Construct the PR path relative to the archive (for future reference)
-        let pr_path = format!("prs/{}", entry.filename);
-        let pr_number = entry.id.to_string();
-
-        files.push(PrFile {
-            filename: entry.filename.clone(),
-            path: pr_path,  // Store the relative path within the archive
-            pr_number,
-            num: entry.id,
-            title: Some(entry.title),
-            author: Some(entry.created_by),
-            status: Some(entry.status),
-            creation_date: Some(entry.creation_date),
-            repository: Some(entry.repository),
-            source_branch: Some(entry.source_branch),
-            target_branch: Some(entry.target_branch),
-        });
-    }
+    // Create files from index using the extracted function
+    let mut files = index_entries_to_pr_files(index_entries);
 
     // Sort by PR number descending
-    files.sort_by(|a, b| b.num.cmp(&a.num));
+    files.sort_by(|a, b| b.pr_number.cmp(&a.pr_number));
 
     println!("Performance: get_pr_files successful with {} files in {:?}",
              files.len(), start.elapsed());
@@ -126,27 +116,8 @@ fn search_prs(query: String, state: State<AppState>) -> Result<Vec<PrFile>, Stri
     // Search for matching PRs
     let results = state.search.search(&query)?;
 
-    // Create files from search results without extracting files
-    let mut files = Vec::with_capacity(results.len());
-    for entry in results {
-        // Construct the PR path relative to the archive
-        let pr_path = format!("prs/{}", entry.filename);
-        let pr_number = entry.id.to_string();
-
-        files.push(PrFile {
-            filename: entry.filename.clone(),
-            path: pr_path,  // Store the relative path within the archive
-            pr_number,
-            num: entry.id,
-            title: Some(entry.title),
-            author: Some(entry.created_by),
-            status: Some(entry.status),
-            creation_date: Some(entry.creation_date),
-            repository: Some(entry.repository),
-            source_branch: Some(entry.source_branch),
-            target_branch: Some(entry.target_branch),
-        });
-    }
+    // Create files from search results using the extracted function
+    let files = index_entries_to_pr_files(results);
 
     println!("Performance: search_prs found {} matches for '{}' in {:?}",
              files.len(), query, start.elapsed());
@@ -185,11 +156,6 @@ fn read_pr_file(path: String, state: State<AppState>) -> Result<String, String> 
         // Fall back to extracting and reading the file
         Err(_) => state.fs.read_file(&path)
     }
-}
-
-#[tauri::command(async)]
-fn get_index_content(state: State<AppState>) -> Result<String, String> {
-    state.fs.get_index_content()
 }
 
 #[tauri::command(async)]
@@ -355,7 +321,6 @@ pub fn run(initial_state: Option<InitialState>) -> Result<(), String> {
             get_pr_files,
             set_archive_file,
             read_pr_file,
-            get_index_content,
             search_prs,
             list_files,
             set_git_repo,

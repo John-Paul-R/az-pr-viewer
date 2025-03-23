@@ -5,7 +5,7 @@ import "../App.css";
 import "../FilesApp.css";
 import { useAppContext } from "../AppContext";
 import FileViewer from "./FileViewer";
-import { PrFile, PrIndexEntry } from "../types/interfaces";
+import { PrFile } from "../types/interfaces";
 
 // Performance logging helper
 const logPerformance = (action: string, startTime: number, extraInfo = "") => {
@@ -17,7 +17,6 @@ const logPerformance = (action: string, startTime: number, extraInfo = "") => {
 
 function Home() {
     const {
-        setIndexData,
         archiveFile,
         setArchiveFile,
         files,
@@ -74,25 +73,6 @@ function Home() {
             await invoke("set_archive_file", { newArchive: archivePath });
             logPerformance("invoke set_archive_file", setArchiveStartTime);
 
-            // Get the index content
-            const indexStartTime = performance.now();
-            const indexContent = await invoke<string>("get_index_content");
-            logPerformance(
-                "invoke get_index_content",
-                indexStartTime,
-                `(${indexContent.length} bytes)`,
-            );
-
-            // Parse index
-            const parseStartTime = performance.now();
-            const indexEntries = JSON.parse(indexContent) as PrIndexEntry[];
-            logPerformance(
-                "parse index JSON",
-                parseStartTime,
-                `(${indexEntries.length} entries)`,
-            );
-            setIndexData(indexEntries);
-
             // Get PR files
             const filesStartTime = performance.now();
             const prFiles = await invoke<PrFile[]>("get_pr_files");
@@ -107,7 +87,6 @@ function Home() {
         } catch (err) {
             setError(`Error: ${err}`);
             setFiles([]);
-            setIndexData([]);
         } finally {
             setLoading(false);
             logPerformance("setArchiveAndFetchFiles total", startTime);
