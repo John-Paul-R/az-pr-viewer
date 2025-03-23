@@ -2,7 +2,7 @@ cargo-features = ["profile-rustflags", "trim-paths"]
 
 [package]
 name = "azure-pr-viewer"
-version = "0.1.0"
+version = "1.2.0"
 description = "A Tauri App"
 authors = ["you"]
 edition = "2021"
