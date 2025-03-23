@@ -3,9 +3,9 @@ cargo-features = ["profile-rustflags", "trim-paths"]
 [package]
 name = "azure-pr-viewer"
 version = "1.2.0"
-description = "A Tauri App"
-authors = ["you"]
-edition = "2021"
+description = "A multi-platform desktop application for viewing archives of Azure DevOps pull requests fully locally."
+authors = ["John Paul R"]
+edition = "2024"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
