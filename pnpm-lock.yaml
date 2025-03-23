@@ -44,9 +44,9 @@ importers:
       react-router-dom:
         specifier: ^7.4.0
         version: 7.4.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
-      react-syntax-highlighter:
-        specifier: ^15.6.1
-        version: 15.6.1(react@19.0.0)
+      rehype-prism-plus:
+        specifier: ^2.0.0
+        version: 2.0.0
       rehype-raw:
         specifier: ^7.0.0
         version: 7.0.0
@@ -659,6 +659,9 @@ packages:
   '@types/ms@2.1.0':
     resolution: {integrity: sha1-BSqmekjszEMJ1/AZG35BQ0uQu3g=}
 
+  '@types/prismjs@1.26.5':
+    resolution: {integrity: sha1-ckmau7TE7JmCRGUJ0vFPuEg4adY=}
+
   '@types/react-dom@19.0.4':
     resolution: {integrity: sha1-vtupf5NGvUwP5dOeaJcTgE7JrIk=}
     peerDependencies:
@@ -712,20 +715,11 @@ packages:
   character-entities-html4@2.1.0:
     resolution: {integrity: sha1-HxrblAyXGksiujndymthjcblays=}
 
-  character-entities-legacy@1.1.4:
-    resolution: {integrity: sha1-lLwYRdznClu50uzHSHJWYSk9j8E=}
-
   character-entities-legacy@3.0.0:
     resolution: {integrity: sha1-dryDqQc4kB17wiOp6TdZ/dVgEls=}
 
-  character-entities@1.2.4:
-    resolution: {integrity: sha1-4Sw5Obfq9OWxXnrUxeKOHUjFsWs=}
-
   character-entities@2.0.2:
     resolution: {integrity: sha1-LQnC5yzZUjB2zLIRV9/2atQ/zCI=}
-
-  character-reference-invalid@1.1.4:
-    resolution: {integrity: sha1-CDMpzaDq4nKrPbvzfpo4LBOvFWA=}
 
   character-reference-invalid@2.0.1:
     resolution: {integrity: sha1-hcZrBB5DtHIQ+vQBJ4q/gIrEXLk=}
@@ -733,9 +727,6 @@ packages:
   chokidar@4.0.3:
     resolution: {integrity: sha1-e+N6TAPJruHs/oYqSiOyxwwgXTA=}
     engines: {node: '>= 14.16.0'}
-
-  comma-separated-tokens@1.0.8:
-    resolution: {integrity: sha1-YyuAthF4Z6FY8QgK1Jiy++fj9eo=}
 
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha1-TonJRYrLYbyP7xn0UplzsjkoOe4=}
@@ -810,16 +801,9 @@ packages:
   extend@3.0.2:
     resolution: {integrity: sha1-+LETa0Bx+9jrFAr/hYsQGewpFfo=}
 
-  fault@1.0.4:
-    resolution: {integrity: sha1-6vz8Cm0hT8lGAeFw3ymVSk+ELxM=}
-
   fill-range@7.1.1:
     resolution: {integrity: sha1-RCZdPKwH4+p9wkdRY4BkN1SgUpI=}
     engines: {node: '>=8'}
-
-  format@0.2.2:
-    resolution: {integrity: sha1-1hcBB+nv3E7TDJ3DkBbflCtctYs=}
-    engines: {node: '>=0.4.x'}
 
   fs.realpath@1.0.0:
     resolution: {integrity: sha1-FQStJSMVjKpA20onh8sBQRmU6k8=}
@@ -843,11 +827,14 @@ packages:
   graceful-fs@4.2.11:
     resolution: {integrity: sha1-QYPk6L8Iu24Fu7L30uDI9xLKQOM=}
 
+  hast-util-from-html@2.0.3:
+    resolution: {integrity: sha1-SFx0eFNYvrgMS6Y0YpkxGsTEnII=}
+
   hast-util-from-parse5@8.0.3:
     resolution: {integrity: sha1-gwo1Ai//KMP+o2l6mML0zGuDWi4=}
 
-  hast-util-parse-selector@2.2.5:
-    resolution: {integrity: sha1-1Xwj9NoWrjxjs7bKRhZoMxNJnDo=}
+  hast-util-parse-selector@3.1.1:
+    resolution: {integrity: sha1-JasArp51y8Ys96kB9ookfq3mWeI=}
 
   hast-util-parse-selector@4.0.0:
     resolution: {integrity: sha1-NSh5+obiVhYDYDfdiTH7XzTLSic=}
@@ -864,20 +851,17 @@ packages:
   hast-util-to-parse5@8.0.0:
     resolution: {integrity: sha1-R3zULSeNTwNrwupYWGEw9vOe5u0=}
 
+  hast-util-to-string@3.0.1:
+    resolution: {integrity: sha1-pPFeaChJMm3SEclxKclLDD52Unw=}
+
   hast-util-whitespace@3.0.0:
     resolution: {integrity: sha1-d3jtnTyS3Z6MXI9kiknCH8UctiE=}
 
-  hastscript@6.0.0:
-    resolution: {integrity: sha1-6HaNfqxWw/3qyKkoMNWOgR5b9kA=}
+  hastscript@7.2.0:
+    resolution: {integrity: sha1-Dq+3r7FT0EcHf6KoM9ybfsYE0Qs=}
 
   hastscript@9.0.1:
     resolution: {integrity: sha1-28hL72BR1ACENCwinEUc2dxWff8=}
-
-  highlight.js@10.7.3:
-    resolution: {integrity: sha1-aXJy45kTVuQMPKxWanTu9oF1ZTE=}
-
-  highlightjs-vue@1.0.0:
-    resolution: {integrity: sha1-/f6X++pjVOcO5E46lVh14RTbCG0=}
 
   html-url-attributes@3.0.1:
     resolution: {integrity: sha1-g7BSzV5DcHG3Vs10rnD3CIcMLYc=}
@@ -906,20 +890,11 @@ packages:
   inline-style-parser@0.2.4:
     resolution: {integrity: sha1-9K9f5y5hKDn81FPZiaWGVm1pXyI=}
 
-  is-alphabetical@1.0.4:
-    resolution: {integrity: sha1-nn1rlJFr4iFTdF0YTCmMv5hqaG0=}
-
   is-alphabetical@2.0.1:
     resolution: {integrity: sha1-AQcgU+p8EDbfPH0Zptqux/GeeJs=}
 
-  is-alphanumerical@1.0.4:
-    resolution: {integrity: sha1-frmiQx+FX2se8aeOMm31FWlsTb8=}
-
   is-alphanumerical@2.0.1:
     resolution: {integrity: sha1-fAP76W4+kxET5X+WSwo2jMLf2HU=}
-
-  is-decimal@1.0.4:
-    resolution: {integrity: sha1-ZaOllYocW2OnBuGzM9fNn2MNP6U=}
 
   is-decimal@2.0.1:
     resolution: {integrity: sha1-lGnS3BkNAhT9h9eLeMrswMwU7vc=}
@@ -931,9 +906,6 @@ packages:
   is-glob@4.0.3:
     resolution: {integrity: sha1-ZPYeQsu7LuwgcanawLKLoeZdUIQ=}
     engines: {node: '>=0.10.0'}
-
-  is-hexadecimal@1.0.4:
-    resolution: {integrity: sha1-zDXJdYjaS9Saju3WvECC1E3LI6c=}
 
   is-hexadecimal@2.0.1:
     resolution: {integrity: sha1-hrW/Zo/KMHSY0xnfwDKJ14GpACc=}
@@ -1037,9 +1009,6 @@ packages:
 
   longest-streak@3.1.0:
     resolution: {integrity: sha1-YvpnzZWHQqFXSvnzmGY2QQLZDNQ=}
-
-  lowlight@1.20.0:
-    resolution: {integrity: sha1-3bGX0zRirQ2TvxnRe2wwGqOUGIg=}
 
   lru-cache@5.1.1:
     resolution: {integrity: sha1-HaJ+ZxAnGUdpXa9oSOhH8B2EuSA=}
@@ -1169,15 +1138,15 @@ packages:
   once@1.4.0:
     resolution: {integrity: sha1-WDsap3WWHUsROsF9nFC6753Xa9E=}
 
-  parse-entities@2.0.0:
-    resolution: {integrity: sha1-U8brW5MUofTsmfoP33zgHs2gy+g=}
-
   parse-entities@4.0.2:
     resolution: {integrity: sha1-YdRvXtKOTuYundxD1rAQGIRD8Vk=}
 
   parse-node-version@1.0.1:
     resolution: {integrity: sha1-4rXb7eAOf6m8NjYH9TMn6LBzGJs=}
     engines: {node: '>= 0.10'}
+
+  parse-numeric-range@1.3.0:
+    resolution: {integrity: sha1-fGO2EZDWHk1ToRl/DIPEe7Zw/6M=}
 
   parse5@7.2.1:
     resolution: {integrity: sha1-iSj1WRXmEl9DDMRDCXZb8XVWozo=}
@@ -1200,17 +1169,6 @@ packages:
   postcss@8.5.3:
     resolution: {integrity: sha1-FGO28cf7Fv4lhzbLopot41I36vs=}
     engines: {node: ^10 || ^12 || >=14}
-
-  prismjs@1.27.0:
-    resolution: {integrity: sha1-u27jE4oLQ4o2U91NbODMZRCkUFc=}
-    engines: {node: '>=6'}
-
-  prismjs@1.30.0:
-    resolution: {integrity: sha1-2XCZadnU4WQD9vNIxjVTsZ8Jdak=}
-    engines: {node: '>=6'}
-
-  property-information@5.6.0:
-    resolution: {integrity: sha1-YWdVRfsjAC8kXGVA7EYHfU2j7Wk=}
 
   property-information@6.5.0:
     resolution: {integrity: sha1-YhL7tSunV+ku9PudZXVjuTO3/+w=}
@@ -1261,11 +1219,6 @@ packages:
       react-dom:
         optional: true
 
-  react-syntax-highlighter@15.6.1:
-    resolution: {integrity: sha1-+lZ8sKn5a+e7zPLBOjxLVlfZVD4=}
-    peerDependencies:
-      react: '>= 0.14.0'
-
   react@19.0.0:
     resolution: {integrity: sha1-bhlpJRufEIhwqkv/N6DOnd+qq90=}
     engines: {node: '>=0.10.0'}
@@ -1274,11 +1227,17 @@ packages:
     resolution: {integrity: sha1-64WAFDX78qfuWPGeCSGwaPxplI0=}
     engines: {node: '>= 14.18.0'}
 
-  refractor@3.6.0:
-    resolution: {integrity: sha1-rDGPWgcV6teQ/PsMcfTdg9l3k1o=}
+  refractor@4.9.0:
+    resolution: {integrity: sha1-Lhx68BVyMM3S+QhmYJEurcX2gyM=}
 
   regenerator-runtime@0.14.1:
     resolution: {integrity: sha1-NWreECY/aF3aElEAzYYsHbiVMn8=}
+
+  rehype-parse@9.0.1:
+    resolution: {integrity: sha1-mZO9oSmsxkxBep02VKe+OLKpTCA=}
+
+  rehype-prism-plus@2.0.0:
+    resolution: {integrity: sha1-dbHi0N10lhJZh6FzLLfVYN4CoP0=}
 
   rehype-raw@7.0.0:
     resolution: {integrity: sha1-Wdc0j9Xb7zgHu6odRD79LdhezuQ=}
@@ -1337,9 +1296,6 @@ packages:
     resolution: {integrity: sha1-qbvnBcnYhG9OCP9nZazw8bCJhlY=}
     engines: {node: '>= 8'}
 
-  space-separated-tokens@1.1.5:
-    resolution: {integrity: sha1-hfMsPRDZaCAH6RdBTdxcJtGqaJk=}
-
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha1-Hs2dI1CjhEVyw/SjErzrAYNIhZ8=}
 
@@ -1379,6 +1335,9 @@ packages:
 
   unified@11.0.5:
     resolution: {integrity: sha1-9mZ3YQpcCp7pDKsrjU1mA3Am2eE=}
+
+  unist-util-filter@5.0.1:
+    resolution: {integrity: sha1-+fOgve4AfgQJZMJ03aJ7rGY9Cjk=}
 
   unist-util-is@6.0.0:
     resolution: {integrity: sha1-t3WVZIav8Qep3tlx2ZbBczdL5CQ=}
@@ -1461,10 +1420,6 @@ packages:
 
   wrappy@1.0.2:
     resolution: {integrity: sha1-tSQ9jz7BqjXxNkYFvA0QNuMKtp8=}
-
-  xtend@4.0.2:
-    resolution: {integrity: sha1-u3J3n1+kZRhrH0OPZ0+jR/2121Q=}
-    engines: {node: '>=0.4'}
 
   yallist@3.1.1:
     resolution: {integrity: sha1-27fa+b/YusmrRev2ArjLrQ1dCP0=}
@@ -1916,6 +1871,8 @@ snapshots:
 
   '@types/ms@2.1.0': {}
 
+  '@types/prismjs@1.26.5': {}
+
   '@types/react-dom@19.0.4(@types/react@19.0.12)':
     dependencies:
       '@types/react': 19.0.12
@@ -1974,15 +1931,9 @@ snapshots:
 
   character-entities-html4@2.1.0: {}
 
-  character-entities-legacy@1.1.4: {}
-
   character-entities-legacy@3.0.0: {}
 
-  character-entities@1.2.4: {}
-
   character-entities@2.0.2: {}
-
-  character-reference-invalid@1.1.4: {}
 
   character-reference-invalid@2.0.1: {}
 
@@ -1990,8 +1941,6 @@ snapshots:
     dependencies:
       readdirp: 4.1.2
     optional: true
-
-  comma-separated-tokens@1.0.8: {}
 
   comma-separated-tokens@2.0.3: {}
 
@@ -2071,16 +2020,10 @@ snapshots:
 
   extend@3.0.2: {}
 
-  fault@1.0.4:
-    dependencies:
-      format: 0.2.2
-
   fill-range@7.1.1:
     dependencies:
       to-regex-range: 5.0.1
     optional: true
-
-  format@0.2.2: {}
 
   fs.realpath@1.0.0:
     optional: true
@@ -2105,6 +2048,15 @@ snapshots:
   graceful-fs@4.2.11:
     optional: true
 
+  hast-util-from-html@2.0.3:
+    dependencies:
+      '@types/hast': 3.0.4
+      devlop: 1.1.0
+      hast-util-from-parse5: 8.0.3
+      parse5: 7.2.1
+      vfile: 6.0.3
+      vfile-message: 4.0.2
+
   hast-util-from-parse5@8.0.3:
     dependencies:
       '@types/hast': 3.0.4
@@ -2116,7 +2068,9 @@ snapshots:
       vfile-location: 5.0.3
       web-namespaces: 2.0.1
 
-  hast-util-parse-selector@2.2.5: {}
+  hast-util-parse-selector@3.1.1:
+    dependencies:
+      '@types/hast': 2.3.10
 
   hast-util-parse-selector@4.0.0:
     dependencies:
@@ -2174,17 +2128,21 @@ snapshots:
       web-namespaces: 2.0.1
       zwitch: 2.0.4
 
+  hast-util-to-string@3.0.1:
+    dependencies:
+      '@types/hast': 3.0.4
+
   hast-util-whitespace@3.0.0:
     dependencies:
       '@types/hast': 3.0.4
 
-  hastscript@6.0.0:
+  hastscript@7.2.0:
     dependencies:
       '@types/hast': 2.3.10
-      comma-separated-tokens: 1.0.8
-      hast-util-parse-selector: 2.2.5
-      property-information: 5.6.0
-      space-separated-tokens: 1.1.5
+      comma-separated-tokens: 2.0.3
+      hast-util-parse-selector: 3.1.1
+      property-information: 6.5.0
+      space-separated-tokens: 2.0.2
 
   hastscript@9.0.1:
     dependencies:
@@ -2193,10 +2151,6 @@ snapshots:
       hast-util-parse-selector: 4.0.0
       property-information: 7.0.0
       space-separated-tokens: 2.0.2
-
-  highlight.js@10.7.3: {}
-
-  highlightjs-vue@1.0.0: {}
 
   html-url-attributes@3.0.1: {}
 
@@ -2224,21 +2178,12 @@ snapshots:
 
   inline-style-parser@0.2.4: {}
 
-  is-alphabetical@1.0.4: {}
-
   is-alphabetical@2.0.1: {}
-
-  is-alphanumerical@1.0.4:
-    dependencies:
-      is-alphabetical: 1.0.4
-      is-decimal: 1.0.4
 
   is-alphanumerical@2.0.1:
     dependencies:
       is-alphabetical: 2.0.1
       is-decimal: 2.0.1
-
-  is-decimal@1.0.4: {}
 
   is-decimal@2.0.1: {}
 
@@ -2249,8 +2194,6 @@ snapshots:
     dependencies:
       is-extglob: 2.1.1
     optional: true
-
-  is-hexadecimal@1.0.4: {}
 
   is-hexadecimal@2.0.1: {}
 
@@ -2329,11 +2272,6 @@ snapshots:
       lightningcss-win32-x64-msvc: 1.29.3
 
   longest-streak@3.1.0: {}
-
-  lowlight@1.20.0:
-    dependencies:
-      fault: 1.0.4
-      highlight.js: 10.7.3
 
   lru-cache@5.1.1:
     dependencies:
@@ -2601,15 +2539,6 @@ snapshots:
       wrappy: 1.0.2
     optional: true
 
-  parse-entities@2.0.0:
-    dependencies:
-      character-entities: 1.2.4
-      character-entities-legacy: 1.1.4
-      character-reference-invalid: 1.1.4
-      is-alphanumerical: 1.0.4
-      is-decimal: 1.0.4
-      is-hexadecimal: 1.0.4
-
   parse-entities@4.0.2:
     dependencies:
       '@types/unist': 2.0.11
@@ -2622,6 +2551,8 @@ snapshots:
 
   parse-node-version@1.0.1:
     optional: true
+
+  parse-numeric-range@1.3.0: {}
 
   parse5@7.2.1:
     dependencies:
@@ -2643,14 +2574,6 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
-
-  prismjs@1.27.0: {}
-
-  prismjs@1.30.0: {}
-
-  property-information@5.6.0:
-    dependencies:
-      xtend: 4.0.2
 
   property-information@6.5.0: {}
 
@@ -2707,28 +2630,34 @@ snapshots:
     optionalDependencies:
       react-dom: 19.0.0(react@19.0.0)
 
-  react-syntax-highlighter@15.6.1(react@19.0.0):
-    dependencies:
-      '@babel/runtime': 7.26.10
-      highlight.js: 10.7.3
-      highlightjs-vue: 1.0.0
-      lowlight: 1.20.0
-      prismjs: 1.30.0
-      react: 19.0.0
-      refractor: 3.6.0
-
   react@19.0.0: {}
 
   readdirp@4.1.2:
     optional: true
 
-  refractor@3.6.0:
+  refractor@4.9.0:
     dependencies:
-      hastscript: 6.0.0
-      parse-entities: 2.0.0
-      prismjs: 1.27.0
+      '@types/hast': 2.3.10
+      '@types/prismjs': 1.26.5
+      hastscript: 7.2.0
+      parse-entities: 4.0.2
 
   regenerator-runtime@0.14.1: {}
+
+  rehype-parse@9.0.1:
+    dependencies:
+      '@types/hast': 3.0.4
+      hast-util-from-html: 2.0.3
+      unified: 11.0.5
+
+  rehype-prism-plus@2.0.0:
+    dependencies:
+      hast-util-to-string: 3.0.1
+      parse-numeric-range: 1.3.0
+      refractor: 4.9.0
+      rehype-parse: 9.0.1
+      unist-util-filter: 5.0.1
+      unist-util-visit: 5.0.0
 
   rehype-raw@7.0.0:
     dependencies:
@@ -2818,8 +2747,6 @@ snapshots:
   source-map@0.7.4:
     optional: true
 
-  space-separated-tokens@1.1.5: {}
-
   space-separated-tokens@2.0.2: {}
 
   stringify-entities@4.0.4:
@@ -2871,6 +2798,12 @@ snapshots:
       is-plain-obj: 4.1.0
       trough: 2.2.0
       vfile: 6.0.3
+
+  unist-util-filter@5.0.1:
+    dependencies:
+      '@types/unist': 3.0.3
+      unist-util-is: 6.0.0
+      unist-util-visit-parents: 6.0.1
 
   unist-util-is@6.0.0:
     dependencies:
@@ -2936,8 +2869,6 @@ snapshots:
 
   wrappy@1.0.2:
     optional: true
-
-  xtend@4.0.2: {}
 
   yallist@3.1.1: {}
 
