@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import React, { DependencyList, ReactNode, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { Thread } from "../../types/interfaces";
 import style from "../PrViewer.module.css" with { type: "css" };
 import { ThreadComment } from "./ThreadComment";
@@ -21,6 +22,8 @@ interface ThreadContainerProps {
 }
 
 export const ThreadContainer: React.FC<ThreadContainerProps> = ({ thread }) => {
+    const navigate = useNavigate();
+    const { prNumber } = useParams<{ prNumber: string }>();
     let filePath = "";
     let lineRange = "";
 
@@ -42,6 +45,19 @@ export const ThreadContainer: React.FC<ThreadContainerProps> = ({ thread }) => {
             }
         }
     }
+
+    const navigateToFileView = () => {
+        if (filePath && prNumber) {
+            // Store the file path and line range in sessionStorage to retrieve later
+            // remove the leading '/' because Files page doesn't use it for git2 compatibility reasons
+            sessionStorage.setItem("scrollToFile", filePath.slice(1));
+            if (lineRange) {
+                sessionStorage.setItem("scrollToLineRange", lineRange);
+            }
+            // Navigate to changes view
+            navigate(`/pr/${prNumber}/changes`);
+        }
+    };
 
     const diffFileContent = useAsyncMemo(async () => {
         if (
@@ -78,7 +94,11 @@ export const ThreadContainer: React.FC<ThreadContainerProps> = ({ thread }) => {
             <div className={style["thread-header"]}>
                 <div>
                     {filePath ? (
-                        <span className={style["file-path"]}>
+                        <span
+                            className={`${style["file-path"]} ${style["file-path-clickable"]}`}
+                            onClick={navigateToFileView}
+                            title="Click to view this file in the Changes tab"
+                        >
                             {filePath}
                             {lineRange && (
                                 <span className={style["line-range"]}>

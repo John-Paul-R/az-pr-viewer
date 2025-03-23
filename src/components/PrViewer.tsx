@@ -1,4 +1,5 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
+import { useNavigate, useParams, useLocation, Link, Outlet } from "react-router-dom";
 import { PrData } from "../types/interfaces";
 import {
     PrHeader,
@@ -19,9 +20,11 @@ interface PrViewerProps {
 }
 
 const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
-    const [activeTab, setActiveTab] = useState<"overview" | "changes">(
-        "overview",
-    );
+    const location = useLocation();
+    const { pathname } = location;
+    const activeTab = pathname.includes("/changes") ? "changes" : "overview";
+    const navigate = useNavigate();
+    const { prNumber } = useParams<{ prNumber: string }>();
 
     if (!prData) {
         return (
@@ -55,28 +58,26 @@ const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
                     />
 
                     <div className={style["pr-tabs"]}>
-                        <button
-                            type="button"
+                        <Link
+                            to={`/pr/${prNumber}/overview`}
                             className={`${style["tab-button"]} ${
                                 activeTab === "overview"
                                     ? style["active-tab"]
                                     : ""
                             }`}
-                            onClick={() => setActiveTab("overview")}
                         >
                             Overview
-                        </button>
-                        <button
-                            type="button"
+                        </Link>
+                        <Link
+                            to={`/pr/${prNumber}/changes`}
                             className={`${style["tab-button"]} ${
                                 activeTab === "changes"
                                     ? style["active-tab"]
                                     : ""
                             }`}
-                            onClick={() => setActiveTab("changes")}
                         >
                             Changes
-                        </button>
+                        </Link>
                     </div>
 
                     {activeTab === "overview" && (

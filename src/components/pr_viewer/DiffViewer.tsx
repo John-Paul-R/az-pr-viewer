@@ -286,14 +286,37 @@ const FileView = memo(
         fileIndex,
         isExpanded,
         onToggle,
+        isTargetFile,
     }: {
         file: FileDiff;
         fileIndex: number;
         isExpanded: boolean;
         onToggle: () => void;
+        isTargetFile: boolean;
     }) => {
+        const fileRef = React.useRef<HTMLDivElement>(null);
+
+        // Scroll to this file if it's the target file
+        useEffect(() => {
+            if (isTargetFile && fileRef.current) {
+                // Use a small timeout to ensure the file is expanded before scrolling
+                setTimeout(() => {
+                    fileRef.current?.scrollIntoView({
+                        behavior: "smooth",
+                        block: "start",
+                    });
+                }, 100);
+            }
+        }, [isTargetFile, isExpanded]);
+
         return (
-            <div key={`file-${fileIndex}`} className={style["diff-file"]}>
+            <div
+                ref={fileRef}
+                key={`file-${fileIndex}`}
+                className={`${style["diff-file"]} ${
+                    isTargetFile ? style["diff-file-highlight"] : ""
+                }`}
+            >
                 <FileHeader
                     file={file}
                     isExpanded={isExpanded}
@@ -316,6 +339,26 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
     const [expandedFiles, setExpandedFiles] = useState<Record<string, boolean>>(
         {},
     );
+    const [fileToScrollTo, setFileToScrollTo] = useState<string | null>(null);
+    const [lineRange, setLineRange] = useState<string | null>(null);
+
+    // Check for file to scroll to from sessionStorage
+    useEffect(() => {
+        const scrollToFile = sessionStorage.getItem("scrollToFile");
+        if (scrollToFile) {
+            setFileToScrollTo(scrollToFile);
+
+            const scrollToLineRange =
+                sessionStorage.getItem("scrollToLineRange");
+            if (scrollToLineRange) {
+                setLineRange(scrollToLineRange);
+            }
+
+            // Clear sessionStorage after retrieving values
+            sessionStorage.removeItem("scrollToFile");
+            sessionStorage.removeItem("scrollToLineRange");
+        }
+    }, []);
 
     useEffect(() => {
         const fetchDiff = async () => {
@@ -338,7 +381,14 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
                 const initialExpandedState: Record<string, boolean> = {};
                 console.log(diff);
                 diff.files.forEach((file) => {
-                    initialExpandedState[file.new_file] = true;
+                    // Auto-expand the file to scroll to, or all files if none specified
+                    const isTargetFile =
+                        fileToScrollTo &&
+                        (file.new_file === fileToScrollTo ||
+                            file.old_file === fileToScrollTo);
+
+                    initialExpandedState[file.new_file] =
+                        isTargetFile || fileToScrollTo === null;
                 });
                 setExpandedFiles(initialExpandedState);
             } catch (err) {
@@ -350,7 +400,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
         };
 
         fetchDiff();
-    }, [sourceBranch, targetBranch, filePattern]);
+    }, [sourceBranch, targetBranch, filePattern, fileToScrollTo]);
 
     const toggleFileExpansion = (fileName: string) => {
         setExpandedFiles((prev) => ({
@@ -392,15 +442,23 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
                 {metadata}
             </div>
             <div className={style["diff-container"]}>
-                {treeDiff.files.map((file, fileIndex) => (
-                    <FileView
-                        key={file.new_file || file.old_file}
-                        file={file}
-                        fileIndex={fileIndex}
-                        isExpanded={expandedFiles[file.new_file]}
-                        onToggle={() => toggleFileExpansion(file.new_file)}
-                    />
-                ))}
+                {treeDiff.files.map((file, fileIndex) => {
+                    const isTargetFile =
+                        fileToScrollTo &&
+                        (file.new_file === fileToScrollTo ||
+                            file.old_file === fileToScrollTo);
+
+                    return (
+                        <FileView
+                            key={file.new_file || file.old_file}
+                            file={file}
+                            fileIndex={fileIndex}
+                            isExpanded={expandedFiles[file.new_file]}
+                            onToggle={() => toggleFileExpansion(file.new_file)}
+                            isTargetFile={!!isTargetFile}
+                        />
+                    );
+                })}
             </div>
         </div>
     );

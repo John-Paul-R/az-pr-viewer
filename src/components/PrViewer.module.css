@@ -562,6 +562,17 @@ p, ul {
     display: inline-block;
 }
 
+.file-path-clickable {
+    cursor: pointer;
+    text-decoration: underline;
+    color: var(--link-color, #3e79b4);
+}
+
+.file-path-clickable:hover {
+    color: var(--link-hover-color, #2a5680);
+    background-color: var(--selected-color);
+}
+
 .line-range {
     background-color: var(--line-range-bg, #e0e0e0);
     margin-left: 6px;
@@ -611,6 +622,12 @@ p, ul {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.diff-file-highlight {
+    border: 1px solid var(--primary-color, #0078d4);
+    box-shadow: 0 0 8px rgba(0, 120, 212, 0.3);
 }
 
 .diff-file-header {

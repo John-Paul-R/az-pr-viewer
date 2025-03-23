@@ -1,5 +1,11 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import {
+    useParams,
+    useNavigate,
+    Routes,
+    Route,
+    Outlet,
+} from "react-router-dom";
 import { invoke } from "@tauri-apps/api/core";
 import { PrData } from "../types/interfaces";
 import PrViewer from "./PrViewer";
@@ -75,6 +81,18 @@ function PrDetails() {
         }
     }, [prNumber, indexData]);
 
+    // Redirect to overview tab if accessed directly at /pr/:prNumber
+    useEffect(() => {
+        if (
+            !loading &&
+            !error &&
+            prData &&
+            window.location.pathname === `/pr/${prNumber}`
+        ) {
+            navigate(`/pr/${prNumber}/overview`, { replace: true });
+        }
+    }, [loading, error, prData, navigate, prNumber]);
+
     function goBack() {
         navigate("/");
     }
@@ -99,7 +117,22 @@ function PrDetails() {
         );
     }
 
-    return <PrViewer prData={prData} onBack={goBack} />;
+    return (
+        <Routes>
+            <Route
+                path="*"
+                element={<PrViewer prData={prData} onBack={goBack} />}
+            />
+            <Route
+                path="overview"
+                element={<PrViewer prData={prData} onBack={goBack} />}
+            />
+            <Route
+                path="changes"
+                element={<PrViewer prData={prData} onBack={goBack} />}
+            />
+        </Routes>
+    );
 }
 
 export default PrDetails;
