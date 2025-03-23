@@ -122,114 +122,199 @@ interface DiffViewerProps {
 }
 
 // Renders a file's diff content as a grid for better text selection
-const FileContentGrid = memo(({ lines }: { lines: DiffLine[] }) => {
-    // Create a map of line types for all rows in one pass
-    const diffTypes = lines.map((line) => {
-        switch (line.origin) {
-            case "+":
-                return "add";
-            case "-":
-                return "remove";
-            case " ":
-                return "unchanged";
-            default:
-                return "metadata"; // For any other origin character (hunk headers etc.)
-        }
-    });
-
-    const { codeHunks, idxUnexpectedLineCount } = createCodeHunks(
+const FileContentGrid = memo(
+    ({
         lines,
-        diffTypes,
-    );
-    const codeText = codeHunks.flatMap((h) => h.text).join("\n");
+        highlightLineRange,
+        isTargetFile,
+    }: {
+        lines: DiffLine[];
+        highlightLineRange?: { start: number; end: number } | null;
+        isTargetFile: boolean;
+    }) => {
+        // Create a ref for the first highlighted line
+        const highlightedLineRef = React.useRef<HTMLDivElement>(null);
+        const hasScrolledToLine = React.useRef<boolean>(false);
 
-    console.log(codeHunks);
+        // Create a map of line types for all rows in one pass
+        const diffTypes = lines.map((line) => {
+            switch (line.origin) {
+                case "+":
+                    return "add";
+                case "-":
+                    return "remove";
+                case " ":
+                    return "unchanged";
+                default:
+                    return "metadata"; // For any other origin character (hunk headers etc.)
+            }
+        });
 
-    /**
-     * the content lines received from the backend, but expanding 'lines' (like
-     * git metadata) that have `\n` characters to multiple lines for rendering.
-     */
-    const filledOutLines = lines.flatMap((line, i) =>
-        Array(1 + (idxUnexpectedLineCount.get(i) || 0)).fill(line),
-    );
+        const { codeHunks, idxUnexpectedLineCount } = createCodeHunks(
+            lines,
+            diffTypes,
+        );
+        const codeText = codeHunks.flatMap((h) => h.text).join("\n");
 
-    return (
-        <div className={diffstyle.diffGrid}>
-            {/* Separate gutter column for old line numbers */}
-            <div className={diffstyle.gutterColumn}>
-                {filledOutLines.map((line, i) => (
-                    <div
-                        key={`old-${i}`}
-                        className={diffstyle.gutterLine}
-                        data-diff-type={
-                            findCodeHunkByLineNumber(i, codeHunks)?.type
-                        }
-                    >
-                        {line.old_lineno !== null ? line.old_lineno : " "}
-                    </div>
-                ))}
+        /**
+         * the content lines received from the backend, but expanding 'lines' (like
+         * git metadata) that have `\n` characters to multiple lines for rendering.
+         */
+        const filledOutLines = lines.flatMap((line, i) =>
+            Array(1 + (idxUnexpectedLineCount.get(i) || 0)).fill(line),
+        );
+
+        // Function to determine if a line should be highlighted
+        const shouldHighlightLine = (lineNumber: number | null) => {
+            if (!highlightLineRange || lineNumber === null) return false;
+            return (
+                lineNumber >= highlightLineRange.start &&
+                lineNumber <= highlightLineRange.end
+            );
+        };
+
+        // Effect to scroll to the first highlighted line
+        useEffect(() => {
+            if (
+                isTargetFile &&
+                highlightLineRange &&
+                highlightedLineRef.current &&
+                !hasScrolledToLine.current
+            ) {
+                // Delay to ensure rendering is complete
+                setTimeout(() => {
+                    if (highlightedLineRef.current) {
+                        highlightedLineRef.current.scrollIntoView({
+                            behavior: "smooth",
+                            block: "center",
+                        });
+                        hasScrolledToLine.current = true;
+                    }
+                }, 150);
+            }
+        }, [isTargetFile, highlightLineRange]);
+
+        return (
+            <div className={diffstyle.diffGrid}>
+                {/* Separate gutter column for old line numbers */}
+                <div className={diffstyle.gutterColumn}>
+                    {filledOutLines.map((line, i) => (
+                        <div
+                            key={`old-${i}`}
+                            className={`${diffstyle.gutterLine} ${
+                                shouldHighlightLine(line.old_lineno)
+                                    ? diffstyle.highlightedLine
+                                    : ""
+                            }`}
+                            data-diff-type={
+                                findCodeHunkByLineNumber(i, codeHunks)?.type
+                            }
+                        >
+                            {line.old_lineno !== null ? line.old_lineno : " "}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Separate gutter column for new line numbers */}
+                <div className={diffstyle.gutterColumn}>
+                    {filledOutLines.map((line, i) => (
+                        <div
+                            key={`new-${i}`}
+                            className={`${diffstyle.gutterLine} ${
+                                shouldHighlightLine(line.new_lineno)
+                                    ? diffstyle.highlightedLine
+                                    : ""
+                            }`}
+                            data-diff-type={
+                                findCodeHunkByLineNumber(i, codeHunks)?.type
+                            }
+                        >
+                            {line.new_lineno !== null ? line.new_lineno : " "}
+                        </div>
+                    ))}
+                </div>
+
+                {/* Content column with full text content */}
+                {/* <div className={diffstyle.contentColumn}> */}
+                <Highlight
+                    theme={themes.nightOwlLight}
+                    code={codeText}
+                    language="tsx"
+                >
+                    {({
+                        className,
+                        style,
+                        tokens,
+                        getLineProps,
+                        getTokenProps,
+                    }) => (
+                        <div
+                            style={style}
+                            className={`${className} ${diffstyle.contentColumn}`}
+                        >
+                            {tokens.map((line, i) => {
+                                // Check if this is a line that should be highlighted
+                                const isHighlighted = shouldHighlightLine(
+                                    filledOutLines[i]?.new_lineno,
+                                );
+
+                                // Check if this is the first highlighted line
+                                const isFirstHighlightedLine =
+                                    isHighlighted &&
+                                    filledOutLines[i]?.new_lineno ===
+                                        highlightLineRange?.start;
+
+                                return (
+                                    <div
+                                        key={i}
+                                        ref={
+                                            isFirstHighlightedLine
+                                                ? highlightedLineRef
+                                                : null
+                                        }
+                                        {...getLineProps({ line })}
+                                        className={`${diffstyle.contentLine} ${
+                                            isHighlighted
+                                                ? diffstyle.highlightedLine
+                                                : ""
+                                        }`}
+                                        data-diff-type={
+                                            findCodeHunkByLineNumber(
+                                                i,
+                                                codeHunks,
+                                            )?.type
+                                        }
+                                    >
+                                        {line.map((token, key) => (
+                                            <span
+                                                key={key}
+                                                {...getTokenProps({ token })}
+                                            />
+                                        ))}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                </Highlight>
             </div>
-
-            {/* Separate gutter column for new line numbers */}
-            <div className={diffstyle.gutterColumn}>
-                {filledOutLines.map((line, i) => (
-                    <div
-                        key={`new-${i}`}
-                        className={diffstyle.gutterLine}
-                        data-diff-type={
-                            findCodeHunkByLineNumber(i, codeHunks)?.type
-                        }
-                    >
-                        {line.new_lineno !== null ? line.new_lineno : " "}
-                    </div>
-                ))}
-            </div>
-
-            {/* Content column with full text content */}
-            {/* <div className={diffstyle.contentColumn}> */}
-            <Highlight
-                theme={themes.nightOwlLight}
-                code={codeText}
-                language="tsx"
-            >
-                {({
-                    className,
-                    style,
-                    tokens,
-                    getLineProps,
-                    getTokenProps,
-                }) => (
-                    <div
-                        style={style}
-                        className={`${className} ${diffstyle.contentColumn}`}
-                    >
-                        {tokens.map((line, i) => (
-                            <div
-                                key={i}
-                                {...getLineProps({ line })}
-                                className={diffstyle.contentLine}
-                                data-diff-type={
-                                    findCodeHunkByLineNumber(i, codeHunks)?.type
-                                }
-                            >
-                                {line.map((token, key) => (
-                                    <span
-                                        key={key}
-                                        {...getTokenProps({ token })}
-                                    />
-                                ))}
-                            </div>
-                        ))}
-                    </div>
-                )}
-            </Highlight>
-        </div>
-    );
-});
+        );
+    },
+);
 
 // Memoized file content component
 const FileContent = memo(
-    ({ file, isExpanded }: { file: FileDiff; isExpanded: boolean }) => {
+    ({
+        file,
+        isExpanded,
+        highlightLineRange,
+        isTargetFile,
+    }: {
+        file: FileDiff;
+        isExpanded: boolean;
+        highlightLineRange?: { start: number; end: number } | null;
+        isTargetFile: boolean;
+    }) => {
         if (!isExpanded) return null;
 
         return (
@@ -239,7 +324,11 @@ const FileContent = memo(
                         Binary file not shown
                     </div>
                 ) : (
-                    <FileContentGrid lines={file.lines} />
+                    <FileContentGrid
+                        lines={file.lines}
+                        highlightLineRange={highlightLineRange}
+                        isTargetFile={isTargetFile}
+                    />
                 )}
             </div>
         );
@@ -287,16 +376,19 @@ const FileView = memo(
         isExpanded,
         onToggle,
         isTargetFile,
+        highlightLineRange,
     }: {
         file: FileDiff;
         fileIndex: number;
         isExpanded: boolean;
         onToggle: () => void;
         isTargetFile: boolean;
+        highlightLineRange?: { start: number; end: number } | null;
     }) => {
         const fileRef = React.useRef<HTMLDivElement>(null);
 
         // Scroll to this file if it's the target file
+        // The specific line scrolling is handled by the FileContentGrid
         useEffect(() => {
             if (isTargetFile && fileRef.current) {
                 // Use a small timeout to ensure the file is expanded before scrolling
@@ -322,7 +414,12 @@ const FileView = memo(
                     isExpanded={isExpanded}
                     onToggle={onToggle}
                 />
-                <FileContent file={file} isExpanded={isExpanded} />
+                <FileContent
+                    file={file}
+                    isExpanded={isExpanded}
+                    highlightLineRange={highlightLineRange}
+                    isTargetFile={isTargetFile}
+                />
             </div>
         );
     },
@@ -341,6 +438,10 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
     );
     const [fileToScrollTo, setFileToScrollTo] = useState<string | null>(null);
     const [lineRange, setLineRange] = useState<string | null>(null);
+    const [parsedLineRange, setParsedLineRange] = useState<{
+        start: number;
+        end: number;
+    } | null>(null);
 
     // Check for file to scroll to from sessionStorage
     useEffect(() => {
@@ -352,6 +453,27 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
                 sessionStorage.getItem("scrollToLineRange");
             if (scrollToLineRange) {
                 setLineRange(scrollToLineRange);
+
+                // Parse the line range string to get start and end line numbers
+                const lineMatch =
+                    scrollToLineRange.match(/Line (\d+)/) ||
+                    scrollToLineRange.match(/Lines (\d+)-(\d+)/);
+
+                if (lineMatch) {
+                    if (lineMatch.length === 2) {
+                        // Single line format: "Line X"
+                        const lineNumber = parseInt(lineMatch[1], 10);
+                        setParsedLineRange({
+                            start: lineNumber,
+                            end: lineNumber,
+                        });
+                    } else if (lineMatch.length === 3) {
+                        // Range format: "Lines X-Y"
+                        const startLine = parseInt(lineMatch[1], 10);
+                        const endLine = parseInt(lineMatch[2], 10);
+                        setParsedLineRange({ start: startLine, end: endLine });
+                    }
+                }
             }
 
             // Clear sessionStorage after retrieving values
@@ -456,6 +578,9 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
                             isExpanded={expandedFiles[file.new_file]}
                             onToggle={() => toggleFileExpansion(file.new_file)}
                             isTargetFile={!!isTargetFile}
+                            highlightLineRange={
+                                isTargetFile ? parsedLineRange : null
+                            }
                         />
                     );
                 })}

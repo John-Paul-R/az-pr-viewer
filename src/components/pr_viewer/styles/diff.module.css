@@ -45,6 +45,15 @@
     contain: content;
 }
 
+/* Highlighted line styles */
+.highlightedLine {
+    background-color: var(--highlight-color, rgba(255, 204, 0, 0.2)) !important;
+    position: relative;
+    border-left: 3px solid var(--highlight-border-color, #ffcc00);
+    z-index: 1;
+    box-shadow: 0 0 3px rgba(255, 204, 0, 0.4);
+}
+
 /* Apply diff styles using data attributes (more efficient) */
 .gutterLine[data-diff-type="add"],
 .contentLine[data-diff-type="add"],
