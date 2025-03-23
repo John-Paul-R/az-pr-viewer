@@ -62,3 +62,13 @@
   background: linear-gradient(to bottom right, #0078d4, #50e6ff);
   border: 1px solid #0078d4;
 }
+
+.catppuccin-pink-icon {
+  background: linear-gradient(to bottom right, #f5bde6, #c6a0f6);
+  border: 1px solid #f5bde6;
+}
+
+.catppuccin-pink-dark-icon {
+  background: linear-gradient(to bottom right, #f5bde6, #1e1e2e);
+  border: 1px solid #f5bde6;
+}

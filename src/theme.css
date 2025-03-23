@@ -129,3 +129,92 @@
   --input-bg: white;
   --input-border: #d2d0ce;
 }
+
+/* Catppuccin Pink theme */
+[data-theme="catppuccin-pink"] {
+  /* Base colors from Catppuccin with pink accent */
+  --primary-color: #f5bde6;     /* Pink */
+  --secondary-color: #c6a0f6;   /* Mauve */
+  --link-hover-color: #f8bd96;  /* Peach */
+  --background-color: #eff1f5;  /* Latte base */
+  --card-background: #ffffff;   /* White */
+  --border-color: #dce0e8;      /* Latte surface0 */
+  --text-color: #4c4f69;        /* Latte text */
+  --text-secondary: #6c6f85;    /* Latte subtext0 */
+  --success-color: #a6da95;     /* Green */
+  --success-color-light: #eff5ed;
+  --success-color-alt: #94e2d5; /* Teal */
+  --warning-color: #f8bd96;     /* Peach */
+  --error-color: #ed8796;       /* Red */
+  --error-color-light: #fef2f4; 
+  --error-color-alt: #f4b8c2;   /* Light red */
+  --active-color: #f5bde6;      /* Pink */
+  --active-color-alt: #f9d4ed;  /* Light pink */
+  --active-color-light: #fdeef8;
+  --comment-bg: #e6e9ef;        /* Lighter than base */
+  --hover-color: #e6e9ef;       /* Lighter than base */
+  --selected-color: #f9d4ed;    /* Light pink */
+  --line-range-bg: #e6e9ef;     /* Lighter than base */
+
+  /* Badge colors */
+  --vote-10-bg: #eff5ed;        /* Light green */
+  --vote-5-bg: #a6da95;         /* Green */
+  --vote-5-text: #4c4f69;       /* Latte text */
+  --vote-neg5-bg: #f8decd;      /* Light peach */
+  --vote-neg5-text: #7c5f4a;    /* Dark peach */
+  --vote-neg10-text: #4c4f69;   /* Latte text */
+  --status-active-bg: #f9d4ed;  /* Light pink */
+  --status-completed-bg: #eff5ed; /* Light green */
+  --status-abandoned-bg: #fef2f4; /* Light red */
+
+  /* Common elements */
+  --button-text: #181926;       /* Macchiato crust - dark for contrast */
+  --button-bg: var(--primary-color);
+  --button-hover: var(--secondary-color);
+  --input-bg: white;
+  --input-border: #dce0e8;      /* Latte surface0 */
+}
+
+/* Catppuccin Pink Dark theme */
+[data-theme="catppuccin-pink-dark"] {
+  /* Base colors from Catppuccin with pink accent dark mode */
+  --primary-color: #f5bde6;     /* Pink */
+  --secondary-color: #c6a0f6;   /* Mauve */
+  --link-hover-color: #f8bd96;  /* Peach */
+  --background-color: #1e1e2e;  /* Mocha base */
+  --card-background: #24273a;   /* Macchiato base */
+  --border-color: #363a4f;      /* Macchiato surface0 */
+  --text-color: #cad3f5;        /* Macchiato text */
+  --text-secondary: #a5adcb;    /* Macchiato subtext0 */
+  --success-color: #a6da95;     /* Green */
+  --success-color-light: #1a2812; /* Dark green */
+  --success-color-alt: #8bd5ca; /* Teal */
+  --warning-color: #f8bd96;     /* Peach */
+  --error-color: #ed8796;       /* Red */
+  --error-color-light: #2a161a; /* Dark red */
+  --error-color-alt: #ee99a0;   /* Light red */
+  --active-color: #f5bde6;      /* Pink */
+  --active-color-alt: #352c3a;  /* Dark pink */
+  --comment-bg: #292c3c;        /* Slightly lighter than base */
+  --hover-color: #292c3c;       /* Slightly lighter than base */
+  --selected-color: #352c3a;    /* Dark pink */
+  --line-range-bg: #292c3c;     /* Slightly lighter than base */
+
+  /* Badge colors */
+  --vote-10-bg: #1a2812;        /* Dark green */
+  --vote-5-bg: #81c19b;         /* Green */
+  --vote-5-text: #cad3f5;       /* Macchiato text */
+  --vote-neg5-bg: #332620;      /* Dark peach */
+  --vote-neg5-text: #f8bd96;    /* Peach */
+  --vote-neg10-text: #cad3f5;   /* Macchiato text */
+  --status-active-bg: #352c3a;  /* Dark pink */
+  --status-completed-bg: #1a2812; /* Dark green */
+  --status-abandoned-bg: #2a161a; /* Dark red */
+
+  /* Common elements */
+  --button-text: #181926;       /* Macchiato crust - dark for contrast with pink */
+  --button-bg: var(--primary-color);
+  --button-hover: var(--secondary-color);
+  --input-bg: #363a4f;          /* Macchiato surface0 */
+  --input-border: #494d64;      /* Macchiato surface1 */
+}

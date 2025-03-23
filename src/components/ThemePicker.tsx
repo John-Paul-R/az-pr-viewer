@@ -57,6 +57,24 @@ const ThemePicker: React.FC<ThemePickerProps> = ({
                 >
                     <span className="theme-icon azure-icon"></span>
                 </button>
+                <button
+                    className={`theme-button ${
+                        currentTheme === "catppuccin-pink" ? "active" : ""
+                    }`}
+                    onClick={() => handleThemeChange("catppuccin-pink")}
+                    title="Catppuccin Pink Theme"
+                >
+                    <span className="theme-icon catppuccin-pink-icon"></span>
+                </button>
+                <button
+                    className={`theme-button ${
+                        currentTheme === "catppuccin-pink-dark" ? "active" : ""
+                    }`}
+                    onClick={() => handleThemeChange("catppuccin-pink-dark")}
+                    title="Catppuccin Pink Dark Theme"
+                >
+                    <span className="theme-icon catppuccin-pink-dark-icon"></span>
+                </button>
             </div>
         </div>
     );
