@@ -74,14 +74,14 @@ function FileViewer({ files }: FileViewerProps) {
                     return (
                         <Link
                             to={`/pr/${file.pr_number}`}
-                            key={file.path}
+                            key={file.archive_path}
                             className="file-row"
                             data-status={file.status || "unknown"}
                             onClick={() => handleFileClick(file)}
                         >
                             <div className="file-cell">
                                 {highlight(
-                                    file.pr_number,
+                                    file.pr_number.toString(),
                                     matchByKey.get("pr_number"),
                                 )}
                             </div>
