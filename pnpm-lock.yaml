@@ -24,23 +24,26 @@ importers:
         specifier: ^1.29.3
         version: 1.29.3
       react:
-        specifier: ^18.3.1
-        version: 18.3.1
+        specifier: ^19.0.0
+        version: 19.0.0
       react-dom:
-        specifier: ^18.3.1
-        version: 18.3.1(react@18.3.1)
+        specifier: ^19.0.0
+        version: 19.0.0(react@19.0.0)
       react-error-boundary:
         specifier: ^5.0.0
-        version: 5.0.0(react@18.3.1)
+        version: 5.0.0(react@19.0.0)
       react-markdown:
         specifier: ^10.1.0
-        version: 10.1.0(@types/react@18.3.19)(react@18.3.1)
+        version: 10.1.0(@types/react@19.0.12)(react@19.0.0)
+      react-markdown-autolink:
+        specifier: ^0.0.2
+        version: 0.0.2
       react-router-dom:
         specifier: ^7.4.0
-        version: 7.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 7.4.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react-syntax-highlighter:
         specifier: ^15.6.1
-        version: 15.6.1(react@18.3.1)
+        version: 15.6.1(react@19.0.0)
       rehype-raw:
         specifier: ^7.0.0
         version: 7.0.0
@@ -52,11 +55,11 @@ importers:
         specifier: ^2
         version: 2.4.0
       '@types/react':
-        specifier: ^18.3.1
-        version: 18.3.19
+        specifier: ^19.0.12
+        version: 19.0.12
       '@types/react-dom':
-        specifier: ^18.3.1
-        version: 18.3.5(@types/react@18.3.19)
+        specifier: ^19.0.4
+        version: 19.0.4(@types/react@19.0.12)
       '@types/react-syntax-highlighter':
         specifier: ^15.5.13
         version: 15.5.13
@@ -653,16 +656,19 @@ packages:
   '@types/prop-types@15.7.14':
     resolution: {integrity: sha1-FDNBnXOyp+v8aRjc79LsDVzWmPI=}
 
-  '@types/react-dom@18.3.5':
-    resolution: {integrity: sha1-Rfn4c5jF3OoIW3FcWN3PH69l9xY=}
+  '@types/react-dom@19.0.4':
+    resolution: {integrity: sha1-vtupf5NGvUwP5dOeaJcTgE7JrIk=}
     peerDependencies:
-      '@types/react': ^18.0.0
+      '@types/react': ^19.0.0
 
   '@types/react-syntax-highlighter@15.5.13':
     resolution: {integrity: sha1-xbr2KjIZs78o05z+pV0KSaJj0fI=}
 
   '@types/react@18.3.19':
     resolution: {integrity: sha1-K2oBMVybG2RKh5mn0z77AnFQJA8=}
+
+  '@types/react@19.0.12':
+    resolution: {integrity: sha1-M4s/eFStu3hL5FSzqDBTEnr5a9M=}
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha1-Ea9XsSfjJId3SEH3pOVOqxZtA8Q=}
@@ -1032,10 +1038,6 @@ packages:
   longest-streak@3.1.0:
     resolution: {integrity: sha1-YvpnzZWHQqFXSvnzmGY2QQLZDNQ=}
 
-  loose-envify@1.4.0:
-    resolution: {integrity: sha1-ce5R+nvkyuwaY4OffmgtgTLTDK8=}
-    hasBin: true
-
   lowlight@1.20.0:
     resolution: {integrity: sha1-3bGX0zRirQ2TvxnRe2wwGqOUGIg=}
 
@@ -1219,15 +1221,18 @@ packages:
   prr@1.0.1:
     resolution: {integrity: sha1-0/wRS6BplaRexok/SEzrHXj19HY=}
 
-  react-dom@18.3.1:
-    resolution: {integrity: sha1-wiZdeVEbV9R5s90/36UVNklMXLQ=}
+  react-dom@19.0.0:
+    resolution: {integrity: sha1-Q0RvHwHGWkzX91iAg+aGpnJs+1c=}
     peerDependencies:
-      react: ^18.3.1
+      react: ^19.0.0
 
   react-error-boundary@5.0.0:
     resolution: {integrity: sha1-a2x+B1ySKvsCgxR+WwhO+kTmhXA=}
     peerDependencies:
       react: '>=16.13.1'
+
+  react-markdown-autolink@0.0.2:
+    resolution: {integrity: sha1-1TsCvyIMhfPMX0IXCAMo1SH7JHE=}
 
   react-markdown@10.1.0:
     resolution: {integrity: sha1-4ivCD63bwHYFwVKEJVZTwPO61co=}
@@ -1261,8 +1266,8 @@ packages:
     peerDependencies:
       react: '>= 0.14.0'
 
-  react@18.3.1:
-    resolution: {integrity: sha1-SauJIAnFOTNiW9FrJTP8dUyrKJE=}
+  react@19.0.0:
+    resolution: {integrity: sha1-bhlpJRufEIhwqkv/N6DOnd+qq90=}
     engines: {node: '>=0.10.0'}
 
   readdirp@4.1.2:
@@ -1306,8 +1311,8 @@ packages:
   sax@1.4.1:
     resolution: {integrity: sha1-RMyJiDd/EmME07P8EBDHM7kp7w8=}
 
-  scheduler@0.23.2:
-    resolution: {integrity: sha1-QUumSjsoKJLpRM8hCOzAeNEVzcM=}
+  scheduler@0.25.0:
+    resolution: {integrity: sha1-M2zZdo6Mzuv1LTyA49z13iPn4BU=}
 
   semver@5.7.2:
     resolution: {integrity: sha1-SNVdtzfDKHzUg14X+hP+rOHEHvg=}
@@ -1911,9 +1916,9 @@ snapshots:
 
   '@types/prop-types@15.7.14': {}
 
-  '@types/react-dom@18.3.5(@types/react@18.3.19)':
+  '@types/react-dom@19.0.4(@types/react@19.0.12)':
     dependencies:
-      '@types/react': 18.3.19
+      '@types/react': 19.0.12
 
   '@types/react-syntax-highlighter@15.5.13':
     dependencies:
@@ -1922,6 +1927,10 @@ snapshots:
   '@types/react@18.3.19':
     dependencies:
       '@types/prop-types': 15.7.14
+      csstype: 3.1.3
+
+  '@types/react@19.0.12':
+    dependencies:
       csstype: 3.1.3
 
   '@types/unist@2.0.11': {}
@@ -2326,10 +2335,6 @@ snapshots:
 
   longest-streak@3.1.0: {}
 
-  loose-envify@1.4.0:
-    dependencies:
-      js-tokens: 4.0.0
-
   lowlight@1.20.0:
     dependencies:
       fault: 1.0.4
@@ -2659,27 +2664,28 @@ snapshots:
   prr@1.0.1:
     optional: true
 
-  react-dom@18.3.1(react@18.3.1):
+  react-dom@19.0.0(react@19.0.0):
     dependencies:
-      loose-envify: 1.4.0
-      react: 18.3.1
-      scheduler: 0.23.2
+      react: 19.0.0
+      scheduler: 0.25.0
 
-  react-error-boundary@5.0.0(react@18.3.1):
+  react-error-boundary@5.0.0(react@19.0.0):
     dependencies:
       '@babel/runtime': 7.26.10
-      react: 18.3.1
+      react: 19.0.0
 
-  react-markdown@10.1.0(@types/react@18.3.19)(react@18.3.1):
+  react-markdown-autolink@0.0.2: {}
+
+  react-markdown@10.1.0(@types/react@19.0.12)(react@19.0.0):
     dependencies:
       '@types/hast': 3.0.4
       '@types/mdast': 4.0.4
-      '@types/react': 18.3.19
+      '@types/react': 19.0.12
       devlop: 1.1.0
       hast-util-to-jsx-runtime: 2.3.6
       html-url-attributes: 3.0.1
       mdast-util-to-hast: 13.2.0
-      react: 18.3.1
+      react: 19.0.0
       remark-parse: 11.0.0
       remark-rehype: 11.1.1
       unified: 11.0.5
@@ -2690,35 +2696,33 @@ snapshots:
 
   react-refresh@0.14.2: {}
 
-  react-router-dom@7.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-router-dom@7.4.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
-      react: 18.3.1
-      react-dom: 18.3.1(react@18.3.1)
-      react-router: 7.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+      react-router: 7.4.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
 
-  react-router@7.4.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  react-router@7.4.0(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       '@types/cookie': 0.6.0
       cookie: 1.0.2
-      react: 18.3.1
+      react: 19.0.0
       set-cookie-parser: 2.7.1
       turbo-stream: 2.4.0
     optionalDependencies:
-      react-dom: 18.3.1(react@18.3.1)
+      react-dom: 19.0.0(react@19.0.0)
 
-  react-syntax-highlighter@15.6.1(react@18.3.1):
+  react-syntax-highlighter@15.6.1(react@19.0.0):
     dependencies:
       '@babel/runtime': 7.26.10
       highlight.js: 10.7.3
       highlightjs-vue: 1.0.0
       lowlight: 1.20.0
       prismjs: 1.30.0
-      react: 18.3.1
+      react: 19.0.0
       refractor: 3.6.0
 
-  react@18.3.1:
-    dependencies:
-      loose-envify: 1.4.0
+  react@19.0.0: {}
 
   readdirp@4.1.2:
     optional: true
@@ -2802,9 +2806,7 @@ snapshots:
   sax@1.4.1:
     optional: true
 
-  scheduler@0.23.2:
-    dependencies:
-      loose-envify: 1.4.0
+  scheduler@0.25.0: {}
 
   semver@5.7.2:
     optional: true
