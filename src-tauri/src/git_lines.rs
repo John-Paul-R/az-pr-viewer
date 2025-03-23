@@ -171,20 +171,6 @@ pub struct DiffLineInfo {
     pub origin: char,
 }
 
-/// Retrieves the diff for specific lines of a file between two Git revisions.
-///
-/// # Arguments
-///
-/// * `repo` - The Git repository
-/// * `file_path` - Path to the file within the repository
-/// * `from_revision` - Git revision for the "before" state
-/// * `to_revision` - Git revision for the "after" state
-/// * `line_range` - Range of lines to retrieve diff for (1-based, inclusive start, inclusive end)
-///
-/// # Returns
-///
-/// * `Result<Vec<DiffLineInfo>, GitFileError>` - The requested diff lines or an error
-///
 pub fn get_file_diff_between_revisions<'a>(
     repo: &'a Repository,
     file_path: &str,
@@ -222,7 +208,15 @@ pub fn get_file_diff_between_revisions<'a>(
 
     // Collect the diff lines
     let mut diff_lines = Vec::new();
-    let line_range_clone = line_range.clone();
+
+    // Precompute the extended range with context buffer
+    let context_buffer = 3;
+    let extended_start = if line_range.start > context_buffer {
+        line_range.start - context_buffer
+    } else {
+        1
+    };
+    let extended_end = line_range.end + context_buffer;
 
     // Use the diff.print callback to process each line
     diff.print(DiffFormat::Patch, |delta, hunk, line| {
@@ -235,17 +229,6 @@ pub fn get_file_diff_between_revisions<'a>(
             return true;
         }
 
-        // If we have a hunk, check if it overlaps with our requested line range
-        if let Some(ref hunk) = hunk {
-            let hunk_start = hunk.new_start() as usize;
-            let hunk_end = hunk_start + hunk.new_lines() as usize - 1;
-
-            // Skip hunks that don't overlap with our range
-            if hunk_end < line_range_clone.start || hunk_start > line_range_clone.end {
-                return true;
-            }
-        }
-
         // Extract line information
         let origin = line.origin();
         let content = match str::from_utf8(line.content()) {
@@ -256,46 +239,68 @@ pub fn get_file_diff_between_revisions<'a>(
         let old_lineno = line.old_lineno();
         let new_lineno = line.new_lineno();
 
-        // Only include lines that fall within our range or are part of the diff context
-        if let Some(new_line) = new_lineno {
-            if new_line as usize >= line_range_clone.start && new_line as usize <= line_range_clone.end {
-                diff_lines.push(DiffLineInfo {
-                    old_lineno,
-                    new_lineno,
-                    content,
-                    origin,
-                });
-            } else if origin == '-' && old_lineno.is_some() {
-                // Include deletion lines that would affect our range
-                let old_line = old_lineno.unwrap();
-                if old_line as usize >= line_range_clone.start && old_line as usize <= line_range_clone.end {
-                    diff_lines.push(DiffLineInfo {
-                        old_lineno,
-                        new_lineno,
-                        content,
-                        origin,
-                    });
+        // Determine whether to include this line based on type and position
+        let include = match origin {
+            // Special lines (headers, etc.) - always exclude
+            c if c != '+' && c != '-' && c != ' ' => {
+                false
+            },
+
+            // Added lines - include if they're in the extended range
+            '+' => {
+                if let Some(new_line) = new_lineno {
+                    let line_num = new_line as usize;
+                    line_num >= extended_start && line_num <= extended_end
+                } else {
+                    false
                 }
-            } else if hunk.is_some() {
-                // Include context lines near our range
-                diff_lines.push(DiffLineInfo {
-                    old_lineno,
-                    new_lineno,
-                    content,
-                    origin,
-                });
-            }
-        } else if origin == '-' && old_lineno.is_some() {
-            // Handle deleted lines
-            let old_line = old_lineno.unwrap();
-            if old_line as usize >= line_range_clone.start && old_line as usize <= line_range_clone.end {
-                diff_lines.push(DiffLineInfo {
-                    old_lineno,
-                    new_lineno,
-                    content,
-                    origin,
-                });
-            }
+            },
+
+            // Deleted lines - include if they affect our extended range
+            '-' => {
+                if let Some(old_line) = old_lineno {
+                    // For deletions, we need to be more careful. If a line was deleted
+                    // that would have been in our range, we should show it.
+                    // Use the context of the current hunk to determine this.
+                    if let Some(ref hunk) = hunk {
+                        let hunk_old_start = hunk.old_start() as usize;
+                        let hunk_old_end = hunk_old_start + hunk.old_lines() as usize - 1;
+                        let hunk_new_start = hunk.new_start() as usize;
+                        let hunk_new_end = hunk_new_start + hunk.new_lines() as usize - 1;
+
+                        // Include if the hunk overlaps with our extended range
+                        !(hunk_new_end < extended_start || hunk_new_start > extended_end)
+                    } else {
+                        // Without hunk information, use the old line number directly
+                        let line_num = old_line as usize;
+                        line_num >= extended_start && line_num <= extended_end
+                    }
+                } else {
+                    false
+                }
+            },
+
+            // Context lines - include if they're in the extended range
+            ' ' => {
+                if let Some(new_line) = new_lineno {
+                    let line_num = new_line as usize;
+                    line_num >= extended_start && line_num <= extended_end
+                } else {
+                    false
+                }
+            },
+
+            // Unknown line type - exclude
+            _ => false,
+        };
+
+        if include {
+            diff_lines.push(DiffLineInfo {
+                old_lineno,
+                new_lineno,
+                content,
+                origin,
+            });
         }
 
         true
@@ -304,18 +309,12 @@ pub fn get_file_diff_between_revisions<'a>(
     // If we didn't get any lines, check if the file exists in both revisions
     if diff_lines.is_empty() {
         // Check if the file exists in the from_revision
-        let from_tree_ref = from_tree.as_tree().ok_or_else(||
-            GitFileError::Generic(format!("Failed to get tree for revision: {}", from_revision)))?;
-
         match from_tree_ref.get_path(Path::new(file_path)) {
             Ok(_) => {}
             Err(_) => return Err(GitFileError::FileNotFound),
         }
 
         // Check if the file exists in the to_revision
-        let to_tree_ref = to_tree.as_tree().ok_or_else(||
-            GitFileError::Generic(format!("Failed to get tree for revision: {}", to_revision)))?;
-
         match to_tree_ref.get_path(Path::new(file_path)) {
             Ok(_) => {}
             Err(_) => return Err(GitFileError::FileNotFound),

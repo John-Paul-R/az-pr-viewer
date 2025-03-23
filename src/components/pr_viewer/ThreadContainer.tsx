@@ -56,10 +56,10 @@ export const ThreadContainer: React.FC<ThreadContainerProps> = ({ thread }) => {
                 filePath: thread.threadContext.filePath.slice(1),
                 fromRevision:
                     thread.pullRequestThreadContext?.firstIterationDetails
-                        .sourceCommit,
+                        .targetCommit,
                 toRevision:
                     thread.pullRequestThreadContext?.firstIterationDetails
-                        .targetCommit,
+                        .sourceCommit,
                 startLine: thread.threadContext.rightFileStart.line,
                 endLine: thread.threadContext.rightFileEnd.line,
             })) as string;
