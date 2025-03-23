@@ -142,30 +142,40 @@
   --text-color: #4c4f69;        /* Latte text */
   --text-secondary: #6c6f85;    /* Latte subtext0 */
   --success-color: #a6da95;     /* Green */
-  --success-color-light: #eff5ed;
-  --success-color-alt: #94e2d5; /* Teal */
+  --success-color-light: #eef8ee; /* Very light green for diffs */
+  --success-color-alt: #8bd5ca; /* Teal */
   --warning-color: #f8bd96;     /* Peach */
   --error-color: #ed8796;       /* Red */
-  --error-color-light: #fef2f4; 
+  --error-color-light: #fdf0f3; /* Very light red for diffs */
   --error-color-alt: #f4b8c2;   /* Light red */
   --active-color: #f5bde6;      /* Pink */
-  --active-color-alt: #f9d4ed;  /* Light pink */
+  --active-color-alt: #f4a6e2;  /* Darker pink for borders */
   --active-color-light: #fdeef8;
   --comment-bg: #e6e9ef;        /* Lighter than base */
   --hover-color: #e6e9ef;       /* Lighter than base */
   --selected-color: #f9d4ed;    /* Light pink */
   --line-range-bg: #e6e9ef;     /* Lighter than base */
+  
+  /* Diff specific colors */
+  --highlight-color: rgba(249, 226, 175, 0.3); /* Soft gold/amber highlight */
+  --highlight-border-color: #f8bd96; /* Peach/gold border */
+  --code-bg-color: #ffffff;     /* White code background */
+  --diff-add-bg: rgba(166, 218, 149, 0.12); /* Slightly more visible, desaturated green */
+  --diff-add-border: rgba(166, 218, 149, 0.6); /* More visible green border */
+  --diff-remove-bg: rgba(237, 135, 150, 0.12); /* Slightly more visible, desaturated red */
+  --diff-remove-border: rgba(237, 135, 150, 0.6); /* More visible red border */
+  --diff-meta-bg: rgba(220, 224, 232, 0.5); /* Subtle gray for meta lines */
 
   /* Badge colors */
-  --vote-10-bg: #eff5ed;        /* Light green */
+  --vote-10-bg: #dff3df;        /* Light green */
   --vote-5-bg: #a6da95;         /* Green */
-  --vote-5-text: #4c4f69;       /* Latte text */
+  --vote-5-text: #1a3a1a;       /* Dark green text */
   --vote-neg5-bg: #f8decd;      /* Light peach */
   --vote-neg5-text: #7c5f4a;    /* Dark peach */
-  --vote-neg10-text: #4c4f69;   /* Latte text */
+  --vote-neg10-text: #fff;      /* White text */
   --status-active-bg: #f9d4ed;  /* Light pink */
-  --status-completed-bg: #eff5ed; /* Light green */
-  --status-abandoned-bg: #fef2f4; /* Light red */
+  --status-completed-bg: #dff3df; /* Light green */
+  --status-abandoned-bg: #fdeaee; /* Light red */
 
   /* Common elements */
   --button-text: #181926;       /* Macchiato crust - dark for contrast */
@@ -187,29 +197,40 @@
   --text-color: #cad3f5;        /* Macchiato text */
   --text-secondary: #a5adcb;    /* Macchiato subtext0 */
   --success-color: #a6da95;     /* Green */
-  --success-color-light: #1a2812; /* Dark green */
+  --success-color-light: #1f2d1f; /* Soft dark green for diffs */
   --success-color-alt: #8bd5ca; /* Teal */
   --warning-color: #f8bd96;     /* Peach */
   --error-color: #ed8796;       /* Red */
-  --error-color-light: #2a161a; /* Dark red */
+  --error-color-light: #2d1e24; /* Soft dark red for diffs */
   --error-color-alt: #ee99a0;   /* Light red */
   --active-color: #f5bde6;      /* Pink */
-  --active-color-alt: #352c3a;  /* Dark pink */
+  --active-color-alt: #d387c6;  /* Darker pink for borders */
+  --active-color-light: #40334d; /* Dark pink bg for indicators */
   --comment-bg: #292c3c;        /* Slightly lighter than base */
   --hover-color: #292c3c;       /* Slightly lighter than base */
-  --selected-color: #352c3a;    /* Dark pink */
+  --selected-color: #3a2c41;    /* Dark pink */
   --line-range-bg: #292c3c;     /* Slightly lighter than base */
+  
+  /* Diff specific colors */
+  --highlight-color: rgba(249, 226, 175, 0.2); /* Soft gold/amber highlight */
+  --highlight-border-color: #f8bd96; /* Peach/gold border */
+  --code-bg-color: #24273a;     /* Macchiato base */
+  --diff-add-bg: rgba(166, 218, 149, 0.10); /* Slightly more visible, desaturated green */
+  --diff-add-border: rgba(166, 218, 149, 0.4); /* More visible green border */
+  --diff-remove-bg: rgba(237, 135, 150, 0.10); /* Slightly more visible, desaturated red */
+  --diff-remove-border: rgba(237, 135, 150, 0.4); /* More visible red border */
+  --diff-meta-bg: rgba(54, 58, 79, 0.6); /* Subtle darker meta lines */
 
   /* Badge colors */
-  --vote-10-bg: #1a2812;        /* Dark green */
-  --vote-5-bg: #81c19b;         /* Green */
-  --vote-5-text: #cad3f5;       /* Macchiato text */
-  --vote-neg5-bg: #332620;      /* Dark peach */
+  --vote-10-bg: #1d321d;        /* Dark green */
+  --vote-5-bg: #70b782;         /* Green */
+  --vote-5-text: #181926;       /* Dark text for contrast */
+  --vote-neg5-bg: #362a22;      /* Dark peach */
   --vote-neg5-text: #f8bd96;    /* Peach */
-  --vote-neg10-text: #cad3f5;   /* Macchiato text */
-  --status-active-bg: #352c3a;  /* Dark pink */
-  --status-completed-bg: #1a2812; /* Dark green */
-  --status-abandoned-bg: #2a161a; /* Dark red */
+  --vote-neg10-text: #eff1f5;   /* Light text - Latte base */
+  --status-active-bg: #3a2c41;  /* Dark pink */
+  --status-completed-bg: #1d321d; /* Dark green */
+  --status-abandoned-bg: #3b222b; /* Dark red - bit more saturated */
 
   /* Common elements */
   --button-text: #181926;       /* Macchiato crust - dark for contrast with pink */

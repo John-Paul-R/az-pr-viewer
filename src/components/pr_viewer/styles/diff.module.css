@@ -51,28 +51,33 @@
     position: relative;
     border-left: 3px solid var(--highlight-border-color, #ffcc00);
     z-index: 1;
-    box-shadow: 0 0 3px rgba(255, 204, 0, 0.4);
+    box-shadow: 0 0 3px rgba(249, 226, 175, 0.6);
+    transition: background-color 0.2s ease;
 }
 
 /* Apply diff styles using data attributes (more efficient) */
 .gutterLine[data-diff-type="add"],
 .contentLine[data-diff-type="add"],
 .diffAdd {
-    background-color: var(--success-color-light);
+    background-color: var(--diff-add-bg, rgba(166, 218, 149, 0.08));
+    border-left: 2px solid var(--diff-add-border, rgba(166, 218, 149, 0.5));
 }
 
 .gutterLine[data-diff-type="remove"],
 .contentLine[data-diff-type="remove"],
 .diffRemove {
-    background-color: var(--error-color-light);
+    background-color: var(--diff-remove-bg, rgba(237, 135, 150, 0.08));
+    border-left: 2px solid var(--diff-remove-border, rgba(237, 135, 150, 0.5));
 }
 
 /* Style for metadata lines (like hunk headers) */
 .gutterLine[data-diff-type="metadata"],
 .contentLine[data-diff-type="metadata"] {
-    background-color: var(--hover-color);
+    background-color: var(--diff-meta-bg, var(--hover-color));
     color: var(--text-secondary);
     font-style: italic;
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
 }
 
 /* Visual indicator for empty/filled line numbers */

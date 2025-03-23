@@ -237,7 +237,7 @@ const FileContentGrid = memo(
                 {/* Content column with full text content */}
                 {/* <div className={diffstyle.contentColumn}> */}
                 <Highlight
-                    theme={themes.nightOwlLight}
+                    theme={themes.nightOwl}
                     code={codeText}
                     language="tsx"
                 >

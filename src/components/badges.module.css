@@ -14,6 +14,7 @@
     font-size: 12px;
     font-weight: 600;
     border: 1px solid var(--border-color);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 /* Approval vote */
@@ -63,6 +64,8 @@
     font-weight: 600;
     text-transform: uppercase;
     border: 1px solid transparent;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
 }
 
 .status-active {
