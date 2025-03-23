@@ -61,7 +61,6 @@ function FileViewer({ files }: FileViewerProps) {
 
     return (
         <div className="file-list">
-            <h2>PR Files ({files.length})</h2>
             <div className="file-grid">
                 <div className="file-header">
                     <div className="file-cell">PR #</div>

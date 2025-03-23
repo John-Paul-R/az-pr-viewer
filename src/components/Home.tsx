@@ -165,41 +165,39 @@ function Home() {
 
                 {error && <div className="error">{error}</div>}
 
-                {archiveFile && (
-                    <div className="search-section">
-                        <div className="search-controls">
-                            <input
-                                type="text"
-                                placeholder="Search PRs by number, title, or author..."
-                                value={searchTerm}
-                                onChange={handleSearchChange}
-                            />
-                        </div>
-                    </div>
-                )}
+                <div className="search-controls">
+                    <input
+                        type="text"
+                        placeholder="Enter path to repository..."
+                        value={repoPath}
+                        onChange={(e) => setRepoPath(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                invoke("set_git_repo", {
+                                    filePath: repoPath,
+                                }).then((e) => {
+                                    console.log(e);
+                                });
+                            }
+                        }}
+                    />
+                </div>
 
-                <div className="search-section">
+                {archiveFile && (
                     <div className="search-controls">
                         <input
                             type="text"
-                            placeholder="Enter path to repository..."
-                            value={repoPath}
-                            onChange={(e) => setRepoPath(e.target.value)}
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    invoke("set_git_repo", {
-                                        filePath: repoPath,
-                                    }).then((e) => {
-                                        console.log(e);
-                                    });
-                                }
-                            }}
+                            placeholder="Search PRs by number, title, or author..."
+                            value={searchTerm}
+                            onChange={handleSearchChange}
                         />
                     </div>
-                </div>
+                )}
             </div>
 
             <div className="home-content">
+                <h2>PR Files ({files.length})</h2>
+
                 {loading ? (
                     <p>Loading PRs...</p>
                 ) : searchLoading ? (

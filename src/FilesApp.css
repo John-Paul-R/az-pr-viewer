@@ -23,13 +23,16 @@ body {
 
 .home-head {
   grid-area: home_head;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items:stretch;
 }
 
 .header-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
 
 .home-content {
@@ -57,35 +60,6 @@ button:hover {
   background-color: var(--button-hover);
 }
 
-.directory-section {
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-  gap: 15px;
-}
-
-.selected-dir {
-  margin: 0;
-  padding: 10px;
-  background-color: var(--secondary-color);
-  border-radius: 4px;
-  flex-grow: 1;
-}
-
-.search-section {
-  margin-bottom: 20px;
-}
-
-.search-section input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid var(--border-color);
-  border-radius: 4px;
-  font-size: 16px;
-  background-color: var(--input-bg);
-  color: var(--text-color);
-}
-
 .error {
   color: var(--error-color);
   background-color: var(--error-color-light);
@@ -104,13 +78,6 @@ button:hover {
   margin-top: 20px;
 }
 
-.file-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  height: 100%;
-  overflow-y: auto;
-}
 
 .file-item {
   padding: 12px 15px;

@@ -1,8 +1,11 @@
 @import "./badges.module.css";
 
 .file-list {
-    margin-top: 20px;
-  }
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+}
 
   .file-grid {
     border: 1px solid var(--border-color);
@@ -130,7 +133,6 @@
     display: flex;
     align-items: center;
     gap: 15px;
-    margin-bottom: 20px;
   }
 
   .selected-dir {
@@ -145,12 +147,11 @@
     text-overflow: ellipsis;
   }
 
-  .search-section {
-    margin-bottom: 20px;
+  .search-controls {
+    display: flex;
   }
-
-  .search-section input {
-    width: 100%;
+  .search-controls input {
+    flex-grow: 1;
     padding: 10px;
     border: 1px solid var(--border-color);
     border-radius: 4px;
