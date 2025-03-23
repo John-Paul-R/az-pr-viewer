@@ -1,7 +1,6 @@
 use git2::{Repository, Time};
 use serde::{Deserialize, Serialize};
-use std::time::{SystemTime, UNIX_EPOCH, Duration};
-use chrono::{DateTime, Local, TimeZone};
+use chrono::{DateTime, Local};
 
 /// Struct to hold commit metadata
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -57,12 +56,8 @@ impl std::error::Error for CommitError {}
 /// Convert git2::Time to chrono::DateTime<Local>
 fn convert_git_time(git_time: Time) -> Result<DateTime<Local>, CommitError> {
     let seconds = git_time.seconds();
-    let offset_mins = git_time.offset_minutes();
 
-    // Create a system time from the seconds since epoch
-    let system_time = UNIX_EPOCH + Duration::from_secs(seconds as u64);
-
-    // Convert to local DateTime (this handles the timezone offset properly)
+    // Convert to local DateTime
     let local_time = match DateTime::from_timestamp(seconds, 0) {
         Some(time) => time.with_timezone(&Local),
         None => return Err(CommitError::TimeConversion),

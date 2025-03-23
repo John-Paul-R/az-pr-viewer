@@ -330,7 +330,7 @@ pub fn run(initial_state: Option<InitialState>) -> Result<(), String> {
     let initial_state = initial_state.unwrap_or_default();
 
     // Create the filesystem with the archive if provided
-    let mut fs = FileSystem::new();
+    let fs = FileSystem::new();
     if let Some(archive_path) = &initial_state.archive_path {
         fs.set_archive(archive_path)?;
         println!("Archive set to: {}", archive_path);

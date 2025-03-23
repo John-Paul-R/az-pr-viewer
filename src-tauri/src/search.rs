@@ -4,10 +4,7 @@ use std::sync::Mutex;
 use std::time::Instant;
 
 use crate::PrIndexEntry;
-use probly_search::{
-    Index,
-    score::bm25,
-};
+use probly_search::Index;
 
 pub struct SearchIndex {
     // Index with 2 fields: title and author

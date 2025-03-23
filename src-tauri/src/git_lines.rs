@@ -1,4 +1,4 @@
-use git2::{DiffFormat, DiffOptions, Error, Object, ObjectType, Repository};
+use git2::{DiffFormat, DiffOptions, Object, ObjectType, Repository};
 use std::io::{self};
 use std::ops::Range;
 use std::path::Path;
@@ -50,20 +50,6 @@ fn tree_to_treeish<'a>(
     let obj = repo.revparse_single(arg).map_err(|_| GitFileError::RevisionNotFound(arg))?;
     let tree = obj.peel(ObjectType::Tree)?;
     Ok(tree)
-}
-
-/// Helper function for backward compatibility with older code
-fn tree_to_treeish_opt<'a>(
-    repo: &'a Repository,
-    arg: Option<&String>,
-) -> Result<Option<Object<'a>>, Error> {
-    let arg = match arg {
-        Some(s) => s,
-        None => return Ok(None),
-    };
-    let obj = repo.revparse_single(arg)?;
-    let tree = obj.peel(ObjectType::Tree)?;
-    Ok(Some(tree))
 }
 
 /// Retrieves specific lines from a file at a specific Git revision using libgit2.

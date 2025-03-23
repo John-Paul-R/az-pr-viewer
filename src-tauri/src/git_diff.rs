@@ -1,5 +1,5 @@
-use git2::{Diff, DiffDelta, DiffFormat, DiffLine, DiffOptions, Error, Object, ObjectType, Repository};
-use std::{collections::HashMap, path::Path};
+use git2::{Diff, DiffOptions, Error, Object, ObjectType, Repository};
+use std::collections::HashMap;
 use std::str;
 use serde::{Deserialize, Serialize};
 
