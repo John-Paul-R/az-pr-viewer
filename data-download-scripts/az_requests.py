@@ -12,6 +12,7 @@ import logging
 import requests
 from urllib.parse import quote
 
+DEFAULT_PAGE_SIZE = 1000
 # Set up logger
 logger = logging.getLogger(__name__)
 
@@ -92,7 +93,7 @@ class AzureDevOpsClient:
             logger.error(f"Request error for URL {url}: {str(e)}")
             raise
     
-    def get_paged_items(self, url, params=None, page_size=100, delay=0.5):
+    def get_paged_items(self, url, params=None, page_size=DEFAULT_PAGE_SIZE, delay=0.5):
         """
         Get all items from a paged API endpoint.
         
@@ -178,7 +179,7 @@ class AzureDevOpsClient:
         
         # Strategy 1: Try with skip/top parameters (common in older Azure APIs)
         skip = 0
-        page_size = 100
+        page_size = DEFAULT_PAGE_SIZE
         strategy1_success = True
         
         while strategy1_success:
@@ -415,3 +416,47 @@ class AzureDevOpsClient:
             str: Avatar URL
         """
         return f"https://dev.azure.com/{self.organization}/_api/_common/identityImage?id={user_id}&size={size}"
+
+    def get_pull_request_iterations(self, pr_id):
+        """
+        Get all iterations for a pull request.
+        
+        Args:
+            pr_id (int): Pull request ID
+            
+        Returns:
+            list: List of pull request iterations
+        """
+        if not self.project or not self.repository:
+            raise ValueError("Project and repository must be specified to get pull request iterations")
+            
+        url = f"https://dev.azure.com/{self.organization}/{self.project}/_apis/git/repositories/{self.repository}/pullRequests/{pr_id}/iterations?api-version=7.0"
+        response = self.get(url)
+        
+        if response.status_code == 200:
+            return response.json().get("value", [])
+        else:
+            logger.error(f"Failed to get PR iterations for PR {pr_id}: {response.status_code}")
+            return []
+
+    def get_pull_request_detailed(self, pr_id):
+        """
+        Get detailed information for a specific pull request including full description.
+        
+        Args:
+            pr_id (int): Pull request ID
+            
+        Returns:
+            dict: Complete pull request details
+        """
+        if not self.project or not self.repository:
+            raise ValueError("Project and repository must be specified to get detailed PR")
+            
+        url = f"https://dev.azure.com/{self.organization}/{self.project}/_apis/git/pullrequests/{pr_id}?api-version=7.0&includeCommits=true&includeWorkItemRefs=true"
+        response = self.get(url)
+        
+        if response.status_code == 200:
+            return response.json()
+        else:
+            logger.error(f"Failed to get detailed PR {pr_id}: {response.status_code}")
+            return None

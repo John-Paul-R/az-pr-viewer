@@ -16,13 +16,20 @@ export interface PrFile {
 export interface PrIndexEntry {
     id: number;
     title: string;
+    description?: string;
     created_by: string;
     creation_date: string;
+    completion_date?: string;
     status: string;
+    is_draft?: boolean;
     repository: string;
     source_branch: string;
     target_branch: string;
     filename: string;
+    reviewer_count: number;
+    has_conflicts?: boolean;
+    work_item_count: number;
+    thread_count: number;
 }
 
 // Common simple types
@@ -86,6 +93,21 @@ export interface Thread {
             secondComparingIteration: number;
         };
         changeTrackingId: number;
+        // Added enriched iteration data
+        firstIterationDetails?: {
+            id: number;
+            sourceCommit: string;
+            targetCommit: string;
+            commonRefCommit: string;
+            createdDate: string;
+        };
+        secondIterationDetails?: {
+            id: number;
+            sourceCommit: string;
+            targetCommit: string;
+            commonRefCommit: string;
+            createdDate: string;
+        };
     };
     id: number;
     publishedDate: string;

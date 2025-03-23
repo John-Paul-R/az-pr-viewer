@@ -66,13 +66,24 @@ def main():
         try:
             logger.info(f"Processing PR {index}/{total_prs}: ID {pr_id} - '{pr['title']}'")
             
+            # Get detailed PR data (with full description)
+            detailed_pr = client.get_pull_request_detailed(pr_id)
+            if detailed_pr:
+                pr_data = detailed_pr  # Use the detailed PR data as base
+            else:
+                pr_data = pr.copy()  # Fallback to original data
+            
             # Get PR threads (comments)
             threads = client.get_pull_request_threads(pr_id)
             logger.info(f"Retrieved {len(threads)} comment threads for PR {pr_id}")
             
-            # Store raw PR data with threads
-            pr_data = pr.copy()  # Keep all original fields
-            pr_data["threads"] = threads  # Add threads to the original PR data
+            # Get PR iterations
+            iterations = client.get_pull_request_iterations(pr_id)
+            logger.info(f"Retrieved {len(iterations)} iterations for PR {pr_id}")
+            
+            # Add threads and iterations to PR data
+            pr_data["threads"] = threads
+            pr_data["iterations"] = iterations
             
             # Save raw PR data file
             pr_filename = f"{output_dir}/pr_{pr_id}_raw.json"
@@ -80,7 +91,6 @@ def main():
                 json.dump(pr_data, f, indent=2)
             
             success_count += 1
-            
         except Exception as e:
             logger.error(f"Error processing PR {pr_id}: {str(e)}")
             failure_count += 1
