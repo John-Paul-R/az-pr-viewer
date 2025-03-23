@@ -19,6 +19,15 @@ export const ThreadComment: React.FC<ThreadCommentProps> = ({
         properties["Microsoft.TeamFoundation.Discussion.SupportsMarkdown"]
             .$value === 1;
 
+    // Get the list of users who liked the comment
+    const hasLikes = comment.usersLiked && comment.usersLiked.length > 0;
+    const likesCount = hasLikes ? comment.usersLiked!.length : 0;
+
+    // Create the tooltip text with the names of users who liked
+    const likedByTooltip = hasLikes
+        ? comment.usersLiked!.map((user) => user.displayName).join("\n")
+        : "";
+
     return (
         <div className={style.comment}>
             <div className={style["comment-header"]}>
@@ -27,8 +36,18 @@ export const ThreadComment: React.FC<ThreadCommentProps> = ({
                         ? comment.author.displayName
                         : "Unknown"}
                 </div>
-                <div className={style["comment-date"]}>
-                    {new Date(comment.publishedDate).toLocaleString()}
+                <div className={style["comment-metadata"]}>
+                    {hasLikes && (
+                        <div
+                            className={style["likes-indicator"]}
+                            title={likedByTooltip}
+                        >
+                            Liked {likesCount}
+                        </div>
+                    )}
+                    <div className={style["comment-date"]}>
+                        {new Date(comment.publishedDate).toLocaleString()}
+                    </div>
                 </div>
             </div>
             <div className={style["comment-content"]}>
