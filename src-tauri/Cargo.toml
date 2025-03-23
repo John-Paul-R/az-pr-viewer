@@ -33,6 +33,7 @@ tar = "0.4.44"
 probly-search = "2.0.1"
 git2 = "0.20.1"
 chrono = { version = "0.4.40", features = ["serde"] }
+clap = "4.5.32"
 
 [profile.dev]
 incremental = true # Compile your binary in smaller steps.

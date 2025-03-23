@@ -26,6 +26,11 @@ impl FileSystem {
         }
     }
 
+    pub fn get_archive_path(&self) -> String {
+        let guard = self.archive_path.lock();
+        guard.expect("unexpected error while reading archive path").clone()
+    }
+
     pub fn set_archive(&self, path: &str) -> Result<(), String> {
         let start = Instant::now();
 

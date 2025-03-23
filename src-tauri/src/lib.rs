@@ -171,6 +171,13 @@ fn set_archive_file(new_archive: String, state: State<AppState>) -> Result<(), S
 }
 
 #[tauri::command(async)]
+async fn get_archive_path(
+    state: State<'_, AppState>
+) -> Result<String, String> {
+    Ok(state.fs.get_archive_path())
+}
+
+#[tauri::command(async)]
 fn read_pr_file(path: String, state: State<AppState>) -> Result<String, String> {
     // For better performance, try to read directly from memory if possible
     match state.fs.read_file_from_memory(&path) {
@@ -205,6 +212,27 @@ async fn set_git_repo(
         },
         Err(err) => Err(err.to_string()),
     }
+}
+
+#[tauri::command(async)]
+async fn get_git_repo(
+    state: State<'_, AppState>
+) -> Result<String, String> {
+    let repo_guard = state.repo.lock().await;
+    Ok(match *repo_guard {
+        Some(ref repo) => {
+            repo.path().to_str()
+                .map(|s|
+                    if let Some(index) = s.find("/.git") {
+                        &s[0..index]
+                    } else {
+                        s
+                    }
+                )
+                .unwrap_or("")
+        }
+        None => ""
+    }.to_owned())
 }
 
 #[tauri::command]
@@ -267,17 +295,60 @@ async fn git_get_file_diff_between_revisions(
     }
 }
 
+// Define the InitialState struct
+pub struct InitialState {
+    pub archive_path: Option<String>,
+    pub repo_path: Option<String>,
+    // You can easily add more initialization parameters in the future
+}
+
+// Implement Default to make it easier to work with
+impl Default for InitialState {
+    fn default() -> Self {
+        Self {
+            archive_path: None,
+            repo_path: None,
+        }
+    }
+}
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
+pub fn run(initial_state: Option<InitialState>) -> Result<(), String> {
+    // Use provided initial state or create a default one
+    let initial_state = initial_state.unwrap_or_default();
+
+    // Create the filesystem with the archive if provided
+    let mut fs = FileSystem::new();
+    if let Some(archive_path) = &initial_state.archive_path {
+        fs.set_archive(archive_path)?;
+        println!("Archive set to: {}", archive_path);
+    }
+
+    // handle the git repository option
+    let repo_option = match &initial_state.repo_path {
+        Some(repo_path) => {
+            match Repository::open(repo_path) {
+                Ok(r) => {
+                    println!("Git repository set to: {}", repo_path);
+                    Some(r)
+                },
+                Err(e) => {
+                    return Err(format!("Failed to open git repository '{}': {}", repo_path, e));
+                }
+            }
+        }
+        _ => None,
+    };
+
+    // Build and run the application with the initialized state
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
         .manage(AppState {
-            fs: FileSystem::new(),
+            fs,
             search: SearchIndex::new(),
-            repo: Arc::new(Mutex::new(None)),
+            repo: Arc::new(Mutex::new(repo_option)),
         })
         .invoke_handler(tauri::generate_handler![
             greet,
@@ -291,7 +362,11 @@ pub fn run() {
             get_git_commit,
             get_git_file_lines_at_revision,
             git_get_file_diff_between_revisions,
+            get_git_repo,
+            get_archive_path,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+
+    Ok(())
 }
