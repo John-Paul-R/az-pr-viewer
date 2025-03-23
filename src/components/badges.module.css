@@ -1,0 +1,115 @@
+.inline-vote-badge {
+    display: inline-block;
+    padding: 2px 6px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+.vote-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid #e0e0e0;
+}
+
+.vote-10 {
+    background-color: #e8f5e9;
+    color: var(--success-color);
+    border: 1px solid var(--success-color-alt);
+
+}
+
+.vote-5 {
+    background-color: #7ed07e;
+    color: white;
+}
+
+.vote-0 {
+    /* background-color: #e0e0e0; */
+    color: #666;
+}
+
+.vote--5 {
+    background-color: #ffd7b3;
+    color: #b35900;
+}
+
+.vote--10 {
+    background-color: var(--error-color);
+    color: white;
+}
+
+.required-badge {
+    background-color: #f0f0f0;
+    color: #666;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 12px;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 12px;
+    font-weight: 600;
+    color: white;
+}
+
+/* .status-active {
+    background-color: var(--primary-color);
+}
+
+.status-completed {
+    background-color: var(--success-color);
+}
+
+.status-abandoned {
+    background-color: var(--error-color);
+} */
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+.status-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+  }
+  .status-active {
+    background-color: #e3f2fd;
+    color: #0277bd;
+    border: 1px solid var(--active-color-alt);
+  }
+
+  .status-completed {
+    background-color: #e8f5e9;
+    color: var(--success-color);
+    border: 1px solid var(--success-color-alt);
+  }
+
+  .status-abandoned {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid var(--error-color-alt);
+  }
+
+  .status-unknown {
+    background-color: #f5f5f5;
+    color: #757575;
+  }
