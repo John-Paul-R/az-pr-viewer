@@ -26,6 +26,9 @@ importers:
       lightningcss:
         specifier: ^1.29.3
         version: 1.29.3
+      prism-react-renderer:
+        specifier: ^2.4.1
+        version: 2.4.1(react@19.0.0)
       react:
         specifier: ^19.0.0
         version: 19.0.0
@@ -728,6 +731,10 @@ packages:
     resolution: {integrity: sha1-e+N6TAPJruHs/oYqSiOyxwwgXTA=}
     engines: {node: '>= 14.16.0'}
 
+  clsx@2.1.1:
+    resolution: {integrity: sha1-7tOXyf2L2IK/sY3qtxAgSaLzKZk=}
+    engines: {node: '>=6'}
+
   comma-separated-tokens@2.0.3:
     resolution: {integrity: sha1-TonJRYrLYbyP7xn0UplzsjkoOe4=}
 
@@ -1169,6 +1176,11 @@ packages:
   postcss@8.5.3:
     resolution: {integrity: sha1-FGO28cf7Fv4lhzbLopot41I36vs=}
     engines: {node: ^10 || ^12 || >=14}
+
+  prism-react-renderer@2.4.1:
+    resolution: {integrity: sha1-rGO3945WyPK1526COpdtXt53418=}
+    peerDependencies:
+      react: '>=16.0.0'
 
   property-information@6.5.0:
     resolution: {integrity: sha1-YhL7tSunV+ku9PudZXVjuTO3/+w=}
@@ -1942,6 +1954,8 @@ snapshots:
       readdirp: 4.1.2
     optional: true
 
+  clsx@2.1.1: {}
+
   comma-separated-tokens@2.0.3: {}
 
   concat-map@0.0.1:
@@ -2574,6 +2588,12 @@ snapshots:
       nanoid: 3.3.11
       picocolors: 1.1.1
       source-map-js: 1.2.1
+
+  prism-react-renderer@2.4.1(react@19.0.0):
+    dependencies:
+      '@types/prismjs': 1.26.5
+      clsx: 2.1.1
+      react: 19.0.0
 
   property-information@6.5.0: {}
 
