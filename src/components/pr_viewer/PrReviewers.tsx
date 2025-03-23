@@ -1,6 +1,7 @@
 // components/pr/PrReviewers.tsx
 import type React from "react";
 import style from "../PrViewer.module.css" with { type: "css" };
+import badgestyle from "../badges.module.css" with { type: "css" };
 
 interface Reviewer {
     id: string;
@@ -60,8 +61,8 @@ export const PrReviewers: React.FC<PrReviewersProps> = ({ reviewers }) => {
                         </div>
                         <div className={style["reviewer-status"]}>
                             <span
-                                className={`${style["vote-badge"]} ${
-                                    style[`vote-${reviewer.vote}`]
+                                className={`${badgestyle["vote-badge"]} ${
+                                    badgestyle[`vote-${reviewer.vote}`]
                                 }`}
                             >
                                 {getVoteText(reviewer.vote)}

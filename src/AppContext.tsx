@@ -63,8 +63,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
         });
     }, []);
 
-    console.log(repoPath);
-
     return (
         <AppContext.Provider
             value={{
@@ -76,8 +74,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
                 setRepoPath: (path: string) => {
                     invoke("set_git_repo", {
                         filePath: path,
-                    }).then((e) => {
-                        console.log(e);
+                    }).then(() => {
                         setRepoPath(path);
                     });
                 },

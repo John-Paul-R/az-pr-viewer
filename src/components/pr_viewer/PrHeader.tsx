@@ -1,5 +1,6 @@
 import type React from "react";
-import style from "../PrViewer.module.css" with { type: "css" };
+import style from "../PrViewer.module.css"; // with { type: "css" };
+import badgestyle from "../badges.module.css"; // with { type: "css" };
 
 interface PrHeaderProps {
     id: number;
@@ -16,13 +17,16 @@ export const PrHeader: React.FC<PrHeaderProps> = ({
 }) => {
     // Determine status class for styling
     const getStatusClass = (status: string | undefined): string => {
-        if (!status) return "";
-        if (status.toLowerCase() === "active") return style["status-active"];
-        if (status.toLowerCase() === "completed")
-            return style["status-completed"];
-        if (status.toLowerCase() === "abandoned")
-            return style["status-abandoned"];
-        return "";
+        switch (status?.toLowerCase()) {
+            case "active":
+                return badgestyle["status-active"];
+            case "completed":
+                return badgestyle["status-completed"];
+            case "abandoned":
+                return badgestyle["status-abandoned"];
+            default:
+                return "";
+        }
     };
 
     return (
@@ -35,7 +39,7 @@ export const PrHeader: React.FC<PrHeaderProps> = ({
                     {status && (
                         <span
                             className={`${
-                                style["status-badge"]
+                                badgestyle["status-badge"]
                             } ${getStatusClass(status)}`}
                         >
                             {status}

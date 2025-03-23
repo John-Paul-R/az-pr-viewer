@@ -37,6 +37,13 @@ function createCodeHunks(
             codeHunks.length > 0 ? codeHunks[codeHunks.length - 1] : undefined;
 
         const contentLines = lineInfo.content.split("\n");
+        console.log(
+            "🚀 ~ contentLines:",
+            contentLines,
+            currentType,
+            lineIdx,
+            diffTypes,
+        );
         const extraLinesCount = contentLines.length - 1;
 
         if (hunk && hunk.type === currentType) {
@@ -137,25 +144,25 @@ const FileContentGrid = memo(
         const highlightedLineRef = React.useRef<HTMLDivElement>(null);
         const hasScrolledToLine = React.useRef<boolean>(false);
 
-        // Create a map of line types for all rows in one pass
-        const diffTypes = lines.map((line) => {
-            switch (line.origin) {
-                case "+":
-                    return "add";
-                case "-":
-                    return "remove";
-                case " ":
-                    return "unchanged";
-                default:
-                    return "metadata"; // For any other origin character (hunk headers etc.)
-            }
-        });
+        const { codeHunks, idxUnexpectedLineCount } = useMemo(() => {
+            // Create a map of line types for all rows in one pass
+            const diffTypes = lines.map((line) => {
+                switch (line.origin) {
+                    case "+":
+                        return "add";
+                    case "-":
+                        return "remove";
+                    case " ":
+                        return "unchanged";
+                    default:
+                        return "metadata"; // For any other origin character (hunk headers etc.)
+                }
+            });
 
-        const { codeHunks, idxUnexpectedLineCount } = createCodeHunks(
-            lines,
-            diffTypes,
-        );
+            return createCodeHunks(lines, diffTypes);
+        }, [lines]);
         const codeText = codeHunks.flatMap((h) => h.text).join("\n");
+        console.log(codeHunks);
 
         /**
          * the content lines received from the backend, but expanding 'lines' (like
@@ -488,7 +495,9 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
     const [expandedFiles, setExpandedFiles] = useState<Record<string, boolean>>(
         {},
     );
-    const [fileToScrollTo, setFileToScrollTo] = useState<string | null>(null);
+    const [fileToScrollTo] = useState<string | null>(() =>
+        sessionStorage.getItem("scrollToFile"),
+    );
     const [parsedLineRange, setParsedLineRange] = useState<{
         start: number;
         end: number;
@@ -496,10 +505,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
 
     // Check for file to scroll to from sessionStorage
     useEffect(() => {
-        const scrollToFile = sessionStorage.getItem("scrollToFile");
-        if (scrollToFile) {
-            setFileToScrollTo(scrollToFile);
-
+        if (fileToScrollTo) {
             const scrollToLineRange =
                 sessionStorage.getItem("scrollToLineRange");
             if (scrollToLineRange) {
@@ -550,7 +556,6 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
 
                 // Initialize expanded state for each file
                 const initialExpandedState: Record<string, boolean> = {};
-                console.log(diff);
                 diff.files.forEach((file) => {
                     // Auto-expand the file to scroll to, or all files if none specified
                     const isTargetFile =
@@ -558,8 +563,7 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
                         (file.new_file === fileToScrollTo ||
                             file.old_file === fileToScrollTo);
 
-                    initialExpandedState[file.new_file] =
-                        isTargetFile || fileToScrollTo === null;
+                    initialExpandedState[file.new_file] = !!isTargetFile;
                 });
                 setExpandedFiles(initialExpandedState);
             } catch (err) {

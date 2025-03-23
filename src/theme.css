@@ -41,6 +41,7 @@
     --button-hover: var(--secondary-color);
     --input-bg: white;
     --input-border: #ddd;
+    --input-text: #202020;
 }
 
 /* Dark theme */
@@ -189,7 +190,7 @@
 [data-theme="catppuccin-pink-dark"] {
     /* Base colors from Catppuccin with pink accent dark mode */
     --primary-color: #f5bde6; /* Pink */
-    --secondary-color: #c6a0f6; /* Mauve */
+    --secondary-color: #f6a0f6; /* Mauve */
     --link-hover-color: #f8bd96; /* Peach */
     --background-color: #1e1e2e; /* Mocha base */
     --card-background: #24273a; /* Macchiato base */

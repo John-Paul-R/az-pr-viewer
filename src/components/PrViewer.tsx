@@ -108,10 +108,10 @@ const PrViewer: React.FC<PrViewerProps> = ({ prData, onBack }) => {
                     )}
 
                     {activeTab === "changes" &&
-                        prData.last_merge_source_commit &&
-                        prData.last_merge_target_commit && (
+                        prData.last_merge_target_commit &&
+                        prData.last_merge_commit && (
                             <DiffViewer
-                                sourceBranch={prData.last_merge_source_commit}
+                                sourceBranch={prData.last_merge_commit}
                                 targetBranch={prData.last_merge_target_commit}
                             />
                         )}

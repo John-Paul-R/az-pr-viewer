@@ -122,17 +122,27 @@ h1 {
 input,
 button,
 .button,
-.button {
+.button,
+a.button {
     border-radius: 8px;
     border: 1px solid transparent;
     padding: 0.6em 1.2em;
     font-size: 1em;
     font-weight: 500;
     font-family: inherit;
-    color: var(--text-color);
-    background-color: var(--input-bg);
+    color: var(--button-text);
     transition: border-color 0.25s;
     box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2);
+}
+
+input {
+    flex-grow: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
 }
 
 button,
@@ -140,12 +150,13 @@ button,
     cursor: pointer;
     background-color: var(--button-bg);
     color: var(--button-text);
+
+    &:hover {
+        border-color: var(--primary-color);
+        background-color: var(--button-hover) !important;
+    }
 }
 
-button:hover {
-    border-color: var(--primary-color);
-    background-color: var(--button-hover);
-}
 button:active {
     border-color: var(--primary-color);
     background-color: var(--hover-color);
