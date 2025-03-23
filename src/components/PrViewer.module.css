@@ -295,8 +295,12 @@ p, ul {
 /* a code snippet for the thread context */
 .thread > pre {
     margin: 0;
-    padding: 4px;
     border-bottom: 1px solid var(--border-color);
+    width: 100%;
+}
+.thread > pre > span {
+    display: inline-block;
+    width: 100%;
 }
 
 .thread-header {

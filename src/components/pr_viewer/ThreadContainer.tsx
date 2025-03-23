@@ -101,8 +101,10 @@ export const ThreadContainer: React.FC<ThreadContainerProps> = ({ thread }) => {
                 <pre>
                     {diffFileContent.split("\n").reduce(
                         (accum, line, idx, lines) => {
-                            // biome-ignore lint/suspicious/noArrayIndexKey: no better key available, really
-                            accum.push(<DiffLine key={idx} line={line} />);
+                            if (line.trim() !== "") {
+                                // biome-ignore lint/suspicious/noArrayIndexKey: no better key available, really
+                                accum.push(<DiffLine key={idx} line={line} />);
+                            }
                             if (idx !== lines.length - 1) {
                                 accum.push(
                                     <React.Fragment key={`${idx}c`}>
