@@ -139,9 +139,8 @@ function FileViewer({ files }: FileViewerProps) {
                             </div>
                             <div className="file-cell status-cell">
                                 <span
-                                    className={`status-badge status-${
-                                        file.status || "unknown"
-                                    }`}
+                                    className={`status-badge status-${file.status || "unknown"
+                                        }`}
                                 >
                                     {file.status || "unknown"}
                                 </span>
@@ -149,8 +148,8 @@ function FileViewer({ files }: FileViewerProps) {
                             <div className="file-cell">
                                 {file.creation_date
                                     ? new Date(
-                                          file.creation_date,
-                                      ).toLocaleDateString()
+                                        file.creation_date,
+                                    ).toLocaleDateString()
                                     : "Unknown"}
                             </div>
                         </Link>
@@ -158,7 +157,7 @@ function FileViewer({ files }: FileViewerProps) {
                 })}
                 {visibleCount < files.length && (
                     <div ref={loaderRef} className="loading-indicator">
-                        <div className="file-cell" colSpan={5}>
+                        <div className="file-cell" >
                             Loading more items ({visibleCount} of {files.length}
                             )...
                         </div>

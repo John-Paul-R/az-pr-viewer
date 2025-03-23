@@ -11,7 +11,7 @@ the commit objects for commits that exist in PRs you've never personally checked
 out, but have since been merged and had their brances deleted on the remote will
 not exist in your local copy.
 
-This isn't entirely surprising, as it owuld be rather expensive to clone these
+This isn't entirely surprising, as it would be rather expensive to clone these
 down for each user on every fresh clone -- and would almost always be
 unnecessary. To cut a long story short, most simple methods available in git to
 attempt to bulk-pull the 'deleted' refs that exist on the remote simply do not
