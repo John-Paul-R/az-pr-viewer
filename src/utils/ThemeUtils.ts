@@ -7,7 +7,7 @@
  * @returns The current theme name (e.g., "light", "dark", "azure", "catppuccin-pink", "catppuccin-pink-dark")
  */
 export const getCurrentTheme = (): string => {
-  return document.documentElement.getAttribute('data-theme') || 'light';
+    return document.documentElement.getAttribute("data-theme") || "light";
 };
 
 /**
@@ -15,9 +15,9 @@ export const getCurrentTheme = (): string => {
  * @returns true if the current theme is a dark theme, false otherwise
  */
 export const isDarkTheme = (): boolean => {
-  const theme = getCurrentTheme();
-  // Add all dark theme names here
-  return theme === 'dark' || theme === 'catppuccin-pink-dark';
+    const theme = getCurrentTheme();
+    // Add all dark theme names here
+    return theme === "dark" || theme === "catppuccin-pink-dark";
 };
 
 /**
@@ -25,8 +25,8 @@ export const isDarkTheme = (): boolean => {
  * @returns true if the current theme is a Catppuccin theme, false otherwise
  */
 export const isCatppuccinTheme = (): boolean => {
-  const theme = getCurrentTheme();
-  return theme.startsWith('catppuccin');
+    const theme = getCurrentTheme();
+    return theme.startsWith("catppuccin");
 };
 
 /**
@@ -34,23 +34,25 @@ export const isCatppuccinTheme = (): boolean => {
  * @param callback Function to call when the theme changes
  * @returns A function to unsubscribe from theme changes
  */
-export const subscribeToThemeChanges = (callback: (theme: string) => void): () => void => {
-  const observer = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
-      if (
-        mutation.type === 'attributes' &&
-        mutation.attributeName === 'data-theme'
-      ) {
-        callback(getCurrentTheme());
-      }
+export const subscribeToThemeChanges = (
+    callback: (theme: string) => void,
+): (() => void) => {
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (
+                mutation.type === "attributes" &&
+                mutation.attributeName === "data-theme"
+            ) {
+                callback(getCurrentTheme());
+            }
+        });
     });
-  });
 
-  observer.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['data-theme'],
-  });
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ["data-theme"],
+    });
 
-  // Return a function to unsubscribe
-  return () => observer.disconnect();
+    // Return a function to unsubscribe
+    return () => observer.disconnect();
 };

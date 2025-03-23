@@ -1,60 +1,60 @@
 .thread-filter {
-  display: inline-block;
-  margin-left: 12px;
+    display: inline-block;
+    margin-left: 12px;
 }
 
 .radio-button-group {
-  display: inline-flex;
-  border-radius: 4px;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    display: inline-flex;
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .filter-button {
-  padding: 4px 10px;
-  font-size: 12px;
-  background: none;
-  border: none;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  color: var(--text-secondary);
-  position: relative;
-  overflow: hidden;
+    padding: 4px 10px;
+    font-size: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: var(--text-secondary);
+    position: relative;
+    overflow: hidden;
 }
 
 .filter-button:not(:last-child) {
-  border-right: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
 }
 
 .filter-button.active {
-  background-color: var(--selected-color);
-  color: var(--primary-color);
-  font-weight: 500;
-  box-shadow: inset 0 0 0 1px var(--primary-color);
+    background-color: var(--selected-color);
+    color: var(--primary-color);
+    font-weight: 500;
+    box-shadow: inset 0 0 0 1px var(--primary-color);
 }
 
 .filter-button:hover:not(.active) {
-  background-color: var(--hover-color);
+    background-color: var(--hover-color);
 }
 
 .filter-button:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px var(--active-color-alt);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--active-color-alt);
 }
 
 /* Adds a subtle animation when clicking */
 .filter-button:active {
-  transform: scale(0.97);
+    transform: scale(0.97);
 }
 
 /* Add a subtle indicator at the bottom of active button */
 .filter-button.active::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background-color: var(--active-color);
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    background-color: var(--active-color);
 }

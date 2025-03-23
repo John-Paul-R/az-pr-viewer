@@ -1,6 +1,7 @@
 @import "./badges.module.css";
 
-p, ul {
+p,
+ul {
     margin: 0;
 }
 
@@ -153,7 +154,7 @@ p, ul {
     left: 12px;
     z-index: 1000;
     margin: 0;
-    
+
     /* Match the global button styles */
     border-radius: 8px;
     border: 1px solid transparent;
@@ -300,7 +301,6 @@ p, ul {
 .threads-section {
     margin-top: 20px;
     position: relative;
-
 }
 
 .thread {
@@ -514,7 +514,7 @@ p, ul {
     border-radius: 3px;
     padding: 16px;
     overflow: auto;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     font-size: 85%;
     line-height: 1.45;
     margin-bottom: 8px;
@@ -524,7 +524,7 @@ p, ul {
 .comment-content code {
     background-color: var(--hover-color);
     border-radius: 3px;
-    font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+    font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
     font-size: 85%;
     padding: 0.2em 0.4em;
     margin: 0;
@@ -706,7 +706,8 @@ p, ul {
     user-select: none;
 }
 
-.diff-old-line-number, .diff-new-line-number {
+.diff-old-line-number,
+.diff-new-line-number {
     display: inline-block;
     width: 35px;
     text-align: right;

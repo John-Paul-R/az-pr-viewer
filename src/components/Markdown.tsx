@@ -30,7 +30,7 @@ export function Markdown({ markdown }: { markdown: string }) {
                         const match = href ? PR_REGEX.exec(href) : "";
                         const linkTo = match?.[1]
                             ? `/pr/${match?.[1]}`
-                            : href ?? "/";
+                            : (href ?? "/");
                         return (
                             <Link
                                 target={

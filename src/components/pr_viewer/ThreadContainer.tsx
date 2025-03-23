@@ -119,8 +119,9 @@ export const ThreadContainer: React.FC<ThreadContainerProps> = ({ thread }) => {
             {diffFileContent && (
                 //  style={{ backgroundColor: "lightblue" }}
                 <pre>
-                    {diffFileContent.split("\n").reduce(
-                        (accum, line, idx, lines) => {
+                    {diffFileContent
+                        .split("\n")
+                        .reduce((accum, line, idx, lines) => {
                             if (line.trim() !== "") {
                                 // biome-ignore lint/suspicious/noArrayIndexKey: no better key available, really
                                 accum.push(<DiffLine key={idx} line={line} />);
@@ -133,9 +134,7 @@ export const ThreadContainer: React.FC<ThreadContainerProps> = ({ thread }) => {
                                 );
                             }
                             return accum;
-                        },
-                        [] as ReactNode[],
-                    )}
+                        }, [] as ReactNode[])}
                 </pre>
             )}
 

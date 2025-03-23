@@ -142,7 +142,7 @@ function Home() {
 
     // Format files for the FileViewer component
     const formattedFiles = (
-        !searchTerm.trim() ? files : searchResults ?? []
+        !searchTerm.trim() ? files : (searchResults ?? [])
     ).map((file) => ({
         item: file,
         refIndex: -1,

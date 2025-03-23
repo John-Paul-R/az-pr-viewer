@@ -373,8 +373,8 @@ const FileHeader = memo(
                         : file.status === "M"
                           ? "Modified"
                           : file.status === "D"
-                              ? "Deleted"
-                              : file.status}
+                            ? "Deleted"
+                            : file.status}
                 </span>
                 <span className={style["diff-file-name"]}>
                     {file.status === "D" ? file.old_file : file.new_file}

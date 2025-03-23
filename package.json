@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "fmt:check": "biome format",
+    "fmt": "biome format --write"
   },
   "dependencies": {
     "@speed-highlight/core": "^1.2.7",
@@ -28,6 +30,7 @@
     "rehype-sanitize": "^6.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.4",
     "@tauri-apps/cli": "^2.4.0",
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
