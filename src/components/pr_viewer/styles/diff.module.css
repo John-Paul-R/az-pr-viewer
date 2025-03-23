@@ -69,3 +69,17 @@
 .gutterLine[data-diff-type="remove"]:last-child {
     color: transparent;
 }
+
+.filesChangedRefMeta {
+    padding: 4px;
+    padding-bottom: 6px;
+    padding-top: 6px;
+}
+.filesChangedRefMeta code:first-child,
+.filesChangedRefMeta code:last-child {
+    font-size: 15px;
+    background-color: var(--background-color);
+    border: 1px  solid var(--border-color);
+    padding: 4px;
+    border-radius: 4px;
+}

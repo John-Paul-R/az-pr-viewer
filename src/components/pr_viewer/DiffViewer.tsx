@@ -360,9 +360,10 @@ export const DiffViewer: React.FC<DiffViewerProps> = ({
 
     const metadata = useMemo(
         () => (
-            <p>
-                {sourceBranch} -- {targetBranch}
-            </p>
+            <span className={diffstyle.filesChangedRefMeta}>
+                <code>{targetBranch}</code> <code>--&gt;</code>{" "}
+                <code>{sourceBranch}</code>
+            </span>
         ),
         [sourceBranch, targetBranch],
     );
