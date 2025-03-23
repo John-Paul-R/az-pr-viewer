@@ -13,74 +13,47 @@
     border-radius: 12px;
     font-size: 12px;
     font-weight: 600;
-    border: 1px solid #e0e0e0;
+    border: 1px solid var(--border-color);
 }
 
+/* Approval vote */
 .vote-10 {
-    background-color: #e8f5e9;
+    background-color: var(--vote-10-bg, #e8f5e9);
     color: var(--success-color);
     border: 1px solid var(--success-color-alt);
-
 }
 
+/* Approval with suggestions */
 .vote-5 {
-    background-color: #7ed07e;
-    color: white;
+    background-color: var(--vote-5-bg, #7ed07e);
+    color: var(--vote-5-text, white);
 }
 
+/* No vote */
 .vote-0 {
-    /* background-color: #e0e0e0; */
-    color: #666;
+    color: var(--text-secondary);
 }
 
+/* Wait for author */
 .vote--5 {
-    background-color: #ffd7b3;
-    color: #b35900;
+    background-color: var(--vote-neg5-bg, #ffd7b3);
+    color: var(--vote-neg5-text, #b35900);
 }
 
+/* Rejected */
 .vote--10 {
     background-color: var(--error-color);
-    color: white;
+    color: var(--vote-neg10-text, white);
 }
 
 .required-badge {
-    background-color: #f0f0f0;
-    color: #666;
+    background-color: var(--hover-color);
+    color: var(--text-secondary);
     font-size: 12px;
     font-weight: 600;
     padding: 3px 8px;
     border-radius: 12px;
 }
-
-.status-badge {
-    display: inline-block;
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-size: 12px;
-    font-weight: 600;
-    color: white;
-}
-
-/* .status-active {
-    background-color: var(--primary-color);
-}
-
-.status-completed {
-    background-color: var(--success-color);
-}
-
-.status-abandoned {
-    background-color: var(--error-color);
-} */
-
-.status-badge {
-    display: inline-block;
-    padding: 3px 8px;
-    border-radius: 12px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
 
 .status-badge {
     display: inline-block;
@@ -90,26 +63,27 @@
     font-weight: 600;
     text-transform: uppercase;
     border: 1px solid transparent;
-  }
-  .status-active {
-    background-color: #e3f2fd;
-    color: #0277bd;
-    border: 1px solid var(--active-color-alt);
-  }
+}
 
-  .status-completed {
-    background-color: #e8f5e9;
+.status-active {
+    background-color: var(--status-active-bg, #e3f2fd);
+    color: var(--active-color);
+    border: 1px solid var(--active-color-alt);
+}
+
+.status-completed {
+    background-color: var(--status-completed-bg, #e8f5e9);
     color: var(--success-color);
     border: 1px solid var(--success-color-alt);
-  }
+}
 
-  .status-abandoned {
-    background-color: #ffebee;
-    color: #c62828;
+.status-abandoned {
+    background-color: var(--status-abandoned-bg, #ffebee);
+    color: var(--error-color);
     border: 1px solid var(--error-color-alt);
-  }
+}
 
-  .status-unknown {
-    background-color: #f5f5f5;
-    color: #757575;
-  }
+.status-unknown {
+    background-color: var(--hover-color);
+    color: var(--text-secondary);
+}

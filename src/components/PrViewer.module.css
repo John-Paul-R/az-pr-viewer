@@ -23,7 +23,7 @@ p, ul {
 }
 
 .reviewer-card {
-    background-color: #f9f9f9;
+    background-color: var(--card-background);
     border: 1px solid var(--border-color);
     border-radius: 6px;
     padding: 10px;
@@ -46,7 +46,7 @@ p, ul {
     overflow: hidden;
     border: 1px solid var(--border-color);
     flex-shrink: 0;
-    background-color: #e0e0e0;
+    background-color: var(--hover-color);
 }
 
 .avatar-image {
@@ -92,28 +92,12 @@ p, ul {
     margin-top: 0;
 }
 
-:root {
-    --primary-color: #0078d7;
-    --secondary-color: #005a9e;
-    --background-color: #f9f9f9;
-    --card-background: #ffffff;
-    --border-color: #e0e0e0;
-    --text-color: #333333;
-    --text-secondary: #555555;
-    --success-color: #107c10;
-    --success-color-alt: #b0e7b0;
-    --warning-color: #ff8c00;
-    --error-color: #e81123;
-    --error-color-alt: #dbbdc0;
-    --active-color: #0277bd;
-    --active-color-alt: #a7d6f1;
-    --comment-bg: #f0f6fc;
-}
+/* Theme variables are now in theme.css */
 
 .pr-header {
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
     /* background-color: var(--background-color); */
@@ -122,8 +106,8 @@ p, ul {
 .back-button {
     display: inline-block;
     padding: 8px 16px;
-    background-color: #f0f2f5;
-    color: #333;
+    background-color: var(--hover-color);
+    color: var(--text-color);
     border: none;
     border-radius: 4px;
     font-size: 14px;
@@ -138,7 +122,7 @@ p, ul {
 }
 
 .back-button:hover {
-    background-color: #e0e3e9;
+    background-color: var(--selected-color);
 }
 
 .pr-details-scroll-wrapper {
@@ -167,13 +151,14 @@ p, ul {
     background-color: var(--card-background);
     position: sticky;
     top: 0;
-
+    padding-top: 16px;
 }
 
 .pr-card {
     background-color: var(--card-background);
     border-radius: 8px;
-    padding: 20px;
+    /* this 0 is so the sticky header can get the padding */
+    padding: 0 20px 20px 20px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: relative;
 }
@@ -220,7 +205,7 @@ p, ul {
     align-items: center;
     margin: 24px 0;
     padding: 16px;
-    background-color: #f8f9fa;
+    background-color: var(--hover-color);
     border-radius: 8px;
 }
 
@@ -229,21 +214,21 @@ p, ul {
 }
 
 .label {
-    color: #666;
+    color: var(--text-secondary);
     margin-right: 6px;
     font-weight: 500;
 }
 
 .branch-arrow {
     margin: 0 16px;
-    color: #666;
+    color: var(--text-secondary);
     font-size: 24px;
 }
 
 .branch-name {
     display: inline-block;
     padding: 6px 10px;
-    background-color: #f0f0f0;
+    background-color: var(--card-background);
     color: var(--text-secondary);
     border-radius: 4px;
     margin-left: 5px;
@@ -263,7 +248,7 @@ p, ul {
 }
 
 .thread-header {
-    background-color: #f3f3f3;
+    background-color: var(--hover-color);
     padding: 8px 15px;
     display: flex;
     justify-content: space-between;
@@ -280,17 +265,17 @@ p, ul {
 .system-notification {
     padding: 10px 15px;
     margin-bottom: 10px;
-    background-color: #f0f0f0;
+    background-color: var(--hover-color);
     border-radius: 4px;
     font-style: italic;
     color: var(--text-secondary);
-    border-left: 3px solid #d0d0d0;
+    border-left: 3px solid var(--border-color);
 }
 
 .notification-time {
     font-size: 12px;
     margin-bottom: 5px;
-    color: #666;
+    color: var(--text-secondary);
 }
 
 .notification-content {
@@ -364,6 +349,7 @@ p, ul {
 }
 
 .comment-content a:hover {
+    color: var(--link-hover-color);
     text-decoration: underline;
 }
 
@@ -382,7 +368,7 @@ p, ul {
 }
 
 .comment-content pre {
-    background-color: #f6f8fa;
+    background-color: var(--card-background);
     border-radius: 3px;
     padding: 16px;
     overflow: auto;
@@ -390,10 +376,11 @@ p, ul {
     font-size: 85%;
     line-height: 1.45;
     margin-bottom: 8px;
+    border: 1px solid var(--border-color);
 }
 
 .comment-content code {
-    background-color: rgba(27, 31, 35, 0.05);
+    background-color: var(--hover-color);
     border-radius: 3px;
     font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
     font-size: 85%;
@@ -424,7 +411,7 @@ p, ul {
 }
 
 .comment-content table tr:nth-child(2n) {
-    background-color: #f6f8fa;
+    background-color: var(--hover-color);
 }
 
 .comment-content img {
@@ -442,7 +429,7 @@ p, ul {
 
 .file-path {
     font-family: monospace;
-    background-color: #f0f0f0;
+    background-color: var(--hover-color);
     padding: 2px 6px;
     border-radius: 4px;
     overflow: hidden;
@@ -452,12 +439,12 @@ p, ul {
 }
 
 .line-range {
-    background-color: #e0e0e0;
+    background-color: var(--hover-color);
     margin-left: 6px;
     padding: 1px 6px;
     border-radius: 3px;
     font-size: 12px;
-    color: #555;
+    color: var(--text-secondary);
     display: inline-block;
 }
 
@@ -476,22 +463,4 @@ p, ul {
 .pr-details.not-found {
     text-align: center;
     padding: 40px 20px;
-}
-
-.external-link {
-    margin-top: 16px;
-}
-
-.external-link a {
-    display: inline-block;
-    padding: 8px 16px;
-    background-color: var(--primary-color);
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    transition: background-color 0.2s;
-}
-
-.external-link a:hover {
-    background-color: var(--secondary-color);
 }

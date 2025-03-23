@@ -44,11 +44,14 @@ export const PrHeader: React.FC<PrHeaderProps> = ({
                 </div>
             </div>
             {url && (
-                <div className={style["external-link"]}>
-                    <a href={url} target="_blank" rel="noopener noreferrer">
-                        View in Browser
-                    </a>
-                </div>
+                <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`button ${style["external-link"]}`}
+                >
+                    View in Browser
+                </a>
             )}
         </div>
     );

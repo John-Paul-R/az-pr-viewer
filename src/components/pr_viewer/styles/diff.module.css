@@ -1,9 +1,9 @@
 
 .diffAdd {
-    background-color: var(--success-color-light)
+    background-color: var(--success-color-light);
 }
 .diffRemove {
-    background-color: var(--error-color-light)
+    background-color: var(--error-color-light);
 }
 
 .diffUnchanged {}

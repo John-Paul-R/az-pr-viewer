@@ -5,6 +5,7 @@ import "../App.css";
 import "../FilesApp.css";
 import { useAppContext } from "../AppContext";
 import FileViewer from "./FileViewer";
+import ThemePicker from "./ThemePicker";
 import { PrFile } from "../types/interfaces";
 
 // Performance logging helper
@@ -148,7 +149,10 @@ function Home() {
     return (
         <div className="center-container">
             <div className="home-head">
-                <h1>PR JSON Viewer</h1>
+                <div className="header-top">
+                    <h1>PR JSON Viewer</h1>
+                    <ThemePicker />
+                </div>
 
                 <div className="directory-section">
                     <button type="button" onClick={selectArchiveFile}>

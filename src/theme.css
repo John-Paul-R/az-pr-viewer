@@ -1,0 +1,127 @@
+/* Theme variables */
+:root {
+  /* Light theme (default) */
+  --primary-color: #0078d7;
+  --secondary-color: #005a9e;
+  --link-hover-color: #50a8ff;
+  --background-color: #f9f9f9;
+  --card-background: #ffffff;
+  --border-color: #e0e0e0;
+  --text-color: #333333;
+  --text-secondary: #555555;
+  --success-color: #107c10;
+  --success-color-light: #e6ffec;
+  --success-color-alt: #b0e7b0;
+  --warning-color: #ff8c00;
+  --error-color: #e81123;
+  --error-color-light: #ffebe9;
+  --error-color-alt: #dbbdc0;
+  --active-color: #0277bd;
+  --active-color-alt: #a7d6f1;
+  --comment-bg: #f0f6fc;
+  --hover-color: #f0f0f0;
+  --selected-color: #eaf4ff;
+
+  /* Badge colors */
+  --vote-10-bg: #e8f5e9;
+  --vote-5-bg: #7ed07e;
+  --vote-5-text: white;
+  --vote-neg5-bg: #ffd7b3;
+  --vote-neg5-text: #b35900;
+  --vote-neg10-text: white;
+  --status-active-bg: #e3f2fd;
+  --status-completed-bg: #e8f5e9;
+  --status-abandoned-bg: #ffebee;
+
+  /* Common elements */
+  --button-text: white;
+  --button-bg: var(--primary-color);
+  --button-hover: var(--secondary-color);
+  --input-bg: white;
+  --input-border: #ddd;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+  --primary-color: #218ec4;
+  --secondary-color: #1a77a5;
+  --link-hover-color: #7dd5ff;
+  --background-color: #1e1e1e;
+  --card-background: #252526;
+  --border-color: #444444;
+  --text-color: #f0f0f0;
+  --text-secondary: #cccccc;
+  --success-color: #4caf50;
+  --success-color-light: #132f14;
+  --success-color-alt: #2d7a2d;
+  --warning-color: #ffa726;
+  --error-color: #f44336;
+  --error-color-light: #3b1a1a;
+  --error-color-alt: #9a3e3e;
+  --active-color: #29b6f6;
+  --active-color-alt: #0d3c55;
+  --comment-bg: #2d2d2d;
+  --hover-color: #333333;
+  --selected-color: #103a6f;
+
+  /* Badge colors */
+  --vote-10-bg: #132f14;
+  --vote-5-bg: #2d7a2d;
+  --vote-5-text: #f0f0f0;
+  --vote-neg5-bg: #3a2210;
+  --vote-neg5-text: #ffb066;
+  --vote-neg10-text: #f0f0f0;
+  --status-active-bg: #0d3c55;
+  --status-completed-bg: #132f14;
+  --status-abandoned-bg: #3b1a1a;
+  --active-color-alt: #308bbf;
+
+  /* Common elements */
+  --button-text: #f0f0f0;
+  --button-bg: var(--primary-color);
+  --button-hover: var(--secondary-color);
+  --input-bg: #333333;
+  --input-border: #555555;
+}
+
+/* Azure theme */
+[data-theme="azure"] {
+  --primary-color: #0078d4;
+  --secondary-color: #106ebe;
+  --link-hover-color: #50acff;
+  --background-color: #faf9f8;
+  --card-background: #ffffff;
+  --border-color: #d2d0ce;
+  --text-color: #323130;
+  --text-secondary: #605e5c;
+  --success-color: #107c10;
+  --success-color-light: #dff6dd;
+  --success-color-alt: #92c353;
+  --warning-color: #ffaa44;
+  --error-color: #a80000;
+  --error-color-light: #fed9cc;
+  --error-color-alt: #d29b85;
+  --active-color: #0078d4;
+  --active-color-alt: #8bb3d4;
+  --comment-bg: #f3f2f1;
+  --hover-color: #f3f2f1;
+  --selected-color: #edebe9;
+
+  /* Badge colors */
+  --vote-10-bg: #dff6dd;
+  --vote-5-bg: #92c353;
+  --vote-5-text: white;
+  --vote-neg5-bg: #fed9cc;
+  --vote-neg5-text: #8a3c2a;
+  --vote-neg10-text: white;
+  --status-active-bg: #c7e0f4;
+  --status-completed-bg: #dff6dd;
+  --status-abandoned-bg: #fed9cc;
+
+  /* Common elements */
+  --button-text: white;
+  --button-bg: var(--secondary-color);
+  --button-hover: var(--primary-color);
+  --input-bg: white;
+  --input-border: #d2d0ce;
+}

@@ -1,12 +1,4 @@
-:root {
-  --primary-color: #2f80ed;
-  --secondary-color: #e0e0e0;
-  --background-color: #f6f8fa;
-  --text-color: #333;
-  --hover-color: #f0f0f0;
-  --selected-color: #eaf4ff;
-  --border-color: #ddd;
-}
+/* Theme variables are in theme.css */
 
 body {
   margin: 0;
@@ -33,6 +25,13 @@ body {
   grid-area: home_head;
 }
 
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
 .home-content {
   grid-area: home_content;
   overflow: hidden;
@@ -43,18 +42,19 @@ h1, h2 {
 }
 
 button {
-  background-color: var(--primary-color);
-  color: white;
+  background-color: var(--button-bg);
+  color: var(--button-text);
   border: none;
   padding: 10px 15px;
   border-radius: 4px;
   cursor: pointer;
   font-size: 14px;
   transition: background-color 0.2s;
+  font-weight: 500;
 }
 
 button:hover {
-  background-color: #1a6fd1;
+  background-color: var(--button-hover);
 }
 
 .directory-section {
@@ -82,19 +82,22 @@ button:hover {
   border: 1px solid var(--border-color);
   border-radius: 4px;
   font-size: 16px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
 }
 
 .error {
-  color: red;
-  background-color: #ffeeee;
+  color: var(--error-color);
+  background-color: var(--error-color-light);
   padding: 10px;
   border-radius: 4px;
   margin-bottom: 15px;
+  border: 1px solid var(--error-color-alt);
 }
 
 /* File Viewer */
 .file-viewer {
-  background-color: white;
+  background-color: var(--card-background);
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   padding: 20px;
@@ -136,12 +139,13 @@ button:hover {
 /* PR Details */
 
 .json-viewer {
-  background-color: white;
+  background-color: var(--card-background);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   overflow: auto;
   max-height: 80vh;
+  border: 1px solid var(--border-color);
 }
 
 .json-viewer pre {

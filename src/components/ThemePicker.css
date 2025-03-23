@@ -1,0 +1,64 @@
+.theme-picker {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.theme-picker-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.theme-options {
+  display: flex;
+  gap: 8px;
+}
+
+.theme-button {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--border-color);
+  background-color: var(--card-background);
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+  transition: all 0.2s ease;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.theme-button:hover {
+  transform: scale(1.1);
+}
+
+.theme-button.active {
+  border-color: var(--primary-color);
+  background-color: var(--selected-color);
+}
+
+.theme-icon {
+  width: 16px;
+  height: 16px;
+  display: block;
+  border-radius: 50%;
+}
+
+.light-icon {
+  background: linear-gradient(to right, #f8f8f8, #ffcc33);
+  border: 1px solid #ddd;
+}
+
+.dark-icon {
+  background: linear-gradient(to right, #1a1a1a, #3a3a3a);
+  border: 1px solid #444;
+}
+
+.azure-icon {
+  background: linear-gradient(to bottom right, #0078d4, #50e6ff);
+  border: 1px solid #0078d4;
+}
