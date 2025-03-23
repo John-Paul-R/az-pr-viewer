@@ -14,7 +14,6 @@ application, and **Python** for the data export.
   - Comment Threads
     - FileName + LineNumber references
     - Inline git diffs, with links to full file
-      - see "[Data Export -> Git Revisions](#git-revisions)"
     - "thumbs-up" comment likes count & user list
   - a "Files Changed" diff view
   - votes / approvers
