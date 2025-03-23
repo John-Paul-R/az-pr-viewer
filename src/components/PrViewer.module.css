@@ -247,17 +247,26 @@ p, ul {
     overflow: hidden;
 }
 
+/* a code snippet for the thread context */
+.thread > pre {
+    margin: 0;
+    padding: 4px;
+    border-bottom: 1px solid var(--border-color);
+}
+
 .thread-header {
     background-color: var(--hover-color);
-    padding: 8px 15px;
+    padding: 10px 15px;
     display: flex;
     justify-content: space-between;
     font-size: 14px;
+    font-weight: 500;
     color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .comment {
-    padding: 15px;
+    padding: 14px;
     border-bottom: 1px solid var(--border-color);
     background-color: var(--comment-bg);
 }
@@ -289,7 +298,9 @@ p, ul {
 .comment-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 10px;
+    /* margin-bottom: 4px; */
+    padding-bottom: 8px;
+    /* border-bottom: 1px solid var(--border-color); */
     font-size: 14px;
 }
 
