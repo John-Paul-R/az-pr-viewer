@@ -141,21 +141,21 @@
   --border-color: #dce0e8;      /* Latte surface0 */
   --text-color: #4c4f69;        /* Latte text */
   --text-secondary: #6c6f85;    /* Latte subtext0 */
-  --success-color: #a6da95;     /* Green */
+  --success-color: #7ccf83;     /* Balanced green - more vivid than original but still Catppuccin */
   --success-color-light: #eef8ee; /* Very light green for diffs */
-  --success-color-alt: #8bd5ca; /* Teal */
+  --success-color-alt: #58c4b8; /* Balanced teal */
   --warning-color: #f8bd96;     /* Peach */
-  --error-color: #ed8796;       /* Red */
+  --error-color: #eb6d7a;       /* Balanced red - midway between original and punchy */
   --error-color-light: #fdf0f3; /* Very light red for diffs */
-  --error-color-alt: #f4b8c2;   /* Light red */
-  --active-color: #f5bde6;      /* Pink */
-  --active-color-alt: #f4a6e2;  /* Darker pink for borders */
+  --error-color-alt: #f0949e;   /* Balanced light red */
+  --active-color: #e47ad0;      /* Balanced pink - midway between original and punchy */
+  --active-color-alt: #e986d4;  /* Balanced pink for borders */
   --active-color-light: #fdeef8;
   --comment-bg: #e6e9ef;        /* Lighter than base */
   --hover-color: #e6e9ef;       /* Lighter than base */
   --selected-color: #f9d4ed;    /* Light pink */
   --line-range-bg: #e6e9ef;     /* Lighter than base */
-  
+
   /* Diff specific colors */
   --highlight-color: rgba(249, 226, 175, 0.3); /* Soft gold/amber highlight */
   --highlight-border-color: #f8bd96; /* Peach/gold border */
@@ -173,9 +173,9 @@
   --vote-neg5-bg: #f8decd;      /* Light peach */
   --vote-neg5-text: #7c5f4a;    /* Dark peach */
   --vote-neg10-text: #fff;      /* White text */
-  --status-active-bg: #f9d4ed;  /* Light pink */
-  --status-completed-bg: #dff3df; /* Light green */
-  --status-abandoned-bg: #fdeaee; /* Light red */
+  --status-active-bg: #f3e8ef;  /* Light pink */
+  --status-completed-bg: #e5f5e5; /* More saturated light green for better contrast */
+  --status-abandoned-bg: #f8e0e4; /* More saturated light red for better contrast */
 
   /* Common elements */
   --button-text: #181926;       /* Macchiato crust - dark for contrast */
@@ -210,7 +210,7 @@
   --hover-color: #292c3c;       /* Slightly lighter than base */
   --selected-color: #3a2c41;    /* Dark pink */
   --line-range-bg: #292c3c;     /* Slightly lighter than base */
-  
+
   /* Diff specific colors */
   --highlight-color: rgba(249, 226, 175, 0.2); /* Soft gold/amber highlight */
   --highlight-border-color: #f8bd96; /* Peach/gold border */

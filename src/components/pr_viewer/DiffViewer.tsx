@@ -5,6 +5,7 @@ import diffstyle from "./styles/diff.module.css";
 import style from "../PrViewer.module.css" with { type: "css" };
 import { Highlight, themes } from "prism-react-renderer";
 import "./styles/diff.overrides.css";
+import { useTheme } from "../../hooks/useTheme";
 
 function createCodeHunks(
     lines: DiffLine[],
@@ -235,9 +236,12 @@ const FileContentGrid = memo(
                 </div>
 
                 {/* Content column with full text content */}
-                {/* <div className={diffstyle.contentColumn}> */}
                 <Highlight
-                    theme={themes.nightOwl}
+                    theme={
+                        useTheme().isDark
+                            ? themes.gruvboxMaterialDark
+                            : themes.nightOwlLight
+                    }
                     code={codeText}
                     language="tsx"
                 >
