@@ -20,12 +20,13 @@ export const ThreadsSection: React.FC<ThreadsSectionProps> = ({ threads }) => {
         );
     }
 
-    // Sort threads by publishedDate
+    // Sort threads by reverse publishedDate
     const sortedThreads = [...activeThreads].sort(
         (a, b) =>
-            new Date(a.publishedDate).getTime() -
-            new Date(b.publishedDate).getTime(),
+            new Date(b.publishedDate).getTime() -
+            new Date(a.publishedDate).getTime(),
     );
+    console.log(sortedThreads);
 
     return (
         <div className={style["threads-section"]}>
