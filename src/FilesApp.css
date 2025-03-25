@@ -46,22 +46,6 @@ h2 {
     color: var(--primary-color);
 }
 
-button {
-    background-color: var(--button-bg);
-    color: var(--button-text);
-    border: none;
-    padding: 10px 15px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.2s;
-    font-weight: 500;
-}
-
-button:hover {
-    background-color: var(--button-hover);
-}
-
 .error {
     color: var(--error-color);
     background-color: var(--error-color-light);

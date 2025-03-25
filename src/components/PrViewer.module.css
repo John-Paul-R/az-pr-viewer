@@ -1,5 +1,3 @@
-@import "./badges.module.css";
-
 p,
 ul {
     margin: 0;
@@ -269,10 +267,19 @@ ul {
     padding: 16px;
     background-color: var(--hover-color);
     border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.branch .branch-name {
+    border: 1px solid var(--border-color);
+    display: block;
 }
 
 .branch {
     flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
 }
 
 .label {

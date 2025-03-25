@@ -18,18 +18,18 @@ export const PrBranches: React.FC<PrBranchesProps> = ({
 
     return (
         <div className={style["pr-branches"]}>
-            <div className="branch source">
+            <div className={`${style.branch} ${style.source}`}>
                 <span className={style.label}>Source:</span>
-                <span className={style["branch-name"]}>
+                <div className={style["branch-name"]}>
                     {formatBranchName(sourceBranch)}
-                </span>
+                </div>
             </div>
             <div className={style["branch-arrow"]}>→</div>
-            <div className="branch target">
+            <div className={`${style.branch} ${style.target}`}>
                 <span className={style.label}>Target:</span>
-                <span className={style["branch-name"]}>
+                <div className={style["branch-name"]}>
                     {formatBranchName(targetBranch)}
-                </span>
+                </div>
             </div>
         </div>
     );

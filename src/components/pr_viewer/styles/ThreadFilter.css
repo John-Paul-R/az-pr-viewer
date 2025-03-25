@@ -33,7 +33,9 @@
     font-weight: 500;
     box-shadow: inset 0 0 0 1px var(--primary-color);
 }
-
+.filter-button:hover {
+    color: var(--button-text);
+}
 .filter-button:hover:not(.active) {
     background-color: var(--hover-color);
 }
