@@ -8,7 +8,7 @@ One thing you'll quickly notice if you attempt to assemble complete PR
 information using a regular old clone of the relevant Azure git repository is
 that some of the refs referenced in the PR simply don't exist. In particular,
 the commit objects for commits that exist in PRs you've never personally checked
-out, but have since been merged and had their brancehs deleted on the remote
+out, but have since been merged and had their branches deleted on the remote
 will not exist in your local copy.
 
 This isn't entirely surprising, as it would be rather expensive to clone these
