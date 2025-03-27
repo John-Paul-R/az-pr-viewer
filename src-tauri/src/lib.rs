@@ -346,164 +346,178 @@ impl Default for InitialState {
     }
 }
 
+// Helper function to initialize a file system with an optional archive path
+fn initialize_filesystem(archive_path: &Option<String>, archive_type: &str) -> Result<FileSystem, String> {
+    let fs = FileSystem::new();
+
+    if let Some(path) = archive_path {
+        fs.set_archive(path)?;
+        println!("{} archive set to: {}", archive_type, path);
+    }
+
+    Ok(fs)
+}
+
+// Helper function to initialize a git repository from a path
+fn initialize_git_repo(repo_path: &Option<String>) -> Result<Option<Repository>, String> {
+    match repo_path {
+        Some(path) => {
+            match Repository::open(path) {
+                Ok(r) => {
+                    println!("Git repository set to: {}", path);
+                    Ok(Some(r))
+                },
+                Err(e) => {
+                    Err(format!("Failed to open git repository '{}': {}", path, e))
+                }
+            }
+        }
+        None => Ok(None),
+    }
+}
+
+// Helper function to create the AppState from initialized components
+fn create_app_state(
+    fs: FileSystem,
+    images_fs: FileSystem,
+    repo_option: Option<Repository>
+) -> AppState {
+    AppState {
+        fs,                              // Main PR data archive
+        images_fs,                       // Separate images archive
+        search: SearchIndex::new(),
+        repo: Arc::new(Mutex::new(repo_option)),
+    }
+}
+
+// Helper function to handle zip image protocol requests
+fn handle_zip_image_protocol<'a>(
+    ctx: UriSchemeContext<'a, Wry>,
+    request: tauri::http::Request<Vec<u8>>,
+) -> tauri::http::Response<Vec<u8>> {
+    // Get the state from the app handle
+    let state = ctx.app_handle().state::<AppState>();
+
+    // Strip the scheme prefix to get the image path
+    let uri = request.uri().to_string();
+    let image_path = uri.strip_prefix("zip-image://")
+        .unwrap_or_default()
+        .to_string();
+
+    // Use the existing get_image_from_index logic but extract just what we need
+    // First, get the images index file
+    let index_content = match state.images_fs.read_file_from_memory("images-index.json") {
+        Ok(content) => content,
+        Err(e) => {
+            println!("Failed to read images index: {}", e);
+            return tauri::http::Response::builder()
+                .status(404)
+                .body(Vec::new())
+                .unwrap();
+        }
+    };
+
+    // Parse the index
+    let index: Value = match serde_json::from_str(&index_content) {
+        Ok(idx) => idx,
+        Err(e) => {
+            println!("Failed to parse images index JSON: {}", e);
+            return tauri::http::Response::builder()
+                .status(500)
+                .body(Vec::new())
+                .unwrap();
+        }
+    };
+
+    // Look up the requested path in the index
+    let index_obj = match index.as_object() {
+        Some(obj) => obj,
+        None => {
+            println!("Images index is not a valid JSON object");
+            return tauri::http::Response::builder()
+                .status(500)
+                .body(Vec::new())
+                .unwrap();
+        }
+    };
+
+    // Get the actual path in the zip file
+    let actual_path = match index_obj.get(&image_path) {
+        Some(path_value) => match path_value.as_str() {
+            Some(path) => path,
+            None => {
+                println!("Path value for '{}' is not a string", image_path);
+                return tauri::http::Response::builder()
+                    .status(400)
+                    .body(Vec::new())
+                    .unwrap();
+            }
+        },
+        None => {
+            println!("Image path '{}' not found in index", image_path);
+            return tauri::http::Response::builder()
+                .status(404)
+                .body(Vec::new())
+                .unwrap();
+        }
+    };
+
+    println!("Image protocol request: '{}' maps to '{}'", image_path, actual_path);
+
+    // Read the binary image data
+    let image_data = match state.images_fs.read_binary_file_from_memory(actual_path) {
+        Ok(data) => data,
+        Err(e) => {
+            println!("Failed to read image file: {}", e);
+            return tauri::http::Response::builder()
+                .status(500)
+                .body(Vec::new())
+                .unwrap();
+        }
+    };
+
+    // Try to determine MIME type from the requested path (for correct browser rendering)
+    let mime_type = if image_path.ends_with(".png") {
+        "image/png"
+    } else if image_path.ends_with(".jpg") || image_path.ends_with(".jpeg") {
+        "image/jpeg"
+    } else if image_path.ends_with(".gif") {
+        "image/gif"
+    } else if image_path.ends_with(".svg") {
+        "image/svg+xml"
+    } else {
+        "application/octet-stream"
+    };
+
+    let mut res = tauri::http::Response::new(image_data);
+    // Set the Content-Type header safely
+    match HeaderValue::from_str(mime_type) {
+        Ok(header_value) => {
+            res.headers_mut().insert("Content-Type", header_value);
+        },
+        Err(_) => {
+            // If we can't create a header value, just use a default
+            if let Ok(default_value) = HeaderValue::from_str("application/octet-stream") {
+                res.headers_mut().insert("Content-Type", default_value);
+            }
+        }
+    };
+
+    res
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run(initial_state: Option<InitialState>) -> Result<(), String> {
     // Use provided initial state or create a default one
     let initial_state = initial_state.unwrap_or_default();
 
-    // Create the filesystems with the archives if provided
-    let fs = FileSystem::new();
-    if let Some(archive_path) = &initial_state.archive_path {
-        fs.set_archive(archive_path)?;
-        println!("PR archive set to: {}", archive_path);
-    }
+    // Initialize components using our helper functions
+    let fs = initialize_filesystem(&initial_state.archive_path, "PR")?;
+    let images_fs = initialize_filesystem(&initial_state.images_archive_path, "Images")?;
+    let repo_option = initialize_git_repo(&initial_state.repo_path)?;
 
-    // Initialize the images filesystem
-    let images_fs = FileSystem::new();
-    if let Some(images_path) = &initial_state.images_archive_path {
-        images_fs.set_archive(images_path)?;
-        println!("Images archive set to: {}", images_path);
-    }
-
-    // handle the git repository option
-    let repo_option = match &initial_state.repo_path {
-        Some(repo_path) => {
-            match Repository::open(repo_path) {
-                Ok(r) => {
-                    println!("Git repository set to: {}", repo_path);
-                    Some(r)
-                },
-                Err(e) => {
-                    return Err(format!("Failed to open git repository '{}': {}", repo_path, e));
-                }
-            }
-        }
-        _ => None,
-    };
-
-    // Create our app state
-    let app_state = AppState {
-        fs,                              // Main PR data archive
-        images_fs,                       // Separate images archive
-        search: SearchIndex::new(),
-        repo: Arc::new(Mutex::new(repo_option)),
-    };
-
-    // Helper function to handle zip image protocol requests
-    fn handle_zip_image_protocol<'a>(
-        ctx: UriSchemeContext<'a, Wry>,
-        request: tauri::http::Request<Vec<u8>>,
-    ) -> tauri::http::Response<Vec<u8>> {
-        // Get the state from the app handle
-        let state = ctx.app_handle().state::<AppState>();
-
-        // Strip the scheme prefix to get the image path
-        let uri = request.uri().to_string();
-        let image_path = uri.strip_prefix("zip-image://")
-            .unwrap_or_default()
-            .to_string();
-
-        // Use the existing get_image_from_index logic but extract just what we need
-        // First, get the images index file
-        let index_content = match state.images_fs.read_file_from_memory("image_index.json") {
-            Ok(content) => content,
-            Err(e) => {
-                println!("Failed to read images index: {}", e);
-                return tauri::http::Response::builder()
-                    .status(404)
-                    .body(Vec::new())
-                    .unwrap();
-            }
-        };
-
-        // Parse the index
-        let index: Value = match serde_json::from_str(&index_content) {
-            Ok(idx) => idx,
-            Err(e) => {
-                println!("Failed to parse images index JSON: {}", e);
-                return tauri::http::Response::builder()
-                    .status(500)
-                    .body(Vec::new())
-                    .unwrap();
-            }
-        };
-
-        // Look up the requested path in the index
-        let index_obj = match index.as_object() {
-            Some(obj) => obj,
-            None => {
-                println!("Images index is not a valid JSON object");
-                return tauri::http::Response::builder()
-                    .status(500)
-                    .body(Vec::new())
-                    .unwrap();
-            }
-        };
-
-        // Get the actual path in the zip file
-        let actual_path = match index_obj.get(&format!("{}{}", "https://", &image_path)) {
-            Some(path_value) => match path_value.as_str() {
-                Some(path) => path,
-                None => {
-                    println!("Path value for '{}' is not a string", image_path);
-                    return tauri::http::Response::builder()
-                        .status(400)
-                        .body(Vec::new())
-                        .unwrap();
-                }
-            },
-            None => {
-                println!("Image path '{}' not found in index", image_path);
-                return tauri::http::Response::builder()
-                    .status(404)
-                    .body(Vec::new())
-                    .unwrap();
-            }
-        };
-
-        println!("Image protocol request: '{}' maps to '{}'", image_path, actual_path);
-
-        // Read the binary image data
-        let image_data = match state.images_fs.read_binary_file_from_memory(actual_path) {
-            Ok(data) => data,
-            Err(e) => {
-                println!("Failed to read image file: {}", e);
-                return tauri::http::Response::builder()
-                    .status(500)
-                    .body(Vec::new())
-                    .unwrap();
-            }
-        };
-
-        // Try to determine MIME type from the requested path (for correct browser rendering)
-        let mime_type = if image_path.ends_with(".png") {
-            "image/png"
-        } else if image_path.ends_with(".jpg") || image_path.ends_with(".jpeg") {
-            "image/jpeg"
-        } else if image_path.ends_with(".gif") {
-            "image/gif"
-        } else if image_path.ends_with(".svg") {
-            "image/svg+xml"
-        } else {
-            "application/octet-stream"
-        };
-
-        let mut res = tauri::http::Response::new(image_data);
-        // Set the Content-Type header safely
-        match HeaderValue::from_str(mime_type) {
-            Ok(header_value) => {
-                res.headers_mut().insert("Content-Type", header_value);
-            },
-            Err(_) => {
-                // If we can't create a header value, just use a default
-                if let Ok(default_value) = HeaderValue::from_str("application/octet-stream") {
-                    res.headers_mut().insert("Content-Type", default_value);
-                }
-            }
-        };
-
-        res
-    }
+    // Create the application state
+    let app_state = create_app_state(fs, images_fs, repo_option);
 
     // Build and run the application with the initialized state
     tauri::Builder::default()
