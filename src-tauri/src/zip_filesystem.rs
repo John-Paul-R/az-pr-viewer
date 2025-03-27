@@ -6,23 +6,25 @@ use std::time::Instant;
 use std::fs;
 use tempfile::TempDir;
 use zip::ZipArchive;
+use serde_json::Value;
 
+#[derive(Clone)]
 pub struct FileSystem {
-    archive_path: Mutex<String>,
-    archive_content: Mutex<Option<Arc<Vec<u8>>>>,
-    temp_dir: Mutex<Option<TempDir>>,
-    file_cache: Mutex<HashMap<String, String>>,
-    extracted_files: Mutex<Vec<String>>,
+    archive_path: Arc<Mutex<String>>,
+    archive_content: Arc<Mutex<Option<Arc<Vec<u8>>>>>,
+    temp_dir: Arc<Mutex<Option<TempDir>>>,
+    file_cache: Arc<Mutex<HashMap<String, String>>>,
+    extracted_files: Arc<Mutex<Vec<String>>>,
 }
 
 impl FileSystem {
     pub fn new() -> Self {
         FileSystem {
-            archive_path: Mutex::new(String::new()),
-            archive_content: Mutex::new(None),
-            temp_dir: Mutex::new(None),
-            file_cache: Mutex::new(HashMap::new()),
-            extracted_files: Mutex::new(Vec::new()),
+            archive_path: Arc::new(Mutex::new(String::new())),
+            archive_content: Arc::new(Mutex::new(None)),
+            temp_dir: Arc::new(Mutex::new(None)),
+            file_cache: Arc::new(Mutex::new(HashMap::new())),
+            extracted_files: Arc::new(Mutex::new(Vec::new())),
         }
     }
 
@@ -347,5 +349,41 @@ impl FileSystem {
         println!("Performance: JSON parsing completed in {:?}", start.elapsed());
 
         Ok(result)
+    }
+
+    pub fn read_binary_file_from_memory(&self, path: &str) -> Result<Vec<u8>, String> {
+        let start = Instant::now();
+
+        self.ensure_archive_loaded()?;
+
+        // Get archive content from memory
+        let archive_content = {
+            let content_guard = self.archive_content.lock().unwrap();
+            match &*content_guard {
+                Some(content) => Arc::clone(content),
+                None => return Err("Archive content not loaded".to_string()),
+            }
+        };
+
+        // Create a cursor to read from memory
+        let cursor = Cursor::new(&*archive_content);
+
+        // Create ZIP archive reader
+        let mut archive = ZipArchive::new(cursor)
+            .map_err(|e| format!("Failed to open ZIP archive: {}", e))?;
+
+        // Try to find the file
+        let mut zip_file = archive.by_name(path)
+            .map_err(|e| format!("Failed to find file in ZIP: {}", e))?;
+
+        // Read binary data
+        let mut data = Vec::new();
+        zip_file.read_to_end(&mut data)
+            .map_err(|e| format!("Failed to read binary file from ZIP: {} ({})", e, path))?;
+
+        println!("Performance: read_binary_file_from_memory '{}' ({} bytes) in {:?}",
+                 path, data.len(), start.elapsed());
+
+        Ok(data)
     }
 }

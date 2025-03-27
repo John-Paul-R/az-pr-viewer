@@ -16,7 +16,12 @@ fn main() {
             .short('a')
             .long("archive")
             .value_name("FILE")
-            .help("Sets the zip archive file to use"))
+            .help("Sets the main zip archive file for PR data"))
+        .arg(Arg::new("images")
+            .short('i')
+            .long("images")
+            .value_name("FILE")
+            .help("Sets the zip archive file for images"))
         .arg(Arg::new("repo")
             .short('r')
             .long("repo")
@@ -27,6 +32,7 @@ fn main() {
     // Create the InitialState based on CLI arguments
     let initial_state = InitialState {
         archive_path: matches.get_one::<String>("archive").cloned(),
+        images_archive_path: matches.get_one::<String>("images").cloned(),
         repo_path: matches.get_one::<String>("repo").cloned(),
     };
 
