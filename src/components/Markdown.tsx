@@ -54,14 +54,13 @@ export function Markdown({ markdown }: { markdown: string }) {
                             children,
                             className,
                             src,
-                            href,
                             node,
                             ...rest
                         } = props;
                         const match = src
                             ? /https?:\/\/(.+\/.+\.(jpg|jpeg|webp|png|gif))/.exec(
-                                  src,
-                              )
+                                src,
+                            )
                             : "";
                         const urlIsh = match?.[1]
                             ? `zip-image://${match[1]}`
