@@ -18,6 +18,7 @@ application, and **Python** for the data export.
   - a "Files Changed" diff view
   - votes / approvers
   - pushes with ref and description
+- rendering markdown-linked images exported from the original repository
 - rewriting internal links to other PRs in the repository to navigate to that PR
   inside the application
 - git integration with local repositories
@@ -28,7 +29,7 @@ application, and **Python** for the data export.
 
 (yet?)
 
-- Images and User Avatars
+- User Avatars
   - Export scripts are done, as is indexing, just need to wire them up
 - search by ref
 - search by files affected
