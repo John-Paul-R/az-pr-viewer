@@ -11,16 +11,16 @@ use git_diff::{get_tree_diff_between_revisions, get_filtered_tree_diff, TreeDiff
 use git_lines::{get_file_diff_as_strings, get_file_lines_at_revision};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tauri::{async_runtime::Mutex, http::HeaderValue, Manager, State, UriSchemeContext, Wry};
+use tauri::{async_runtime::{Mutex, spawn}, http::HeaderValue, Manager, State, UriSchemeContext, Wry};
 use zip_filesystem::FileSystem;
 use search::SearchIndex;
 use memory_stats::memory_stats;
 
 fn log_memory_usage(label: &str) {
     if let Some(usage) = memory_stats() {
-        println!("Memory usage at {}: Physical: {} MB, Virtual: {} MB", 
-                 label, 
-                 usage.physical_mem / (1024 * 1024), 
+        println!("Memory usage at {}: Physical: {} MB, Virtual: {} MB",
+                 label,
+                 usage.physical_mem / (1024 * 1024),
                  usage.virtual_mem / (1024 * 1024));
     } else {
         println!("Memory stats not available");
@@ -62,11 +62,16 @@ struct PrIndexEntry {
 // The index is just an array of entries
 type PrIndex = Vec<PrIndexEntry>;
 
+use std::collections::HashMap;
+
+#[derive(Clone)]
 struct AppState {
     fs: FileSystem,                          // Main archive for PR data
     images_fs: FileSystem,                   // Separate archive for images
-    search: SearchIndex,
+    search: Arc<SearchIndex>,
     repo: Arc<Mutex<Option<Repository>>>,
+    pr_file_cache: Arc<Mutex<HashMap<String, String>>>, // Cache for PR file contents
+    preload_token: Arc<std::sync::Mutex<u64>>,          // Token to cancel preload tasks (std::sync::Mutex for sync access)
 }
 
 // Helper function to convert index entries to PrFile objects
@@ -90,6 +95,94 @@ fn index_entries_to_pr_files(entries: Vec<PrIndexEntry>) -> Vec<PrFile> {
     }
 
     files
+}
+
+// Helper function to preload PR files into cache as a background task
+fn spawn_preload_pr_files_into_cache(files: Vec<PrFile>, state: AppState) {
+    // Get the current token and increment it to cancel any previous tasks
+    let current_token = {
+        let mut token_guard = state.preload_token.lock().unwrap();
+        *token_guard += 1;
+        *token_guard
+    };
+
+    println!("Starting preload task with token {}", current_token);
+
+    // Spawn a background task to preload files
+    spawn(async move {
+        let cache_start = Instant::now();
+        let mut cache_hits = 0;
+        let files_count = files.len();
+
+        // First check what's already in cache
+        {
+            let pr_cache = state.pr_file_cache.lock().await;
+            for file in &files {
+                if pr_cache.contains_key(&file.archive_path) {
+                    cache_hits += 1;
+                }
+            }
+        }
+
+        // If all files are already cached, return early
+        if cache_hits == files_count {
+            println!("Performance: All {} PR files were already in cache (token {})",
+                     files_count, current_token);
+            return;
+        }
+
+        // Now load any missing files
+        let mut new_cache_entries = 0;
+
+        for file in files {
+            // Check if this task has been cancelled by a newer search
+            {
+                let token_guard = state.preload_token.lock().unwrap();
+                if *token_guard != current_token {
+                    println!("Preload task with token {} cancelled (current is {})",
+                             current_token, *token_guard);
+                    return;
+                }
+            }
+
+            // Check again when processing each file to avoid locking the entire time
+            {
+                let pr_cache = state.pr_file_cache.lock().await;
+                if pr_cache.contains_key(&file.archive_path) {
+                    continue;
+                }
+            }
+
+            // Try to read the file and add it to cache
+            match state.fs.read_file_from_memory(&file.archive_path) {
+                Ok(content) => {
+                    // Check again for cancellation after file read
+                    {
+                        let token_guard = state.preload_token.lock().unwrap();
+                        if *token_guard != current_token {
+                            println!("Preload task with token {} cancelled after file read (current is {})",
+                                     current_token, *token_guard);
+                            return;
+                        }
+                    }
+
+                    let mut cache = state.pr_file_cache.lock().await;
+                    // Double-check it's not already cached
+                    if !cache.contains_key(&file.archive_path) {
+                        cache.insert(file.archive_path.clone(), content);
+                        new_cache_entries += 1;
+                    }
+                },
+                Err(e) => {
+                    println!("Warning: Failed to preload PR file '{}': {}",
+                             file.archive_path, e);
+                }
+            }
+        }
+
+        println!("Performance: Background task (token {}) preloaded {} new PR files into cache in {:?} ({} were already cached)",
+                current_token, new_cache_entries, cache_start.elapsed(), cache_hits);
+    });
 }
 
 #[tauri::command(async)]
@@ -118,8 +211,16 @@ fn get_pr_files(state: State<AppState>) -> Result<Vec<PrFile>, String> {
 }
 
 #[tauri::command(async)]
-fn search_prs(query: String, state: State<AppState>) -> Result<Vec<PrFile>, String> {
+async fn search_prs(query: String, state: State<'_, AppState>) -> Result<Vec<PrFile>, String> {
     let start = Instant::now();
+    log_memory_usage(&format!("start of search_prs for query '{}'", query));
+
+    // Increment the preload token to cancel any ongoing preload tasks
+    {
+        let mut token_guard = state.preload_token.lock().unwrap();
+        *token_guard += 1;
+        println!("Search incremented preload token to {}", *token_guard);
+    }
 
     // Make sure we have an initialized search index
     if !state.search.is_initialized() {
@@ -131,9 +232,14 @@ fn search_prs(query: String, state: State<AppState>) -> Result<Vec<PrFile>, Stri
 
     // Search for matching PRs
     let results = state.search.search(&query)?;
+    log_memory_usage(&format!("after search for query '{}' with {} results", query, results.len()));
 
     // Create files from search results using the extracted function
     let files = index_entries_to_pr_files(results);
+
+    // Pre-load the PR files content into cache in the background (if the result set is reasonably small)
+    spawn_preload_pr_files_into_cache(files.iter().cloned().take(100).collect(), state.inner().clone());
+    log_memory_usage(&format!("after spawning preload task for query '{}'", query));
 
     println!("Performance: search_prs found {} matches for '{}' in {:?}",
              files.len(), query, start.elapsed());
@@ -142,17 +248,27 @@ fn search_prs(query: String, state: State<AppState>) -> Result<Vec<PrFile>, Stri
 }
 
 #[tauri::command(async)]
-fn set_archive_file(new_archive: String, state: State<AppState>) -> Result<(), String> {
+async fn set_archive_file(new_archive: String, state: State<'_, AppState>) -> Result<(), String> {
     let start = Instant::now();
+    log_memory_usage("start of set_archive_file");
 
     // Set the archive in the filesystem
     let result = state.fs.set_archive(&new_archive);
 
-    // Clear the search index to force rebuild on next search
+    // Clear the search index and PR cache to force rebuild on next search
     if result.is_ok() {
-        // We'll rebuild the search index when needed
+        // Clear the PR file cache
+        let mut pr_cache = state.pr_file_cache.lock().await;
+        pr_cache.clear();
+
+        // Increment the preload token to cancel any ongoing preload tasks
+        let mut token_guard = state.preload_token.lock().unwrap();
+        *token_guard += 1;
+
+        println!("PR file cache cleared and preload token incremented to {} for new archive", *token_guard);
     }
 
+    log_memory_usage("end of set_archive_file");
     println!("Performance: set_archive_file completed in {:?}", start.elapsed());
     result
 }
@@ -183,10 +299,28 @@ async fn get_images_archive_path(
 }
 
 #[tauri::command(async)]
-fn read_pr_file(path: String, state: State<AppState>) -> Result<String, String> {
+async fn read_pr_file(path: String, state: State<'_, AppState>) -> Result<String, String> {
+    let start = Instant::now();
+
+    // First, check if the file is in our PR file cache
+    {
+        let pr_cache = state.pr_file_cache.lock().await;
+        if let Some(content) = pr_cache.get(&path) {
+            println!("Performance: read_pr_file '{}' served from PR cache in {:?}",
+                     path, start.elapsed());
+            return Ok(content.clone());
+        }
+    }
+
     // For better performance, try to read directly from memory if possible
     match state.fs.read_file_from_memory(&path) {
-        Ok(content) => Ok(content),
+        Ok(content) => {
+            // Also cache in our PR cache for faster access
+            let mut pr_cache = state.pr_file_cache.lock().await;
+            pr_cache.insert(path.clone(), content.clone());
+
+            Ok(content)
+        },
         // Fall back to extracting and reading the file
         Err(_) => state.fs.read_file(&path)
     }
@@ -397,8 +531,10 @@ fn create_app_state(
     AppState {
         fs,                              // Main PR data archive
         images_fs,                       // Separate images archive
-        search: SearchIndex::new(),
+        search: Arc::new(SearchIndex::new()),
         repo: Arc::new(Mutex::new(repo_option)),
+        pr_file_cache: Arc::new(Mutex::new(HashMap::new())),
+        preload_token: Arc::new(std::sync::Mutex::new(0)), // Start with token 0, using std::sync::Mutex
     }
 }
 
@@ -521,7 +657,7 @@ fn handle_zip_image_protocol<'a>(
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run(initial_state: Option<InitialState>) -> Result<(), String> {
     log_memory_usage("start of run");
-    
+
     // Use provided initial state or create a default one
     let initial_state = initial_state.unwrap_or_default();
     log_memory_usage("after unwrapping initial state");
@@ -529,10 +665,10 @@ pub fn run(initial_state: Option<InitialState>) -> Result<(), String> {
     // Initialize components using our helper functions
     let fs = initialize_filesystem(&initial_state.archive_path, "PR")?;
     log_memory_usage("after initializing PR filesystem");
-    
+
     let images_fs = initialize_filesystem(&initial_state.images_archive_path, "Images")?;
     log_memory_usage("after initializing Images filesystem");
-    
+
     let repo_option = initialize_git_repo(&initial_state.repo_path)?;
     log_memory_usage("after initializing git repo");
 
