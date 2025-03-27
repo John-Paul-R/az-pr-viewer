@@ -1,6 +1,6 @@
 import type React from "react";
-import style from "../PrViewer.module.css"; // with { type: "css" };
-import badgestyle from "../badges.module.css"; // with { type: "css" };
+import style from "../PrViewer.module.css";
+import badgestyle from "../badges.module.css";
 
 interface PrHeaderProps {
     id: number;

@@ -58,14 +58,14 @@
 .gutterLine[data-diff-type="add"],
 .contentLine[data-diff-type="add"],
 .diffAdd {
-    background-color: var(--diff-add-bg, rgba(166, 218, 149, 0.08));
+    background-color: var(--diff-add-bg, rgba(166, 218, 149, 0.15));
     border-left: 2px solid var(--diff-add-border, rgba(166, 218, 149, 0.5));
 }
 
 .gutterLine[data-diff-type="remove"],
 .contentLine[data-diff-type="remove"],
 .diffRemove {
-    background-color: var(--diff-remove-bg, rgba(237, 135, 150, 0.08));
+    background-color: var(--diff-remove-bg, rgba(237, 135, 150, 0.15));
     border-left: 2px solid var(--diff-remove-border, rgba(237, 135, 150, 0.5));
 }
 
