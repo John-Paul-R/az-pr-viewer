@@ -50,14 +50,8 @@ export function Markdown({ markdown }: { markdown: string }) {
                         );
                     },
                     img(props) {
-                        const {
-                            children,
-                            className,
-                            src,
-                            href,
-                            node,
-                            ...rest
-                        } = props;
+                        const { children, className, src, node, ...rest } =
+                            props;
                         const match = src
                             ? /https?:\/\/(.+\/.+\.(jpg|jpeg|webp|png|gif))/.exec(
                                   src,
@@ -67,7 +61,6 @@ export function Markdown({ markdown }: { markdown: string }) {
                             ? `zip-image://${match[1]}`
                             : src ?? "/";
 
-                        // zip - image;
                         return (
                             // biome-ignore lint/a11y/useAltText: <explanation>
                             <img className={className} {...rest} src={urlIsh} />
