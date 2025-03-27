@@ -14,6 +14,18 @@ use serde_json::Value;
 use tauri::{async_runtime::Mutex, http::HeaderValue, Manager, State, UriSchemeContext, Wry};
 use zip_filesystem::FileSystem;
 use search::SearchIndex;
+use memory_stats::memory_stats;
+
+fn log_memory_usage(label: &str) {
+    if let Some(usage) = memory_stats() {
+        println!("Memory usage at {}: Physical: {} MB, Virtual: {} MB", 
+                 label, 
+                 usage.physical_mem / (1024 * 1024), 
+                 usage.virtual_mem / (1024 * 1024));
+    } else {
+        println!("Memory stats not available");
+    }
+}
 
 #[tauri::command(async)]
 fn greet(name: &str) -> String {
@@ -508,18 +520,28 @@ fn handle_zip_image_protocol<'a>(
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run(initial_state: Option<InitialState>) -> Result<(), String> {
+    log_memory_usage("start of run");
+    
     // Use provided initial state or create a default one
     let initial_state = initial_state.unwrap_or_default();
+    log_memory_usage("after unwrapping initial state");
 
     // Initialize components using our helper functions
     let fs = initialize_filesystem(&initial_state.archive_path, "PR")?;
+    log_memory_usage("after initializing PR filesystem");
+    
     let images_fs = initialize_filesystem(&initial_state.images_archive_path, "Images")?;
+    log_memory_usage("after initializing Images filesystem");
+    
     let repo_option = initialize_git_repo(&initial_state.repo_path)?;
+    log_memory_usage("after initializing git repo");
 
     // Create the application state
     let app_state = create_app_state(fs, images_fs, repo_option);
+    log_memory_usage("after creating app state");
 
     // Build and run the application with the initialized state
+    log_memory_usage("before creating Tauri builder");
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
@@ -547,5 +569,6 @@ pub fn run(initial_state: Option<InitialState>) -> Result<(), String> {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 
+    log_memory_usage("end of run (should not reach here in normal execution)");
     Ok(())
 }

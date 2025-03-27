@@ -6,6 +6,7 @@ use std::time::Instant;
 use std::fs;
 use tempfile::TempDir;
 use zip::ZipArchive;
+use memory_stats::memory_stats;
 
 #[derive(Clone)]
 pub struct FileSystem {
@@ -17,6 +18,17 @@ pub struct FileSystem {
 }
 
 impl FileSystem {
+    fn log_memory_usage(&self, label: &str) {
+        if let Some(usage) = memory_stats() {
+            println!("Memory usage at {}: Physical: {} MB, Virtual: {} MB",
+                     label,
+                     usage.physical_mem / (1024 * 1024),
+                     usage.virtual_mem / (1024 * 1024));
+        } else {
+            println!("Memory stats not available");
+        }
+    }
+
     pub fn new() -> Self {
         FileSystem {
             archive_path: Arc::new(Mutex::new(String::new())),
@@ -34,6 +46,7 @@ impl FileSystem {
 
     pub fn set_archive(&self, path: &str) -> Result<(), String> {
         let start = Instant::now();
+        self.log_memory_usage("start of set_archive");
 
         let path_obj = Path::new(path);
         if !path_obj.exists() {
@@ -52,11 +65,13 @@ impl FileSystem {
         let content = fs::read(path_obj)
             .map_err(|e| format!("Failed to read archive file: {}", e))?;
         let content_size = content.len();
+        self.log_memory_usage("after reading file");
 
         // Create ZipArchive from content
         let cursor = Cursor::new(content);
         let archive = ZipArchive::new(cursor)
             .map_err(|e| format!("Failed to open ZIP archive: {}", e))?;
+        self.log_memory_usage("after creating ZipArchive");
 
         // Clear existing data
         {
@@ -69,6 +84,7 @@ impl FileSystem {
             let mut extracted_files = self.extracted_files.lock().unwrap();
             extracted_files.clear();
         }
+        self.log_memory_usage("after clearing existing data");
 
         // Update archive path and zip archive
         {
@@ -78,6 +94,7 @@ impl FileSystem {
             let mut zip_archive = self.zip_archive.lock().unwrap();
             *zip_archive = Some(archive);
         }
+        self.log_memory_usage("end of set_archive");
 
         println!("Performance: set_archive loaded {} bytes in {:?}", content_size, start.elapsed());
         Ok(())
@@ -85,6 +102,7 @@ impl FileSystem {
 
     pub fn ensure_archive_loaded(&self) -> Result<(), String> {
         let start = Instant::now();
+        self.log_memory_usage("start of ensure_archive_loaded");
         let archive_path = self.archive_path.lock().unwrap().clone();
 
         if archive_path.is_empty() {
@@ -100,16 +118,19 @@ impl FileSystem {
                 .map_err(|e| format!("Failed to read archive file: {}", e))?;
 
             let content_size = content.len();
+            self.log_memory_usage(&format!("after reading {} bytes from disk", content_size));
 
             // Create ZipArchive from content
             let cursor = Cursor::new(content);
             let archive = ZipArchive::new(cursor)
                 .map_err(|e| format!("Failed to open ZIP archive: {}", e))?;
+            self.log_memory_usage("after creating ZipArchive");
 
             *zip_archive = Some(archive);
             println!("Performance: loaded archive into memory ({} bytes) in {:?}",
                      content_size, start.elapsed());
         }
+        self.log_memory_usage("end of ensure_archive_loaded");
 
         Ok(())
     }
@@ -129,6 +150,7 @@ impl FileSystem {
     pub fn extract_file(&self, file_path: &str) -> Result<PathBuf, String> {
         self.ensure_archive_loaded()?;
         let extraction_start = Instant::now();
+        self.log_memory_usage(&format!("start of extract_file '{}'", file_path));
 
         // Get or create temporary directory
         let temp_dir = self.ensure_temp_dir()?;
@@ -144,6 +166,7 @@ impl FileSystem {
                 }
             }
         }
+        self.log_memory_usage(&format!("after checking extracted files '{}'", file_path));
 
         // Get a lock on the archive so we can read from it
         let mut zip_archive_guard = self.zip_archive.lock().unwrap();
@@ -153,6 +176,7 @@ impl FileSystem {
         // Try to find the file
         let mut zip_file = archive.by_name(file_path)
             .map_err(|e| format!("Failed to find file in ZIP: {}", e))?;
+        self.log_memory_usage(&format!("after finding file '{}'", file_path));
 
         // Create parent directories if needed
         let output_path = temp_dir.join(file_path);
@@ -167,12 +191,14 @@ impl FileSystem {
 
         std::io::copy(&mut zip_file, &mut outfile)
             .map_err(|e| format!("Failed to extract file: {}", e))?;
+        self.log_memory_usage(&format!("after extracting file '{}'", file_path));
 
         // Add to extracted files list
         {
             let mut extracted_files = self.extracted_files.lock().unwrap();
             extracted_files.push(file_path.to_string());
         }
+        self.log_memory_usage(&format!("end of extract_file '{}'", file_path));
 
         println!("Performance: extracted file '{}' in {:?}", file_path, extraction_start.elapsed());
         Ok(output_path)
@@ -212,6 +238,7 @@ impl FileSystem {
 
     pub fn read_file_from_memory(&self, path: &str) -> Result<String, String> {
         let start = Instant::now();
+        self.log_memory_usage(&format!("start of read_file_from_memory '{}'", path));
 
         // Check cache first
         {
@@ -224,6 +251,7 @@ impl FileSystem {
         }
 
         self.ensure_archive_loaded()?;
+        self.log_memory_usage(&format!("after ensure_archive_loaded '{}'", path));
 
         // Get a lock on the archive so we can read from it
         let mut zip_archive_guard = self.zip_archive.lock().unwrap();
@@ -233,17 +261,20 @@ impl FileSystem {
         // Try to find the file
         let mut zip_file = archive.by_name(path)
             .map_err(|e| format!("Failed to find file in ZIP: {}", e))?;
+        self.log_memory_usage(&format!("after finding file '{}'", path));
 
         // Read file content directly to string
         let mut content = String::new();
         zip_file.read_to_string(&mut content)
             .map_err(|e| format!("Failed to read file from ZIP: {}", e))?;
+        self.log_memory_usage(&format!("after reading content '{}'", path));
 
         // Cache the content
         {
             let mut file_cache = self.file_cache.lock().unwrap();
             file_cache.insert(path.to_string(), content.clone());
         }
+        self.log_memory_usage(&format!("after caching content '{}'", path));
 
         println!("Performance: read_file_from_memory '{}' ({} bytes) in {:?}",
                  path, content.len(), start.elapsed());
