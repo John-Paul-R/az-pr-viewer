@@ -1,6 +1,6 @@
 use std::sync::{Arc, Mutex};
 use std::collections::HashMap;
-use std::io::{Cursor, Read};
+use std::io::Read;
 use std::path::{Path, PathBuf};
 use std::time::Instant;
 use std::fs;
@@ -11,7 +11,7 @@ use memory_stats::memory_stats;
 #[derive(Clone)]
 pub struct FileSystem {
     archive_path: Arc<Mutex<String>>,
-    zip_archive: Arc<Mutex<Option<ZipArchive<Cursor<Vec<u8>>>>>>,
+    zip_archive: Arc<Mutex<Option<ZipArchive<std::fs::File>>>>,
     temp_dir: Arc<Mutex<Option<TempDir>>>,
     file_cache: Arc<Mutex<HashMap<String, String>>>,
     extracted_files: Arc<Mutex<Vec<String>>>,
@@ -61,15 +61,18 @@ impl FileSystem {
             return Err(format!("Not a .zip file: {}", path));
         }
 
-        // Load the archive into memory
-        let content = fs::read(path_obj)
-            .map_err(|e| format!("Failed to read archive file: {}", e))?;
-        let content_size = content.len();
-        self.log_memory_usage("after reading file");
+        // Get file size for reporting
+        let metadata = fs::metadata(path_obj)
+            .map_err(|e| format!("Failed to get file metadata: {}", e))?;
+        let file_size = metadata.len();
 
-        // Create ZipArchive from content
-        let cursor = Cursor::new(content);
-        let archive = ZipArchive::new(cursor)
+        // Open the file directly instead of loading into memory
+        let file = fs::File::open(path_obj)
+            .map_err(|e| format!("Failed to open archive file: {}", e))?;
+        self.log_memory_usage("after opening file");
+
+        // Create ZipArchive from file
+        let archive = ZipArchive::new(file)
             .map_err(|e| format!("Failed to open ZIP archive: {}", e))?;
         self.log_memory_usage("after creating ZipArchive");
 
@@ -96,7 +99,7 @@ impl FileSystem {
         }
         self.log_memory_usage("end of set_archive");
 
-        println!("Performance: set_archive loaded {} bytes in {:?}", content_size, start.elapsed());
+        println!("Performance: set_archive opened file of {} bytes in {:?}", file_size, start.elapsed());
         Ok(())
     }
 
@@ -112,23 +115,25 @@ impl FileSystem {
         // Check if archive is already loaded
         let mut zip_archive = self.zip_archive.lock().unwrap();
         if zip_archive.is_none() {
-            // Load the archive content into memory
+            // Get file size for reporting
             let path = Path::new(&archive_path);
-            let content = fs::read(path)
-                .map_err(|e| format!("Failed to read archive file: {}", e))?;
-
-            let content_size = content.len();
-            self.log_memory_usage(&format!("after reading {} bytes from disk", content_size));
-
-            // Create ZipArchive from content
-            let cursor = Cursor::new(content);
-            let archive = ZipArchive::new(cursor)
+            let metadata = fs::metadata(path)
+                .map_err(|e| format!("Failed to get file metadata: {}", e))?;
+            let file_size = metadata.len();
+            
+            // Open the file directly instead of loading into memory
+            let file = fs::File::open(path)
+                .map_err(|e| format!("Failed to open archive file: {}", e))?;
+            self.log_memory_usage("after opening file");
+            
+            // Create ZipArchive from file
+            let archive = ZipArchive::new(file)
                 .map_err(|e| format!("Failed to open ZIP archive: {}", e))?;
             self.log_memory_usage("after creating ZipArchive");
-
+                
             *zip_archive = Some(archive);
-            println!("Performance: loaded archive into memory ({} bytes) in {:?}",
-                     content_size, start.elapsed());
+            println!("Performance: opened archive file ({} bytes) in {:?}",
+                     file_size, start.elapsed());
         }
         self.log_memory_usage("end of ensure_archive_loaded");
 
