@@ -406,7 +406,7 @@ fn handle_zip_image_protocol<'a>(
 
     // Use the existing get_image_from_index logic but extract just what we need
     // First, get the images index file
-    let index_content = match state.images_fs.read_file_from_memory("images-index.json") {
+    let index_content = match state.images_fs.read_file_from_memory("image_index.json") {
         Ok(content) => content,
         Err(e) => {
             println!("Failed to read images index: {}", e);
@@ -442,7 +442,7 @@ fn handle_zip_image_protocol<'a>(
     };
 
     // Get the actual path in the zip file
-    let actual_path = match index_obj.get(&image_path) {
+    let actual_path = match index_obj.get(&format!("{}{}", "https://", &image_path)) {
         Some(path_value) => match path_value.as_str() {
             Some(path) => path,
             None => {
