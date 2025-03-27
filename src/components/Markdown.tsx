@@ -4,8 +4,7 @@ import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
 import { autoLinkMd } from "react-markdown-autolink";
 import rehypePrism from "rehype-prism-plus";
-import { useTheme } from "../hooks/useTheme";
-import { useEffect } from "react";
+import "../syntax-highligh-themes/prism.css";
 
 // https://dev.azure.com/ORGANIZATION/PROJECT/_git/REPOSITORY/pullrequest/32627
 const PR_REGEX =
@@ -14,16 +13,6 @@ const PR_REGEX =
 export function Markdown({ markdown }: { markdown: string }) {
     // Process markdown content (autolink urls)
     const processedMarkdown = autoLinkMd(markdown);
-    const { isDark } = useTheme();
-
-    // Dynamically import the appropriate syntax highlighting theme based on dark mode
-    useEffect(() => {
-        if (isDark) {
-            import("../syntax-highligh-themes/tomorrow-night-dark.css");
-        } else {
-            import("../syntax-highligh-themes/prism.css");
-        }
-    }, [isDark]);
 
     return (
         <div className="markdown-content">
@@ -44,7 +33,7 @@ export function Markdown({ markdown }: { markdown: string }) {
                         const match = href ? PR_REGEX.exec(href) : "";
                         const linkTo = match?.[1]
                             ? `/pr/${match?.[1]}`
-                            : (href ?? "/");
+                            : href ?? "/";
                         return (
                             <Link
                                 target={

@@ -1,0 +1,80 @@
+/**
+ * Centralized syntax highlighting theme variables
+ * This file defines all syntax theme variables in one place for easier management
+ */
+
+:root {
+    /* Default light theme syntax colors */
+    --syntax-text-color: black;
+    --syntax-background: none;
+    --syntax-text-shadow: 0 1px white;
+    --syntax-selection-background: #b3d4fc;
+    --syntax-comment-color: slategray;
+    --syntax-punctuation-color: #999;
+    --syntax-property-color: #905;
+    --syntax-selector-color: #690;
+    --syntax-operator-color: #9a6e3a;
+    --syntax-operator-background: hsla(0, 0%, 100%, 0.5);
+    --syntax-atrule-color: #07a;
+    --syntax-function-color: #dd4a68;
+    --syntax-regex-color: #e90;
+    --syntax-function-name-color: inherit;
+}
+
+/* Dark theme */
+[data-theme="dark"] {
+    --syntax-text-color: #ccc;
+    --syntax-background: none;
+    --syntax-text-shadow: none;
+    --syntax-selection-background: #b3d4fc;
+    --syntax-comment-color: #999;
+    --syntax-punctuation-color: #ccc;
+    --syntax-property-color: #e2777a;
+    --syntax-selector-color: #cc99cd;
+    --syntax-operator-color: #67cdcc;
+    --syntax-operator-background: transparent;
+    --syntax-atrule-color: #cc99cd;
+    --syntax-function-color: #f08d49;
+    --syntax-regex-color: #7ec699;
+    --syntax-function-name-color: #6196cc;
+}
+
+/* Azure theme */
+[data-theme="azure"] {
+    --syntax-text-color: #333333;
+    --syntax-property-color: #a31515;
+    --syntax-selector-color: #008000;
+    --syntax-atrule-color: #0000ff;
+    --syntax-function-color: #b03060;
+}
+
+/* Catppuccin Pink theme */
+[data-theme="catppuccin-pink"] {
+    --syntax-text-color: #4c4f69;
+    --syntax-comment-color: #8c8fa1;
+    --syntax-property-color: #eb6f92; /* Pink */
+    --syntax-selector-color: #40a02b; /* Green */
+    --syntax-atrule-color: #7287fd; /* Blue */
+    --syntax-function-color: #d20f39; /* Red */
+    --syntax-regex-color: #fe640b; /* Orange */
+    --syntax-operator-color: #8839ef; /* Mauve */
+    --syntax-operator-background: transparent;
+}
+
+/* Catppuccin Pink Dark theme */
+[data-theme="catppuccin-pink-dark"] {
+    --syntax-text-color: #cdd6f4;
+    --syntax-background: none;
+    --syntax-text-shadow: none;
+    --syntax-selection-background: #b3d4fc;
+    --syntax-comment-color: #999;
+    --syntax-punctuation-color: #cdd6f4;
+    --syntax-property-color: #f38ba8; /* Red */
+    --syntax-selector-color: #cba6f7; /* Mauve */
+    --syntax-operator-color: #94e2d5; /* Teal */
+    --syntax-operator-background: transparent;
+    --syntax-atrule-color: #cba6f7; /* Mauve */
+    --syntax-function-color: #fab387; /* Peach */
+    --syntax-regex-color: #a6e3a1; /* Green */
+    --syntax-function-name-color: #89b4fa; /* Blue */
+}
