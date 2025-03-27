@@ -6,12 +6,11 @@ use std::time::Instant;
 use std::fs;
 use tempfile::TempDir;
 use zip::ZipArchive;
-use serde_json::Value;
 
 #[derive(Clone)]
 pub struct FileSystem {
     archive_path: Arc<Mutex<String>>,
-    archive_content: Arc<Mutex<Option<Arc<Vec<u8>>>>>,
+    zip_archive: Arc<Mutex<Option<ZipArchive<Cursor<Vec<u8>>>>>>,
     temp_dir: Arc<Mutex<Option<TempDir>>>,
     file_cache: Arc<Mutex<HashMap<String, String>>>,
     extracted_files: Arc<Mutex<Vec<String>>>,
@@ -21,7 +20,7 @@ impl FileSystem {
     pub fn new() -> Self {
         FileSystem {
             archive_path: Arc::new(Mutex::new(String::new())),
-            archive_content: Arc::new(Mutex::new(None)),
+            zip_archive: Arc::new(Mutex::new(None)),
             temp_dir: Arc::new(Mutex::new(None)),
             file_cache: Arc::new(Mutex::new(HashMap::new())),
             extracted_files: Arc::new(Mutex::new(Vec::new())),
@@ -54,6 +53,11 @@ impl FileSystem {
             .map_err(|e| format!("Failed to read archive file: {}", e))?;
         let content_size = content.len();
 
+        // Create ZipArchive from content
+        let cursor = Cursor::new(content);
+        let archive = ZipArchive::new(cursor)
+            .map_err(|e| format!("Failed to open ZIP archive: {}", e))?;
+
         // Clear existing data
         {
             let mut temp_dir_guard = self.temp_dir.lock().unwrap();
@@ -66,13 +70,13 @@ impl FileSystem {
             extracted_files.clear();
         }
 
-        // Update archive path and content
+        // Update archive path and zip archive
         {
             let mut archive_path = self.archive_path.lock().unwrap();
             *archive_path = path.to_string();
 
-            let mut archive_content = self.archive_content.lock().unwrap();
-            *archive_content = Some(Arc::new(content));
+            let mut zip_archive = self.zip_archive.lock().unwrap();
+            *zip_archive = Some(archive);
         }
 
         println!("Performance: set_archive loaded {} bytes in {:?}", content_size, start.elapsed());
@@ -87,16 +91,22 @@ impl FileSystem {
             return Err("No archive file selected".to_string());
         }
 
-        // Check if already loaded
-        let mut archive_content = self.archive_content.lock().unwrap();
-        if archive_content.is_none() {
+        // Check if archive is already loaded
+        let mut zip_archive = self.zip_archive.lock().unwrap();
+        if zip_archive.is_none() {
             // Load the archive content into memory
             let path = Path::new(&archive_path);
             let content = fs::read(path)
                 .map_err(|e| format!("Failed to read archive file: {}", e))?;
 
             let content_size = content.len();
-            *archive_content = Some(Arc::new(content));
+
+            // Create ZipArchive from content
+            let cursor = Cursor::new(content);
+            let archive = ZipArchive::new(cursor)
+                .map_err(|e| format!("Failed to open ZIP archive: {}", e))?;
+
+            *zip_archive = Some(archive);
             println!("Performance: loaded archive into memory ({} bytes) in {:?}",
                      content_size, start.elapsed());
         }
@@ -120,15 +130,6 @@ impl FileSystem {
         self.ensure_archive_loaded()?;
         let extraction_start = Instant::now();
 
-        // Get archive content from memory
-        let archive_content = {
-            let content_guard = self.archive_content.lock().unwrap();
-            match &*content_guard {
-                Some(content) => Arc::clone(content),
-                None => return Err("Archive content not loaded".to_string()),
-            }
-        };
-
         // Get or create temporary directory
         let temp_dir = self.ensure_temp_dir()?;
 
@@ -144,21 +145,14 @@ impl FileSystem {
             }
         }
 
-        // Create a cursor to read from memory
-        let cursor = Cursor::new(&*archive_content);
-
-        // Create ZIP archive reader
-        let mut archive = ZipArchive::new(cursor)
-            .map_err(|e| format!("Failed to open ZIP archive: {}", e))?;
+        // Get a lock on the archive so we can read from it
+        let mut zip_archive_guard = self.zip_archive.lock().unwrap();
+        let archive = zip_archive_guard.as_mut()
+            .ok_or_else(|| "Archive not loaded".to_string())?;
 
         // Try to find the file
-        let file_index = archive.file_names()
-            .position(|name| name == file_path)
-            .ok_or_else(|| format!("File not found in ZIP archive: {}", file_path))?;
-
-        // Extract only the specific file
-        let mut zip_file = archive.by_index(file_index)
-            .map_err(|e| format!("Failed to access file in ZIP: {}", e))?;
+        let mut zip_file = archive.by_name(file_path)
+            .map_err(|e| format!("Failed to find file in ZIP: {}", e))?;
 
         // Create parent directories if needed
         let output_path = temp_dir.join(file_path);
@@ -231,21 +225,10 @@ impl FileSystem {
 
         self.ensure_archive_loaded()?;
 
-        // Get archive content from memory
-        let archive_content = {
-            let content_guard = self.archive_content.lock().unwrap();
-            match &*content_guard {
-                Some(content) => Arc::clone(content),
-                None => return Err("Archive content not loaded".to_string()),
-            }
-        };
-
-        // Create a cursor to read from memory
-        let cursor = Cursor::new(&*archive_content);
-
-        // Create ZIP archive reader
-        let mut archive = ZipArchive::new(cursor)
-            .map_err(|e| format!("Failed to open ZIP archive: {}", e))?;
+        // Get a lock on the archive so we can read from it
+        let mut zip_archive_guard = self.zip_archive.lock().unwrap();
+        let archive = zip_archive_guard.as_mut()
+            .ok_or_else(|| "Archive not loaded".to_string())?;
 
         // Try to find the file
         let mut zip_file = archive.by_name(path)
@@ -272,21 +255,10 @@ impl FileSystem {
         self.ensure_archive_loaded()?;
         let start = Instant::now();
 
-        // Get archive content from memory
-        let archive_content = {
-            let content_guard = self.archive_content.lock().unwrap();
-            match &*content_guard {
-                Some(content) => Arc::clone(content),
-                None => return Err("Archive content not loaded".to_string()),
-            }
-        };
-
-        // Create a cursor to read from memory
-        let cursor = Cursor::new(&*archive_content);
-
-        // Create ZIP archive reader
-        let archive = ZipArchive::new(cursor)
-            .map_err(|e| format!("Failed to open ZIP archive: {}", e))?;
+        // Get a lock on the archive so we can read the file names
+        let zip_archive_guard = self.zip_archive.lock().unwrap();
+        let archive = zip_archive_guard.as_ref()
+            .ok_or_else(|| "Archive not loaded".to_string())?;
 
         // Collect all file names
         let files: Vec<String> = archive.file_names().map(String::from).collect();
@@ -356,21 +328,10 @@ impl FileSystem {
 
         self.ensure_archive_loaded()?;
 
-        // Get archive content from memory
-        let archive_content = {
-            let content_guard = self.archive_content.lock().unwrap();
-            match &*content_guard {
-                Some(content) => Arc::clone(content),
-                None => return Err("Archive content not loaded".to_string()),
-            }
-        };
-
-        // Create a cursor to read from memory
-        let cursor = Cursor::new(&*archive_content);
-
-        // Create ZIP archive reader
-        let mut archive = ZipArchive::new(cursor)
-            .map_err(|e| format!("Failed to open ZIP archive: {}", e))?;
+        // Get a lock on the archive so we can read from it
+        let mut zip_archive_guard = self.zip_archive.lock().unwrap();
+        let archive = zip_archive_guard.as_mut()
+            .ok_or_else(|| "Archive not loaded".to_string())?;
 
         // Try to find the file
         let mut zip_file = archive.by_name(path)
