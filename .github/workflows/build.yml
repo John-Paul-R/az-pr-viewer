@@ -2,26 +2,26 @@ name: Build Tauri App
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
   pull_request:
-    branches: [ main ]
+    branches: [main]
   workflow_dispatch:
     inputs:
       create_release:
-        description: 'Create GitHub Release'
+        description: "Create GitHub Release"
         required: false
         type: boolean
         default: false
       release_tag:
-        description: 'Release tag (e.g., v1.0.0)'
+        description: "Release tag (e.g., v1.0.0)"
         required: false
         type: string
-        default: ''
+        default: ""
 
 permissions:
-  contents: write  # Required for creating releases and uploading artifacts
-  packages: write  # Required for uploading artifacts
-  actions: write   # Required for creating and managing workflow runs
+  contents: write # Required for creating releases and uploading artifacts
+  packages: write # Required for uploading artifacts
+  actions: write # Required for creating and managing workflow runs
 
 jobs:
   build:
@@ -54,7 +54,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version: "lts/*"
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -100,7 +100,8 @@ jobs:
 
       # Create tar.gz for Linux executable
       - name: Create Linux executable tarball
-        if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'ubuntu-24.04-arm'
+        # only generating for x64 for now, can update later
+        if: matrix.platform == 'ubuntu-latest' # || matrix.platform == 'ubuntu-24.04-arm'
         run: |
           cd src-tauri/target/${{ matrix.target }}/release
           APP_NAME=$(find . -type f -executable -not -path "*/\.*" -not -path "*/deps/*" -not -path "*/build/*" | grep -v "\.d$" | grep -v "\.rlib$" | grep -v "\.rmeta$" | head -1)
